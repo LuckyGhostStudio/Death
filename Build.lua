@@ -42,8 +42,8 @@ project "Lucky"			-- 项目
 	targetdir ("Binaries/" .. outputdir .. "/%{prj.name}")				-- 目标目录
     objdir ("Binaries/Intermediates/" .. outputdir .. "/%{prj.name}")	-- 中间目录
 
-	-- pchheader "lcpch.h"	-- 预编译头文件
-	-- pchsource "Lucky/Source/lcpch.cpp"
+	pchheader "lcpch.h"	-- 预编译头文件
+	pchsource "Lucky/Source/lcpch.cpp"
 
 	files				-- 文件
 	{

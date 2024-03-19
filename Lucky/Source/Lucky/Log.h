@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "Core.h"
 #include "spdlog/spdlog.h"
 
@@ -43,8 +41,8 @@ namespace Lucky
 #define LC_CORE_FATAL(...)	::Lucky::Log::GetCoreLogger()->fatal(__VA_ARGS__)		// 严重错误
 
 // 客户端 Log
-#define LC_TRACE(...)		::Lucky::Log::GetClientLogger()->trace(__VA_ARGS__)		//提示
-#define LC_INFO(...)		::Lucky::Log::GetClientLogger()->info(__VA_ARGS__)		//信息
-#define LC_WARN(...)		::Lucky::Log::GetClientLogger()->warn(__VA_ARGS__)		//警告
-#define LC_ERROR(...)		::Lucky::Log::GetClientLogger()->error(__VA_ARGS__)		//错误
-#define LC_FATAL(...)		::Lucky::Log::GetClientLogger()->fatal(__VA_ARGS__)		//严重错误
+#define LC_TRACE(...)		::Lucky::Log::GetClientLogger()->trace(__VA_ARGS__)		// 提示
+#define LC_INFO(...)		::Lucky::Log::GetClientLogger()->info(__VA_ARGS__)		// 信息
+#define LC_WARN(...)		::Lucky::Log::GetClientLogger()->warn(__VA_ARGS__)		// 警告
+#define LC_ERROR(...)		::Lucky::Log::GetClientLogger()->error(__VA_ARGS__)		// 错误
+#define LC_FATAL(...)		::Lucky::Log::GetClientLogger()->fatal(__VA_ARGS__)		// 严重错误
