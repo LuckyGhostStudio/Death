@@ -1,13 +1,15 @@
 #include "lcpch.h"
 #include "Application.h"
 
-#include "Events/ApplicationEvent.h"
-#include "Log.h"
+#include "Lucky/Events/ApplicationEvent.h"
+
+#include <GLFW/glfw3.h>
 
 namespace Lucky
 {
 	Application::Application()
 	{
+		m_Window = std::unique_ptr<Window>(Window::Create());	// ´´½¨´°¿Ú
 	}
 
 	Application::~Application()
@@ -26,6 +28,10 @@ namespace Lucky
 			LC_TRACE(e.ToString());
 		}
 
-		while (true);
+		while (m_Running) {
+			glClearColor(0.3, 0.5, 0.8, 1.0);
+			glClear(GL_COLOR_BUFFER_BIT);
+			m_Window->OnUpdate();
+		}
 	}
 }

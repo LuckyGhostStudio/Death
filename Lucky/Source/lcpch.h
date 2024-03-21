@@ -12,6 +12,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#ifdef LC_PLATFORM_WINDOWS	// windows
-	#include <Windows.h>
-#endif
+#include "Lucky/Log.h"
+
+#include <Windows.h>

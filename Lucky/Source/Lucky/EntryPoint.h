@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef LC_PLATFORM_WINDOWS
-
 extern Lucky::Application* Lucky::CreateApplication();
 
 int main(int argc, char** argv)
@@ -14,5 +12,3 @@ int main(int argc, char** argv)
 	app->Run();
 	delete app;
 }
-
-#endif

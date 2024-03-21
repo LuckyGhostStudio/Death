@@ -14,7 +14,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"	-- 输出目录
 -- 包含目录列表
 IncludeDir = {}
 -- IncludeDir["Box2D"] = "Lucky/Vendor/Box2D/include"
--- IncludeDir["GLFW"] = "Lucky/Vendor/GLFW/include"
+IncludeDir["GLFW"] = "Lucky/Vendor/GLFW/include"
 -- IncludeDir["GLAD"] = "Lucky/Vendor/GLAD/include"
 -- IncludeDir["ImGui"] = "Lucky/Vendor/imgui"
 -- IncludeDir["glm"] = "Lucky/Vendor/glm"
@@ -23,14 +23,14 @@ IncludeDir = {}
 -- IncludeDir["yaml_cpp"] = "Lucky/Vendor/yaml-cpp/include"
 -- IncludeDir["ImGuizmo"] = "Lucky/Vendor/ImGuizmo"
 
--- group "Dependencies"
+group "Dependencies"
 	-- include "Lucky/Vendor/Box2D"		-- 包含Box2D目录
-	-- include "Lucky/Vendor/GLFW"			-- 包含GLFW目录
+	include "Lucky/Vendor/GLFW"			-- 包含GLFW目录
 	-- include "Lucky/Vendor/GLAD"			-- 包含GLAD目录
 	-- include "Lucky/Vendor/imgui"		-- 包含imgui目录
 	-- include "Lucky/Vendor/yaml-cpp"
 
--- group ""
+group ""
 
 project "Lucky"			-- 项目
 	location "Lucky"	-- 相对路径
@@ -67,7 +67,7 @@ project "Lucky"			-- 项目
 		"%{prj.name}/Source",
 		"%{prj.name}/Vendor/spdlog/include",
 		-- "%{IncludeDir.Box2D}",
-		-- "%{IncludeDir.GLFW}",
+		"%{IncludeDir.GLFW}",
 		-- "%{IncludeDir.GLAD}",
 		-- "%{IncludeDir.ImGui}",
 		-- "%{IncludeDir.glm}",
@@ -80,12 +80,11 @@ project "Lucky"			-- 项目
 	links
 	{
 		-- "Box2D",			-- 引用Box2D
-		-- "GLFW",			-- 引用GLFW
+		"GLFW",			-- 引用GLFW
 		-- "GLAD",			-- 引用GLAD
 		-- "ImGui",			-- 引用imgui
 		-- "yaml-cpp",		-- 引用yaml-cpp
-
-		-- "opengl32.lib"
+		"opengl32.lib"
 	}
 
 	-- filter "files:Lucky/Vendor/ImGuizmo/**.cpp"
@@ -96,7 +95,6 @@ project "Lucky"			-- 项目
 
 		defines
 		{
-			"LC_PLATFORM_WINDOWS",
 			-- "GLFW_INCLUDE_NONE"
 		}
 
@@ -136,7 +134,7 @@ project "Editor"
 		"Lucky/Vendor/spdlog/include",
 		"Lucky/Source",
 		"Lucky/Vendor",
-		-- "%{IncludeDir.GLFW}",
+		"%{IncludeDir.GLFW}",
 		-- "%{IncludeDir.glm}",
 		-- "%{IncludeDir.entt}",
 		-- "%{IncludeDir.ImGuizmo}"
@@ -144,7 +142,7 @@ project "Editor"
 
 	links
 	{
-		"Lucky"			
+		"Lucky"
 	}
 
 	filter "system:windows"	-- windows
@@ -152,7 +150,7 @@ project "Editor"
 
 		defines			
 		{
-			"LC_PLATFORM_WINDOWS"
+
 		}
 
 	filter "configurations:Debug"	
