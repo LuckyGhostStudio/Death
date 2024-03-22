@@ -1,20 +1,34 @@
 #pragma once
 
 #include "Lucky/Core.h"
+#include "Lucky/LayerStack.h"
 #include "Lucky/Events/Event.h"
 #include "Lucky/Events/ApplicationEvent.h"
 #include "Lucky/Window.h"
 
-namespace Lucky {
-
+namespace Lucky
+{
 	class Application
 	{
 	private:
 		std::unique_ptr<Window> m_Window;	// 窗口指针
 		bool m_Running = true;				// 是否正在运行
+		LayerStack m_LayerStack;			// 层栈
 	public:
 		Application();
 		virtual ~Application();
+
+		/// <summary>
+		/// 添加普通层到层栈
+		/// </summary>
+		/// <param name="layer">普通层</param>
+		void PushLayer(Layer* layer);
+
+		/// <summary>
+		/// 添加覆盖层到层栈
+		/// </summary>
+		/// <param name="layer">覆盖层</param>
+		void PushOverlay(Layer* layer);
 
 		/// <summary>
 		/// 事件回调函数
