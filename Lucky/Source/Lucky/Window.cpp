@@ -5,6 +5,9 @@
 #include "Lucky/Events/KeyEvent.h"
 #include "Lucky/Events/MouseEvent.h"
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 namespace Lucky
 {
 	static bool s_GLFWInitialized = false;		// GLFW 是否已初始化
@@ -46,7 +49,7 @@ namespace Lucky
 
 		if (!s_GLFWInitialized) {		// 未初始化
 			// TODO: glfwTerminate on system shutdown
-			int success = glfwInit();	// 初始化GLFW窗口
+			int success = glfwInit();								// 初始化GLFW窗口
 			LC_CORE_ASSERT(success, "Could not initialize GLFW!");	// 初始化失败 不能初始化GLFW
 
 			s_GLFWInitialized = true;
@@ -56,6 +59,10 @@ namespace Lucky
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
 		glfwMakeContextCurrent(m_Window);				// 设置窗口上下文为当前线程主上下文
+
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);	// 初始化GLAD
+		LC_CORE_ASSERT(status, "Failed to initialize Glad!");
+
 		glfwSetWindowUserPointer(m_Window, &m_Data);	// 将数据m_Data传递给m_Window
 		SetVSync(true);									// 垂直同步
 

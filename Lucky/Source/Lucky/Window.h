@@ -3,7 +3,7 @@
 #include "Lucky/Core.h"
 #include "Lucky/Events/Event.h"
 
-#include <GLFW/glfw3.h>
+struct GLFWwindow;
 
 namespace Lucky
 {
@@ -80,7 +80,7 @@ namespace Lucky
 		/// </summary>
 		virtual void Shutdown();
 	private:
-		GLFWwindow* m_Window;	//GLFW窗口
+		GLFWwindow* m_Window;	// GLFW窗口
 
 		/// <summary>
 		/// 窗口数据

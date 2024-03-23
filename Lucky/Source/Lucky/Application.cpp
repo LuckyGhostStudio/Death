@@ -1,6 +1,8 @@
 #include "lcpch.h"
 #include "Application.h"
 
+#include <glad/glad.h>
+
 namespace Lucky
 {
 	Application::Application()
