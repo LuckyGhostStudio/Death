@@ -11,6 +11,8 @@ namespace Lucky
 	class Application
 	{
 	private:
+		static Application* s_Instance;		// 实例
+
 		std::unique_ptr<Window> m_Window;	// 窗口指针
 		bool m_Running = true;				// 是否正在运行
 		LayerStack m_LayerStack;			// 层栈
@@ -37,6 +39,18 @@ namespace Lucky
 		void OnEvent(Event& e);
 
 		void Run();
+
+		/// <summary>
+		/// 返回Application的实例
+		/// </summary>
+		/// <returns>实例</returns>
+		inline static Application& GetInstance() { return *s_Instance; }
+
+		/// <summary>
+		/// 返回Application的窗口
+		/// </summary>
+		/// <returns></returns>
+		inline Window& GetWindow() { return *m_Window; }
 	private:
 		/// <summary>
 		/// 窗口关闭回调函数

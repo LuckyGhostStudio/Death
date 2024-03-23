@@ -16,7 +16,7 @@ IncludeDir = {}
 -- IncludeDir["Box2D"] = "Lucky/Vendor/Box2D/include"
 IncludeDir["GLFW"] = "Lucky/Vendor/GLFW/include"
 IncludeDir["GLAD"] = "Lucky/Vendor/GLAD/include"
--- IncludeDir["ImGui"] = "Lucky/Vendor/imgui"
+IncludeDir["ImGui"] = "Lucky/Vendor/imgui"
 -- IncludeDir["glm"] = "Lucky/Vendor/glm"
 -- IncludeDir["stb_image"] = "Lucky/Vendor/stb_image"
 -- IncludeDir["entt"] = "Lucky/Vendor/entt/include"
@@ -27,7 +27,7 @@ group "Dependencies"
 	-- include "Lucky/Vendor/Box2D"		-- 包含Box2D目录
 	include "Lucky/Vendor/GLFW"			-- 包含GLFW目录
 	include "Lucky/Vendor/GLAD"			-- 包含GLAD目录
-	-- include "Lucky/Vendor/imgui"		-- 包含imgui目录
+	include "Lucky/Vendor/imgui"		-- 包含imgui目录
 	-- include "Lucky/Vendor/yaml-cpp"
 
 group ""
@@ -69,7 +69,7 @@ project "Lucky"			-- 项目
 		-- "%{IncludeDir.Box2D}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
-		-- "%{IncludeDir.ImGui}",
+		"%{IncludeDir.ImGui}",
 		-- "%{IncludeDir.glm}",
 		-- "%{IncludeDir.stb_image}",
 		-- "%{IncludeDir.entt}",
@@ -80,9 +80,9 @@ project "Lucky"			-- 项目
 	links
 	{
 		-- "Box2D",			-- 引用Box2D
-		"GLFW",			-- 引用GLFW
-		"GLAD",			-- 引用GLAD
-		-- "ImGui",			-- 引用imgui
+		"GLFW",				-- 引用GLFW
+		"GLAD",				-- 引用GLAD
+		"ImGui",			-- 引用imgui
 		-- "yaml-cpp",		-- 引用yaml-cpp
 		"opengl32.lib"
 	}

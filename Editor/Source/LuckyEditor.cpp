@@ -22,6 +22,7 @@ public:
 	LuckyEditor()
 	{
 		PushLayer(new ExampleLayer());
+		PushOverlay(new Lucky::ImGuiLayer());
 	}
 
 	~LuckyEditor()
