@@ -117,6 +117,15 @@ namespace Lucky
 			}
 		});
 
+		// 键盘字符输入
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			KeyTypedEvent event(keycode);	// 按键输入字符事件
+			data.EventCallback(event);
+		});
+
 		// 鼠标按钮
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{
