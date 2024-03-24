@@ -4,6 +4,10 @@
 #include "Lucky/Log.h"
 #include "Lucky/Layer.h"
 
+#include "Lucky/Input.h"
+#include "Lucky/KeyCodes.h"
+#include "Lucky/MouseButtonCodes.h"
+
 #include "Lucky/ImGui/ImGuiLayer.h"
 
 // Entry Point

@@ -7,12 +7,15 @@ public:
 
 	void OnUpdate() override
 	{
-		LC_INFO("ExampleLayer::OnUpdate");
+
 	}
 
 	void OnEvent(Lucky::Event& event) override
 	{
-		LC_TRACE("{0}", event.ToString());
+		if (event.GetEventType() == Lucky::EventType::KeyPressed) {		// 按键按下事件
+			Lucky::KeyPressedEvent& e = (Lucky::KeyPressedEvent&)event;
+			LC_TRACE("{0}", (char)e.GetKeyCode());
+		}
 	}
 };
 

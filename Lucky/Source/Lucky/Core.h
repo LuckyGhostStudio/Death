@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef LC_DEBUG
+	#define LC_ENABLE_ASSERTS
+#endif
+
 #ifdef LC_ENABLE_ASSERTS	// 启用断言
 	// 断言：x为假 则显示ERROR日志信息 并中断调试
 	#define LC_ASSERT(x, ...) { if(!(x)) { LC_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
