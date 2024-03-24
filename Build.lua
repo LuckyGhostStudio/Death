@@ -17,7 +17,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Lucky/Vendor/GLFW/include"
 IncludeDir["GLAD"] = "Lucky/Vendor/GLAD/include"
 IncludeDir["ImGui"] = "Lucky/Vendor/imgui"
--- IncludeDir["glm"] = "Lucky/Vendor/glm"
+IncludeDir["glm"] = "Lucky/Vendor/glm"
 -- IncludeDir["stb_image"] = "Lucky/Vendor/stb_image"
 -- IncludeDir["entt"] = "Lucky/Vendor/entt/include"
 -- IncludeDir["yaml_cpp"] = "Lucky/Vendor/yaml-cpp/include"
@@ -51,8 +51,8 @@ project "Lucky"			-- 项目
 		"%{prj.name}/Source/**.cpp",
 		-- "%{prj.name}/Vendor/stb_image/**.h",
 		-- "%{prj.name}/Vendor/stb_image/**.cpp",
-		-- "%{prj.name}/Vendor/glm/glm/**.hpp",
-		-- "%{prj.name}/Vendor/glm/glm/**.inl",
+		"%{prj.name}/Vendor/glm/glm/**.hpp",
+		"%{prj.name}/Vendor/glm/glm/**.inl",
 		-- "%{prj.name}/Vendor/ImGuizmo/ImGuizmo.h",
 		-- "%{prj.name}/Vendor/ImGuizmo/ImGuizmo.cpp"
 	}
@@ -70,7 +70,7 @@ project "Lucky"			-- 项目
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
-		-- "%{IncludeDir.glm}",
+		"%{IncludeDir.glm}",
 		-- "%{IncludeDir.stb_image}",
 		-- "%{IncludeDir.entt}",
 		-- "%{IncludeDir.yaml_cpp}",
@@ -135,7 +135,7 @@ project "Editor"
 		"Lucky/Source",
 		"Lucky/Vendor",
 		"%{IncludeDir.GLFW}",
-		-- "%{IncludeDir.glm}",
+		"%{IncludeDir.glm}",
 		-- "%{IncludeDir.entt}",
 		-- "%{IncludeDir.ImGuizmo}"
 	}
