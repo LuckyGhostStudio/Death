@@ -2,10 +2,12 @@
 #include "ImGuiLayer.h"
 
 #include "imgui.h"
-#include "OpenGL/ImGuiOpenGLRenderer.h"
+#include "examples/imgui_impl_glfw.h"
+#include "examples/imgui_impl_opengl3.h"
 
 #include "Lucky/Application.h"
 
+// Temp
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -23,158 +25,67 @@ namespace Lucky
 
 	void ImGuiLayer::OnAttach()
 	{
+		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();		// 创建ImGui上下文
+
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+
 		ImGui::StyleColorsDark();	// 深色样式
 
-		ImGuiIO& io = ImGui::GetIO();
-		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;	// 可以接受GetMouseCursor()的值
-		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;	// 可以接受io.WantSetMousePos请求
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
 
-		// 临时：最终将使用Lucky按键代码
-		io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
-		io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
-		io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
-		io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
-		io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
-		io.KeyMap[ImGuiKey_PageUp] = GLFW_KEY_PAGE_UP;
-		io.KeyMap[ImGuiKey_PageDown] = GLFW_KEY_PAGE_DOWN;
-		io.KeyMap[ImGuiKey_Home] = GLFW_KEY_HOME;
-		io.KeyMap[ImGuiKey_End] = GLFW_KEY_END;
-		io.KeyMap[ImGuiKey_Insert] = GLFW_KEY_INSERT;
-		io.KeyMap[ImGuiKey_Delete] = GLFW_KEY_DELETE;
-		io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
-		io.KeyMap[ImGuiKey_Space] = GLFW_KEY_SPACE;
-		io.KeyMap[ImGuiKey_Enter] = GLFW_KEY_ENTER;
-		io.KeyMap[ImGuiKey_Escape] = GLFW_KEY_ESCAPE;
-		io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
-		io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
-		io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
-		io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
-		io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
-		io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
+		Application& app = Application::GetInstance();
+		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
-		ImGui_ImplOpenGL3_Init("#version 410");	//初始化ImGui
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init("#version 410");
 	}
 
 	void ImGuiLayer::OnDetach()
 	{
-
+		ImGui_ImplOpenGL3_Shutdown();	// 关闭 ImGui 
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();		// 毁上下文
 	}
 
-	void ImGuiLayer::OnUpdate()
+	void ImGuiLayer::OnImGuiRender()
 	{
-		// 设置io的显示尺寸
-		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::GetInstance();
-		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());	// io的显示显示尺寸
-
-		// 计算io帧间隔
-		float time = (float)glfwGetTime();									// 当前时间
-		io.DeltaTime = m_Time > 0.0f ? (time - m_Time) : (1.0f / 60.0f);	// 帧间隔时间
-		m_Time = time;
-
-		// 开启一个新的帧
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui::NewFrame();
-
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);	// 显示Demo窗口
-
-		ImGui::Render();				// 渲染ImGui
-
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());	// 渲染绘制数据
 	}
 
-	void ImGuiLayer::OnEvent(Event& event)
+	void ImGuiLayer::Begin()
 	{
-		EventDispatcher dispatcher(event);	// 事件调度器
-
-		// 事件调度：触发与event匹配的事件函数
-		dispatcher.Dispatch<MouseButtonPressedEvent>(LC_BIND_EVENT_FUNC(ImGuiLayer::OnMouseButtonPressedEvent));
-		dispatcher.Dispatch<MouseButtonReleasedEvent>(LC_BIND_EVENT_FUNC(ImGuiLayer::OnMouseButtonReleasedEvent));
-		dispatcher.Dispatch<MouseMovedEvent>(LC_BIND_EVENT_FUNC(ImGuiLayer::OnMouseMovedEvent));
-		dispatcher.Dispatch<MouseScrolledEvent>(LC_BIND_EVENT_FUNC(ImGuiLayer::OnMouseScrolledEvent));
-		dispatcher.Dispatch<KeyPressedEvent>(LC_BIND_EVENT_FUNC(ImGuiLayer::OnKeyPressedEvent));
-		dispatcher.Dispatch<KeyReleasedEvent>(LC_BIND_EVENT_FUNC(ImGuiLayer::OnKeyReleasedEvent));
-		dispatcher.Dispatch<KeyTypedEvent>(LC_BIND_EVENT_FUNC(ImGuiLayer::OnKeyTypedEvent));
-		dispatcher.Dispatch<WindowResizeEvent>(LC_BIND_EVENT_FUNC(ImGuiLayer::OnWindowResizeEvent));
+		// 开启新帧
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 	}
 
-	bool ImGuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& event)
+	void ImGuiLayer::End()
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.MouseDown[event.GetMouseButton()] = true;	// 鼠标按下
+		Application& app = Application::GetInstance();
+		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());	// 设置窗口大小
 
-		return false;	// 未处理 希望其他层可以接收到event
-	}
+		// Rendering
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-	bool ImGuiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& event)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.MouseDown[event.GetMouseButton()] = false;	// 鼠标抬起
-
-		return false;
-	}
-
-	bool ImGuiLayer::OnMouseMovedEvent(MouseMovedEvent& event)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = ImVec2(event.GetX(), event.GetY());	// 设置鼠标位置
-
-		return false;
-	}
-
-	bool ImGuiLayer::OnMouseScrolledEvent(MouseScrolledEvent& event)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.MouseWheelH += event.GetXOffset();	// 累加鼠标水平滚轮偏移量
-		io.MouseWheel += event.GetYOffset();	// 累加鼠标竖直滚轮偏移量
-
-		return false;
-	}
-
-	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& event)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.KeysDown[event.GetKeyCode()] = true;		// 按键按下
-
-		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];	// Ctrl键
-		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];	// Shift键
-		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];			// Alt键
-		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];	// Win键
-
-		return false;
-	}
-
-	bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& event)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.KeysDown[event.GetKeyCode()] = false;	// 按键抬起
-
-		return false;
-	}
-
-	bool ImGuiLayer::OnKeyTypedEvent(KeyTypedEvent& event)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		int keycode = event.GetKeyCode();
-		if (keycode > 0 && keycode < 0x10000) {
-			io.AddInputCharacter((unsigned short)keycode);	// 添加输入字符：按键代码
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup_current_context);
 		}
-
-		return false;
-	}
-
-	bool ImGuiLayer::OnWindowResizeEvent(WindowResizeEvent& event)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.DisplaySize = ImVec2(event.GetWidth(), event.GetHeight());	// 设置窗口大小
-		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
-		glViewport(0, 0, event.GetWidth(), event.GetHeight());			// 设置ImGui视口
-
-		return false;
 	}
 }

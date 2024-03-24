@@ -14,6 +14,9 @@ namespace Lucky
 
 		m_Window = std::unique_ptr<Window>(Window::Create());					// 创建窗口
 		m_Window->SetEventCallback(LC_BIND_EVENT_FUNC(Application::OnEvent));	// 设置回调函数
+
+		m_ImGuiLayer = new ImGuiLayer();		// 创建ImGui层
+		PushOverlay(m_ImGuiLayer);				// 添加ImGuiLayer到覆盖层
 	}
 
 	Application::~Application()
@@ -34,7 +37,7 @@ namespace Lucky
 
 	void Application::OnEvent(Event& e)
 	{
-		EventDispatcher dispatcher(e);		// 事件调度器
+		EventDispatcher dispatcher(e);	// 事件调度器
 		dispatcher.Dispatch<WindowCloseEvent>(LC_BIND_EVENT_FUNC(Application::OnWindowClose));	// 调度 窗口关闭事件
 
 		// 从最顶层向下遍历层栈
@@ -55,6 +58,13 @@ namespace Lucky
 			for (Layer* layer : m_LayerStack) {
 				layer->OnUpdate();
 			}
+
+			// ImGui渲染
+			m_ImGuiLayer->Begin();
+			for (Layer* layer : m_LayerStack) {
+				layer->OnImGuiRender();		// 渲染每个Layer的ImGui
+			}
+			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();	// 更新窗口
 		}

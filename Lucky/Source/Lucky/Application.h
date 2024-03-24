@@ -6,14 +6,18 @@
 #include "Lucky/Events/ApplicationEvent.h"
 #include "Lucky/Window.h"
 
+#include "Lucky/ImGui/ImGuiLayer.h"
+
 namespace Lucky
 {
 	class Application
 	{
 	private:
-		static Application* s_Instance;		// 实例
+		static Application* s_Instance;		// 静态实例
 
 		std::unique_ptr<Window> m_Window;	// 窗口指针
+		ImGuiLayer* m_ImGuiLayer;			// ImGui层指针
+
 		bool m_Running = true;				// 是否正在运行
 		LayerStack m_LayerStack;			// 层栈
 	public:

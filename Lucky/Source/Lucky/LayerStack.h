@@ -18,8 +18,8 @@ namespace Lucky
 	class LayerStack
 	{
 	private:
-		std::vector<Layer*> m_Layers;					// 层列表
-		std::vector<Layer*>::iterator m_LayerInsert;	// 插入迭代器
+		std::vector<Layer*> m_Layers;			// 层列表
+		unsigned int m_LayerInsertIndex = 0;	// 插入位置索引
 	public:
 		LayerStack();
 		~LayerStack();

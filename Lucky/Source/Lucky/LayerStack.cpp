@@ -5,7 +5,7 @@ namespace Lucky
 {
 	LayerStack::LayerStack()
 	{
-		m_LayerInsert = m_Layers.begin();	// 插入迭代器初始化为 begin
+
 	}
 
 	LayerStack::~LayerStack()
@@ -18,7 +18,8 @@ namespace Lucky
 
 	void LayerStack::PushLayer(Layer* layer)
 	{
-		m_LayerInsert = m_Layers.emplace(m_LayerInsert, layer);	// 插入layer到 m_LayerInsert位置
+		m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);		// 插入layer到 m_LayerInsertIndex位置
+		m_LayerInsertIndex++;
 	}
 
 	void LayerStack::PushOverlay(Layer* overlay)
@@ -32,8 +33,8 @@ namespace Lucky
 
 		// 找到layer
 		if (it != m_Layers.end()) {
-			m_Layers.erase(it);		// 移除it指向的layer
-			m_LayerInsert--;
+			m_Layers.erase(it);			// 移除it指向的layer
+			m_LayerInsertIndex--;
 		}
 	}
 

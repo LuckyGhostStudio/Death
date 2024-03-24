@@ -29,6 +29,11 @@ namespace Lucky
 		virtual void OnUpdate() {}
 
 		/// <summary>
+		/// 渲染ImGui
+		/// </summary>
+		virtual void OnImGuiRender() {}
+
+		/// <summary>
 		/// 事件函数：接收事件
 		/// </summary>
 		/// <param name="event">事件</param>

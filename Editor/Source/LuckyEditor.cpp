@@ -7,7 +7,7 @@ public:
 
 	void OnUpdate() override
 	{
-		
+
 	}
 
 	void OnEvent(Lucky::Event& event) override
@@ -25,7 +25,6 @@ public:
 	LuckyEditor()
 	{
 		PushLayer(new ExampleLayer());
-		PushOverlay(new Lucky::ImGuiLayer());
 	}
 
 	~LuckyEditor()
