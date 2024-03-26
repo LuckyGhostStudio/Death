@@ -2,8 +2,9 @@
 
 #include "Lucky/Core.h"
 #include "Lucky/Events/Event.h"
+#include "Lucky/Renderer/OpenGLContext.h"
 
-struct GLFWwindow;
+#include <GLFW/glfw3.h>
 
 namespace Lucky
 {
@@ -86,7 +87,8 @@ namespace Lucky
 		/// </summary>
 		virtual void Shutdown();
 	private:
-		GLFWwindow* m_Window;	// GLFW窗口
+		GLFWwindow* m_Window;		// GLFW窗口
+		OpenGLContext* m_Context;	// OpenGL上下文
 
 		/// <summary>
 		/// 窗口数据

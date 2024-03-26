@@ -49,7 +49,7 @@ namespace Lucky
 	{
 		while (m_Running) {
 			// Temp
-			glClearColor(0.3, 0.5, 0.8, 1.0);
+			glClearColor(0.3f, 0.5f, 0.8f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			// 更新层栈中所有层

@@ -5,12 +5,17 @@ class ExampleLayer : public Lucky::Layer
 public:
 	ExampleLayer() : Layer("Example") {}
 
-	void OnUpdate() override
+	virtual void OnUpdate() override
 	{
 
 	}
 
-	void OnEvent(Lucky::Event& event) override
+	virtual void OnImGuiRender() override
+	{
+
+	}
+
+	virtual void OnEvent(Lucky::Event& event) override
 	{
 		if (event.GetEventType() == Lucky::EventType::KeyPressed) {		// 按键按下事件
 			Lucky::KeyPressedEvent& e = (Lucky::KeyPressedEvent&)event;

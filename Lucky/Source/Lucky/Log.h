@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Core.h"
 #include "spdlog/spdlog.h"
@@ -6,43 +6,43 @@
 namespace Lucky
 {
 	/// <summary>
-	/// ÈÕÖ¾
+	/// æ—¥å¿—
 	/// </summary>
 	class Log
 	{
 	public:
 		/// <summary>
-		/// ³õÊ¼»¯
+		/// åˆå§‹åŒ–
 		/// </summary>
 		static void Init();
 
 		/// <summary>
-		/// ·µ»ØÄÚºË Log
+		/// è¿”å›å†…æ ¸ Log
 		/// </summary>
-		/// <returns>ÄÚºË Log</returns>
+		/// <returns>å†…æ ¸ Log</returns>
 		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
 
 		/// <summary>
-		/// ·µ»Ø¿Í»§¶Ë Log
+		/// è¿”å›å®¢æˆ·ç«¯ Log
 		/// </summary>
-		/// <returns>¿Í»§¶Ë Log</returns>
+		/// <returns>å®¢æˆ·ç«¯ Log</returns>
 		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 	private:
-		static std::shared_ptr<spdlog::logger> s_CoreLogger;		// ÄÚºË Log
-		static std::shared_ptr<spdlog::logger> s_ClientLogger;		// ¿Í»§¶Ë Log
+		static std::shared_ptr<spdlog::logger> s_CoreLogger;		// å†…æ ¸ Log
+		static std::shared_ptr<spdlog::logger> s_ClientLogger;		// å®¢æˆ·ç«¯ Log
 	};
 }
 
-// ÄÚºË Log
-#define LC_CORE_TRACE(...)	::Lucky::Log::GetCoreLogger()->trace(__VA_ARGS__)		// ÌáÊ¾
-#define LC_CORE_INFO(...)	::Lucky::Log::GetCoreLogger()->info(__VA_ARGS__)		// ĞÅÏ¢
-#define LC_CORE_WARN(...)	::Lucky::Log::GetCoreLogger()->warn(__VA_ARGS__)		// ¾¯¸æ
-#define LC_CORE_ERROR(...)	::Lucky::Log::GetCoreLogger()->error(__VA_ARGS__)		// ´íÎó
-#define LC_CORE_FATAL(...)	::Lucky::Log::GetCoreLogger()->fatal(__VA_ARGS__)		// ÑÏÖØ´íÎó
+// å†…æ ¸ Log
+#define LC_CORE_TRACE(...)	::Lucky::Log::GetCoreLogger()->trace(__VA_ARGS__)		// æç¤º
+#define LC_CORE_INFO(...)	::Lucky::Log::GetCoreLogger()->info(__VA_ARGS__)		// ä¿¡æ¯
+#define LC_CORE_WARN(...)	::Lucky::Log::GetCoreLogger()->warn(__VA_ARGS__)		// è­¦å‘Š
+#define LC_CORE_ERROR(...)	::Lucky::Log::GetCoreLogger()->error(__VA_ARGS__)		// é”™è¯¯
+#define LC_CORE_FATAL(...)	::Lucky::Log::GetCoreLogger()->fatal(__VA_ARGS__)		// ä¸¥é‡é”™è¯¯
 
-// ¿Í»§¶Ë Log
-#define LC_TRACE(...)		::Lucky::Log::GetClientLogger()->trace(__VA_ARGS__)		// ÌáÊ¾
-#define LC_INFO(...)		::Lucky::Log::GetClientLogger()->info(__VA_ARGS__)		// ĞÅÏ¢
-#define LC_WARN(...)		::Lucky::Log::GetClientLogger()->warn(__VA_ARGS__)		// ¾¯¸æ
-#define LC_ERROR(...)		::Lucky::Log::GetClientLogger()->error(__VA_ARGS__)		// ´íÎó
-#define LC_FATAL(...)		::Lucky::Log::GetClientLogger()->fatal(__VA_ARGS__)		// ÑÏÖØ´íÎó
+// å®¢æˆ·ç«¯ Log
+#define LC_TRACE(...)		::Lucky::Log::GetClientLogger()->trace(__VA_ARGS__)		// æç¤º
+#define LC_INFO(...)		::Lucky::Log::GetClientLogger()->info(__VA_ARGS__)		// ä¿¡æ¯
+#define LC_WARN(...)		::Lucky::Log::GetClientLogger()->warn(__VA_ARGS__)		// è­¦å‘Š
+#define LC_ERROR(...)		::Lucky::Log::GetClientLogger()->error(__VA_ARGS__)		// é”™è¯¯
+#define LC_FATAL(...)		::Lucky::Log::GetClientLogger()->fatal(__VA_ARGS__)		// ä¸¥é‡é”™è¯¯

@@ -95,7 +95,7 @@ project "Lucky"			-- 项目
 
 		defines
 		{
-			-- "GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"	-- Debug

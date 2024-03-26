@@ -1,19 +1,19 @@
-#pragma once
+О╩©#pragma once
 
 #ifdef LC_DEBUG
 	#define LC_ENABLE_ASSERTS
 #endif
 
-#ifdef LC_ENABLE_ASSERTS	// фТсц╤оят
-	// ╤оятё╨xн╙╪ы тРотй╬ERRORхуж╬пео╒ ╡╒жп╤о╣Вйт
+#ifdef LC_ENABLE_ASSERTS	// Е░╞Г■╗Ф√╜Х╗─
+	// Ф√╜Х╗─О╪ xД╦╨Е│┤ Е┬≥Ф≤╬Г╓╨ERRORФ≈╔Е©≈Д©║Ф│╞ Е╧╤Д╦╜Ф√╜Х╟┐Х╞∙
 	#define LC_ASSERT(x, ...) { if(!(x)) { LC_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-	// ╤оятё╨xн╙╪ы тРотй╬ERRORхуж╬пео╒ ╡╒жп╤о╣Вйт
+	// Ф√╜Х╗─О╪ xД╦╨Е│┤ Е┬≥Ф≤╬Г╓╨ERRORФ≈╔Е©≈Д©║Ф│╞ Е╧╤Д╦╜Ф√╜Х╟┐Х╞∙
 	#define LC_CORE_ASSERT(x, ...) { if(!(x)) { LC_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-#else	// ╫Шсц╤оят
+#else	// Г╕│Г■╗Ф√╜Х╗─
 	#define LC_ASSERT(x, ...)
 	#define LC_CORE_ASSERT(x, ...)
 #endif
 
-#define BIT(x) (1 << x)		// 1вСрфxн╩
+#define BIT(x) (1 << x)		// 1Е╥╕Г╖╩xД╫█
 
-#define LC_BIND_EVENT_FUNC(func) std::bind(&func, this, std::placeholders::_1)	// ╟С╤╗йб╪Ч╨╞йЩ ╥╣╩ь╨╞йЩ╤тоС
+#define LC_BIND_EVENT_FUNC(func) std::bind(&func, this, std::placeholders::_1)	// Г╩▒Е╝ Д╨▀Д╩╤Е┤╫Ф∙╟ Х©■Е⌡·Е┤╫Ф∙╟Е╞╧Х╠║
