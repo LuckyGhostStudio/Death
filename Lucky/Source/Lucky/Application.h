@@ -7,6 +7,7 @@
 #include "Lucky/Window.h"
 
 #include "Lucky/ImGui/ImGuiLayer.h"
+#include "Lucky/Renderer/Shader.h"
 
 namespace Lucky
 {
@@ -22,6 +23,7 @@ namespace Lucky
 		LayerStack m_LayerStack;			// ²ãÕ»
 
 		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		std::unique_ptr<Shader> m_Shader;	// ×ÅÉ«Æ÷
 	public:
 		Application();
 		virtual ~Application();
