@@ -17,6 +17,11 @@ namespace Lucky
 
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);	// 初始化GLAD
 		LC_CORE_ASSERT(status, "Failed to initialize Glad!");
+
+		LC_CORE_INFO("OpenGL Info");										// OpenGL信息
+		LC_CORE_INFO("    Vendor: {0}", (char*)glGetString(GL_VENDOR));		// 出版商
+		LC_CORE_INFO("    Renderer: {0}", (char*)glGetString(GL_RENDERER));	// GPU类型
+		LC_CORE_INFO("    Version: {0}", (char*)glGetString(GL_VERSION));	// 版本
 	}
 
 	void OpenGLContext::SwapBuffers()

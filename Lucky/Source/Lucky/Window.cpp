@@ -40,7 +40,7 @@ namespace Lucky
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
 
-		LC_CORE_INFO("Cteating window {0} ({1}, {2})", props.Title, props.Width, props.Height);		// 输出日志信息：创建窗口
+		LC_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);		// 输出日志信息：创建窗口
 
 		glfwSetErrorCallback(GLFWErrorCallback);	// 设置错误回调函数
 
