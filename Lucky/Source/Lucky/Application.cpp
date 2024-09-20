@@ -7,33 +7,6 @@ namespace Lucky
 {
 	Application* Application::s_Instance = nullptr;
 
-	/// <summary>
-	/// ShaderDataType转换为OpenGL基本类型
-	/// </summary>
-	/// <param name="">ShaderDataType</param>
-	/// <returns>OpenGL基本类型</returns>
-	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-	{
-		switch (type)
-		{
-			case ShaderDataType::Float:		return GL_FLOAT;
-			case ShaderDataType::Float2:	return GL_FLOAT;
-			case ShaderDataType::Float3:	return GL_FLOAT;
-			case ShaderDataType::Float4:	return GL_FLOAT;
-			case ShaderDataType::Mat3:		return GL_FLOAT;
-			case ShaderDataType::Mat4:		return GL_FLOAT;
-			case ShaderDataType::Int:		return GL_INT;
-			case ShaderDataType::Int2:		return GL_INT;
-			case ShaderDataType::Int3:		return GL_INT;
-			case ShaderDataType::Int4:		return GL_INT;
-			case ShaderDataType::Bool:		return GL_BOOL;
-		}
-
-		LC_CORE_ASSERT(false, "Unknown ShaderDataType!");
-
-		return 0;
-	}
-
 	Application::Application()
 	{
 		LC_CORE_ASSERT(!s_Instance, "Application already exists!");
@@ -46,9 +19,7 @@ namespace Lucky
 		m_ImGuiLayer = new ImGuiLayer();		// 创建ImGui层
 		PushOverlay(m_ImGuiLayer);				// 添加ImGuiLayer到覆盖层
 
-		// TODO Temp
-		glGenVertexArrays(1, &m_VertexArray);	// 创建顶点数组
-		glBindVertexArray(m_VertexArray);		// 绑定
+		m_VertexArray.reset(new VertexArray());		// 创建顶点数组对象
 
 		float vertices[] = {
 			// ----- 位置 -----  -------- 颜色 --------
@@ -57,33 +28,23 @@ namespace Lucky
 			 0.0f,  0.5f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f,	// 上
 		};
 
-		m_VertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));				// 创建顶点缓冲区
+		std::shared_ptr<VertexBuffer> vertexBuffer;								// VBO
+		vertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));		// 创建顶点缓冲区
 
-		{
-			// 顶点缓冲区布局（出作用域销毁）
-			BufferLayout layout = {
-				{ ShaderDataType::Float3, "a_Position" },	// 位置
-				{ ShaderDataType::Float4, "a_Color" }		// 颜色
-			};
-			m_VertexBuffer->SetLayout(layout);	// 设置顶点缓冲区布局
-		}
+		//顶点缓冲区布局
+		BufferLayout layout = {
+			{ ShaderDataType::Float3, "a_Position" },	//位置
+			{ ShaderDataType::Float4, "a_Color" }		//颜色
+		};
 
-		const auto& layout = m_VertexBuffer->GetLayout();		// 顶点缓冲区布局
+		vertexBuffer->SetLayout(layout);				// 设置顶点缓冲区布局
+		m_VertexArray->AddVertexBuffer(vertexBuffer);	// 添加 VBO 到 VAO
 
-		uint32_t index = 0;
-		for (const auto& element : layout) {
-			glEnableVertexAttribArray(index);					// 启用顶点属性
-			glVertexAttribPointer(index,						// 顶点属性位置编号
-				element.GetComponentCount(),					// 顶点属性数据个数
-				ShaderDataTypeToOpenGLBaseType(element.Type), 	// 数据类型
-				element.Normalized ? GL_TRUE : GL_FALSE, 		// 是否标准化
-				layout.GetStride(), 							// 顶点大小（字节）
-				(const void*)element.Offset);					// 顶点属性偏移量（字节）
-			index++;
-		}
+		unsigned int indices[3] = { 0, 1, 2 };			// 顶点索引
 
-		unsigned int indices[3] = { 0, 1, 2 };					// 顶点索引
-		m_IndexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));	// 创建索引缓冲区
+		std::shared_ptr<IndexBuffer> indexBuffer;												// EBO
+		indexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));		// 创建索引缓冲
+		m_VertexArray->SetIndexBuffer(indexBuffer);												// 设置 EBO 到 VAO
 
 		std::string vertexSrc = R"(
 			#version 330 core
@@ -151,10 +112,9 @@ namespace Lucky
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			m_Shader->Bind();
-
-			glBindVertexArray(m_VertexArray);							// 绑定VAO
-			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);	// 根据索引绘制三角形
+			m_Shader->Bind();				// 使用 Shader
+			m_VertexArray->Bind();			// 绑定 VAO
+			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);	// 根据索引绘制三角形
 
 			// 更新层栈中所有层
 			for (Layer* layer : m_LayerStack) {

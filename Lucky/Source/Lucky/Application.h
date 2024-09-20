@@ -9,6 +9,7 @@
 #include "Lucky/ImGui/ImGuiLayer.h"
 
 #include "Lucky/Renderer/Buffer.h"
+#include "Lucky/Renderer/VertexArray.h"
 #include "Lucky/Renderer/Shader.h"
 
 namespace Lucky
@@ -24,9 +25,7 @@ namespace Lucky
 		bool m_Running = true;				// 是否正在运行
 		LayerStack m_LayerStack;			// 层栈
 
-		unsigned int m_VertexArray;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;	// 顶点缓冲区
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;		// 索引缓冲区
+		std::shared_ptr<VertexArray> m_VertexArray;		// 顶点数组
 		std::unique_ptr<Shader> m_Shader;				// 着色器
 	public:
 		Application();
