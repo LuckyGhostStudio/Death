@@ -104,9 +104,47 @@ namespace Lucky
 		glUseProgram(0);
 	}
 
-	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
+	// ---- 下列方法：上传 Uniform 变量到 Shader ----
+
+	void Shader::UploadUniformInt(const std::string& name, int value)
 	{
 		int location = glGetUniformLocation(m_RendererID, name.c_str());	// 获取 Uniform 变量位置
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));	// 设置 Uniform 变量（位置，变量个数，是否转置，变量地址）
+		glUniform1i(location, value);										// 设置 Uniform 变量（位置，变量个数，是否转置，变量地址）
+	}
+
+	void Shader::UploadUniformFloat(const std::string& name, float value)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform1f(location, value);
+	}
+
+	void Shader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform2f(location, value.x, value.y);
+	}
+
+	void Shader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform3f(location, value.x, value.y, value.z);
+	}
+
+	void Shader::UploadUniformFloat4(const std::string& name, const glm::vec4& value)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform4f(location, value.x, value.y, value.z, value.w);
+	}
+
+	void Shader::UploadUniformMat3(const std::string& name, const glm::mat3& matrix)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 }
