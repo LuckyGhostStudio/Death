@@ -2,6 +2,7 @@
 #include "Shader.h"
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Lucky
 {
@@ -101,5 +102,11 @@ namespace Lucky
 	void Shader::UnBind() const
 	{
 		glUseProgram(0);
+	}
+
+	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());	// 获取 Uniform 变量位置
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));	// 设置 Uniform 变量（位置，变量个数，是否转置，变量地址）
 	}
 }

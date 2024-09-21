@@ -11,6 +11,7 @@
 #include "Lucky/Renderer/Buffer.h"
 #include "Lucky/Renderer/VertexArray.h"
 #include "Lucky/Renderer/Shader.h"
+#include "Lucky/Renderer/Camera.h"
 
 namespace Lucky
 {
@@ -26,7 +27,9 @@ namespace Lucky
 		LayerStack m_LayerStack;			// 层栈
 
 		std::shared_ptr<VertexArray> m_VertexArray;		// 顶点数组
-		std::unique_ptr<Shader> m_Shader;				// 着色器
+		std::shared_ptr<Shader> m_Shader;				// 着色器
+
+		Camera m_Camera;					//相机
 	public:
 		Application();
 		virtual ~Application();
