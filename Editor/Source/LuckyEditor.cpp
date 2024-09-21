@@ -1,5 +1,7 @@
 #include <Lucky.h>
 
+#include <glm/ext/matrix_transform.hpp>
+
 class ExampleLayer : public Lucky::Layer
 {
 private:
@@ -39,8 +41,8 @@ public:
 
 		unsigned int indices[3] = { 0, 1, 2 };			// 顶点索引
 
-		std::shared_ptr<Lucky::IndexBuffer> indexBuffer;												// EBO
-		indexBuffer.reset(new Lucky::IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));		// 创建索引缓冲
+		std::shared_ptr<Lucky::IndexBuffer> indexBuffer;										// EBO
+		indexBuffer.reset(new Lucky::IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));	// 创建索引缓冲
 		m_VertexArray->SetIndexBuffer(indexBuffer);												// 设置 EBO 到 VAO
 
 		std::string vertexSrc = R"(
@@ -50,6 +52,7 @@ public:
 			layout(location = 1) in vec4 a_Color;
 
 			uniform mat4 u_ViewProjectionMatrix;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;
 			out vec4 v_Color;
@@ -59,7 +62,7 @@ public:
 				v_Position = a_Position;
 				v_Color = a_Color;
 
-				gl_Position = u_ViewProjectionMatrix * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 		std::string fragmentSrc = R"(
@@ -112,7 +115,17 @@ public:
 		m_Camera.SetRotation(m_CameraRotation);
 
 		Lucky::Renderer::BeginScene(m_Camera);				// 开始渲染场景
-		Lucky::Renderer::Submit(m_Shader, m_VertexArray);	// 提交渲染命令
+		
+		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+		for (int y = 0; y < 20; y++) {
+			for (int x = 0; x < 20; x++) {
+				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;	// 三角形的变换矩阵
+				Lucky::Renderer::Submit(m_Shader, m_VertexArray, transform);		// 提交渲染指令
+			}
+		}
+
 		Lucky::Renderer::EndScene();						// 结束渲染场景
 	}
 
