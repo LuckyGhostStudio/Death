@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lucky/Core.h"
+#include "Lucky/Core/Core.h"
 #include "Lucky/KeyCodes.h"
 #include "Lucky/MouseButtonCodes.h"
 

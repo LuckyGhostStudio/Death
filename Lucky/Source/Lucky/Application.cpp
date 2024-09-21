@@ -3,14 +3,13 @@
 
 #include "Lucky/Renderer/Renderer.h"
 
-#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 namespace Lucky
 {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
-		: m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		LC_CORE_ASSERT(!s_Instance, "Application already exists!");
 
@@ -21,68 +20,6 @@ namespace Lucky
 
 		m_ImGuiLayer = new ImGuiLayer();		// 创建ImGui层
 		PushOverlay(m_ImGuiLayer);				// 添加ImGuiLayer到覆盖层
-
-		m_VertexArray.reset(new VertexArray());		// 创建顶点数组对象
-
-		float vertices[] = {
-			// ----- 位置 -----  -------- 颜色 --------
-			-0.5f, -0.5f, 0.0f,	1.0f, 0.0f, 1.0f, 1.0f,	// 左下
-			 0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 1.0f, 1.0f,	// 右下
-			 0.0f,  0.5f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f,	// 上
-		};
-
-		std::shared_ptr<VertexBuffer> vertexBuffer;								// VBO
-		vertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));		// 创建顶点缓冲区
-
-		//顶点缓冲区布局
-		BufferLayout layout = {
-			{ ShaderDataType::Float3, "a_Position" },	//位置
-			{ ShaderDataType::Float4, "a_Color" }		//颜色
-		};
-
-		vertexBuffer->SetLayout(layout);				// 设置顶点缓冲区布局
-		m_VertexArray->AddVertexBuffer(vertexBuffer);	// 添加 VBO 到 VAO
-
-		unsigned int indices[3] = { 0, 1, 2 };			// 顶点索引
-
-		std::shared_ptr<IndexBuffer> indexBuffer;												// EBO
-		indexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));		// 创建索引缓冲
-		m_VertexArray->SetIndexBuffer(indexBuffer);												// 设置 EBO 到 VAO
-
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			uniform mat4 u_ViewProjectionMatrix;
-
-			out vec3 v_Position;
-			out vec4 v_Color;
-
-			void main()
-			{
-				v_Position = a_Position;
-				v_Color = a_Color;
-
-				gl_Position = u_ViewProjectionMatrix * vec4(a_Position, 1.0);
-			}
-		)";
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-			in vec4 v_Color;
-			
-			void main()
-			{
-				color = v_Color;
-			}
-		)";
-
-		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));	// 创建着色器
 	}
 
 	Application::~Application()
@@ -113,23 +50,14 @@ namespace Lucky
 
 	void Application::Run()
 	{
-		float angle = 0.0f;
-
 		while (m_Running) {
-			// TODO Temp
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-			RenderCommand::Clear();
-
-			m_Camera.SetPosition({ 0.5f, 0.5f, 0.0f });
-			m_Camera.SetRotation(angle += 0.2f);
-
-			Renderer::BeginScene(m_Camera);				// 开始渲染场景
-			Renderer::Submit(m_Shader, m_VertexArray);	// 提交渲染命令
-			Renderer::EndScene();						// 结束渲染场景
+			float time = (float)glfwGetTime();				// 当前时间
+			DeltaTime deltaTime = time - m_LastFrameTime;	// 帧间隔 = 当前时间 - 上一帧时间
+			m_LastFrameTime = time;							// 更新上一帧时间
 
 			// 更新层栈中所有层
 			for (Layer* layer : m_LayerStack) {
-				layer->OnUpdate();
+				layer->OnUpdate(deltaTime);
 			}
 
 			// ImGui渲染

@@ -1,17 +1,14 @@
 #pragma once
 
-#include "Lucky/Core.h"
+#include "Lucky/Core/Core.h"
+#include "Lucky/Core/DeltaTime.h"
+
 #include "Lucky/LayerStack.h"
 #include "Lucky/Events/Event.h"
 #include "Lucky/Events/ApplicationEvent.h"
 #include "Lucky/Window.h"
 
 #include "Lucky/ImGui/ImGuiLayer.h"
-
-#include "Lucky/Renderer/Buffer.h"
-#include "Lucky/Renderer/VertexArray.h"
-#include "Lucky/Renderer/Shader.h"
-#include "Lucky/Renderer/Camera.h"
 
 namespace Lucky
 {
@@ -26,10 +23,7 @@ namespace Lucky
 		bool m_Running = true;				// 是否正在运行
 		LayerStack m_LayerStack;			// 层栈
 
-		std::shared_ptr<VertexArray> m_VertexArray;		// 顶点数组
-		std::shared_ptr<Shader> m_Shader;				// 着色器
-
-		Camera m_Camera;					//相机
+		float m_LastFrameTime = 0.0f;		// 上一帧时间
 	public:
 		Application();
 		virtual ~Application();

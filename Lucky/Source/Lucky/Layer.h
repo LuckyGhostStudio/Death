@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Lucky/Core.h"
+#include "Lucky/Core/Core.h"
+#include "Lucky/Core/DeltaTime.h"
 #include "Lucky/Events/Event.h"
 
 namespace Lucky
@@ -8,9 +9,10 @@ namespace Lucky
 	class Layer
 	{
 	protected:
-		std::string m_DebugName;	// Layer在Debug模式中的名字
+		std::string m_DebugName;	// Layer 在 Debug 模式中的名字
 	public:
 		Layer(const std::string& name = "Layer");
+
 		virtual ~Layer();
 
 		/// <summary>
@@ -26,7 +28,8 @@ namespace Lucky
 		/// <summary>
 		/// 该层更新时调用：每帧调用
 		/// </summary>
-		virtual void OnUpdate() {}
+		/// <param name="dt">帧间隔</param>
+		virtual void OnUpdate(DeltaTime dt) {}
 
 		/// <summary>
 		/// 渲染ImGui

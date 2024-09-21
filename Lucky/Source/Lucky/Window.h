@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lucky/Core.h"
+#include "Lucky/Core/Core.h"
 #include "Lucky/Events/Event.h"
 #include "Lucky/Renderer/OpenGLContext.h"
 

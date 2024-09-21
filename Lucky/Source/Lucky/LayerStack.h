@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lucky/Core.h"
+#include "Lucky/Core/Core.h"
 #include "Layer.h"
 
 #include <vector>
