@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "Lucky/Core/Core.h"
-#include "spdlog/spdlog.h"
+
+#include <spdlog/spdlog.h>
 
 namespace Lucky
 {

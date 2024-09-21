@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lucky/Layer.h"
+#include "Lucky/Core/Layer.h"
 
 #include "Lucky/Events/ApplicationEvent.h"
 #include "Lucky/Events/KeyEvent.h"
@@ -9,12 +9,12 @@
 namespace Lucky
 {
 	/// <summary>
-	/// ImGui层
+	/// ImGui 层
 	/// </summary>
 	class ImGuiLayer : public Layer
 	{
 	private:
-		float m_Time = 0.0f;	//当前帧时间
+		float m_Time = 0.0f;	// 当前帧时间
 	public:
 		ImGuiLayer();
 		~ImGuiLayer();

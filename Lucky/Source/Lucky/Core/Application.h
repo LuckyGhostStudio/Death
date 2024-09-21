@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Lucky/Core/Core.h"
+#include "Lucky/Core/Window.h"
+#include "Lucky/Core/LayerStack.h"
 #include "Lucky/Core/DeltaTime.h"
 
-#include "Lucky/LayerStack.h"
 #include "Lucky/Events/Event.h"
 #include "Lucky/Events/ApplicationEvent.h"
-#include "Lucky/Window.h"
 
 #include "Lucky/ImGui/ImGuiLayer.h"
 

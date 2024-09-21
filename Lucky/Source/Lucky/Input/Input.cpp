@@ -1,7 +1,7 @@
 #include "lcpch.h"
 #include "Input.h"
 
-#include "Lucky/Application.h"
+#include "Lucky/Core/Application.h"
 
 #include <GLFW/glfw3.h>
 

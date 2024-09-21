@@ -5,7 +5,7 @@
 #include "examples/imgui_impl_glfw.h"
 #include "examples/imgui_impl_opengl3.h"
 
-#include "Lucky/Application.h"
+#include "Lucky/Core/Application.h"
 
 // Temp
 #include <glad/glad.h>
@@ -26,7 +26,7 @@ namespace Lucky
 	void ImGuiLayer::OnAttach()
 	{
 		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();		// 创建ImGui上下文
+		ImGui::CreateContext();		// 创建 ImGui 上下文
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
@@ -59,7 +59,7 @@ namespace Lucky
 	void ImGuiLayer::OnImGuiRender()
 	{
 		static bool show = true;
-		ImGui::ShowDemoWindow(&show);	// 显示Demo窗口
+		ImGui::ShowDemoWindow(&show);	// 显示 Demo 窗口
 	}
 
 	void ImGuiLayer::Begin()
