@@ -57,40 +57,7 @@ public:
 		indexBuffer.reset(new Lucky::IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));	// 创建索引缓冲
 		m_VertexArray->SetIndexBuffer(indexBuffer);												// 设置 EBO 到 VAO
 
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			uniform mat4 u_ViewProjectionMatrix;
-			uniform mat4 u_Transform;
-
-			out vec3 v_Position;
-
-			void main()
-			{
-				v_Position = a_Position;
-
-				gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-
-			uniform vec3 u_Color;
-			
-			void main()
-			{
-				color = vec4(u_Color, 1.0);
-			}
-		)";
-
-		m_Shader.reset(new Lucky::Shader(vertexSrc, fragmentSrc));	// 创建着色器
+		m_Shader.reset(new Lucky::Shader("Assets/Shaders/Triangle.vert", "Assets/Shaders/Triangle.frag"));	// 创建着色器
 
 		//Square
 		m_SquareVA.reset(new Lucky::VertexArray());		// 创建顶点数组对象
@@ -120,69 +87,10 @@ public:
 		squareIB.reset(new Lucky::IndexBuffer(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));	// 创建索引缓冲
 		m_SquareVA->SetIndexBuffer(squareIB);																// 设置 EBO 到 VAO
 
-		std::string squareVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
+		
+		m_FlatColorShader.reset(new Lucky::Shader("Assets/Shaders/Color.vert", "Assets/Shaders/Color.frag"));	// 创建着色器
 
-			uniform mat4 u_ViewProjectionMatrix;
-			uniform mat4 u_Transform;					
-
-			void main()
-			{
-				gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string squareFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			uniform vec3 u_Color;
-			
-			void main()
-			{
-				color = vec4(u_Color, 1.0);
-			}
-		)";
-
-		m_FlatColorShader.reset(new Lucky::Shader(squareVertexSrc, squareFragmentSrc));	// 创建着色器
-
-		std::string textureVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
-
-			uniform mat4 u_ViewProjectionMatrix;
-			uniform mat4 u_Transform;
-
-			out vec2 v_TexCoord;					
-
-			void main()
-			{
-				v_TexCoord = a_TexCoord;
-				gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string textureFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec2 v_TexCoord;
-
-			uniform sampler2D u_Texture;
-			
-			void main()
-			{
-				color = texture(u_Texture, v_TexCoord);
-			}
-		)";
-
-		m_TextureShader.reset(new Lucky::Shader(textureVertexSrc, textureFragmentSrc));	// 创建着色器
+		m_TextureShader.reset(new Lucky::Shader("Assets/Shaders/Texture.vert", "Assets/Shaders/Texture.frag"));	// 创建着色器
 
 		m_Texture.reset(new Lucky::Texture2D("Assets/Textures/Checkerboard.png"));				// 创建纹理
 		m_LuckyLogoTexture.reset(new Lucky::Texture2D("Assets/Textures/LuckyLogoBlue.png"));	// 创建纹理

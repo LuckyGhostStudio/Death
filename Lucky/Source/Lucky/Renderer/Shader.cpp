@@ -6,67 +6,92 @@
 
 namespace Lucky
 {
-	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc) :m_RendererID(0)
+	Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+		: m_RendererID(0)
 	{
-		unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);		// 创建顶点着色器
-		const char* source = vertexSrc.c_str();
+		std::string vertexSrc = ReadFile(vertexShaderPath);		// 读取顶点着色器文件
+		std::string fragmentSrc = ReadFile(fragmentShaderPath);	// 读取片元着色器文件
 
-		glShaderSource(vertexShader, 1, &source, 0);						// 顶点着色器源代码发送到 GL
-		glCompileShader(vertexShader);										// 编译顶点着色器
+		std::unordered_map<GLenum, std::string> shaderSources;	// 着色器类型 - 源码 map
 
-		int isCompiled = 0;
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isCompiled);		// 获取编译状态
+		shaderSources[GL_VERTEX_SHADER] = vertexSrc;			// 顶点着色器
+		shaderSources[GL_FRAGMENT_SHADER] = fragmentSrc;		// 片元着色器
 
-		if (isCompiled == GL_FALSE)
-		{
-			int maxLength = 0;
-			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);			// 获取编译日志信息长度
+		Compile(shaderSources);									// 编译着色器源码
+	}
 
-			std::vector<char> infoLog(maxLength);
-			glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);	// 获取编译日志信息
+	Shader::~Shader()
+	{
+		glDeleteProgram(m_RendererID);	// 删除着色器程序
+	}
 
-			glDeleteShader(vertexShader);											// 删除着色器
+	std::string Shader::ReadFile(const std::string& filepath)
+	{
+		std::string result;		// 文件内容
 
-			LC_CORE_ERROR("{0}", infoLog.data());									// 失败信息
-			LC_CORE_ASSERT(false, "Vertex Shader Compilation Failure!");			// 顶点着色器编译失败
+		std::ifstream in(filepath, std::ios::in, std::ios::binary);	// 输入流 二进制
 
-			return;
+		if (in) {
+			in.seekg(0, std::ios::end);			// 文件指针移动到文件末尾
+			result.resize(in.tellg());			// 重置 string 大小为文件大小
+			in.seekg(0, std::ios::beg);			// 文件指针移动到文件开头
+			in.read(&result[0], result.size());	// 读文件到 result 大小 size
+
+			in.close();							// 关闭文件输入流
+		}
+		else {
+			LC_CORE_ERROR("Could not open file '{0}'", filepath);	//无法打开文件
 		}
 
-		unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);		// 创建片元着色器
-		source = fragmentSrc.c_str();
+		return result;
+	}
 
-		glShaderSource(fragmentShader, 1, &source, 0);
-		glCompileShader(fragmentShader);
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isCompiled);
+	void Shader::Compile(std::unordered_map<GLenum, std::string>& shaderSources)
+	{
+		unsigned int program = glCreateProgram();				// 创建程序;
+		std::vector<GLenum> glShaderIDs(shaderSources.size());	// 着色器 ID 列表
 
-		if (isCompiled == GL_FALSE)
-		{
-			int maxLength = 0;
-			glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
+		// 遍历所有类型着色器源码
+		for (auto& kv : shaderSources) {
+			GLenum type = kv.first;							// 着色器类型
+			const std::string& source = kv.second;			// 着色器源码
 
-			std::vector<char> infoLog(maxLength);
-			glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &infoLog[0]);
+			unsigned int shader = glCreateShader(type);		// 创建 type 类型着色器 返回 id
 
-			glDeleteShader(fragmentShader);
-			glDeleteShader(vertexShader);
+			const char* sourceCStr = source.c_str();
+			glShaderSource(shader, 1, &sourceCStr, 0);		// 着色器源代码发送到GL
 
-			LC_CORE_ERROR("{0}", infoLog.data());							// 失败信息
-			LC_CORE_ASSERT(false, "Fragment Shader Compilation Failure!");	// 片元着色器编译失败
+			glCompileShader(shader);						// 编译着色器
 
-			return;
+			int isCompiled = 0;
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);				// 获取编译状态
+
+			if (isCompiled == GL_FALSE)	// 编译失败
+			{
+				int maxLength = 0;
+				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);			// 获取编译日志信息长度
+
+				std::vector<char> infoLog(maxLength);
+				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);	// 获取编译日志信息
+
+				glDeleteShader(shader);	// 删除着色器
+
+				LC_CORE_ERROR("{0}", infoLog.data());							// 失败信息
+				LC_CORE_ASSERT(false, "Shader Compilation Failure!");			// 着色器编译失败
+
+				break;
+			}
+
+			glAttachShader(program, shader);		// 将着色器添加到程序
+			glShaderIDs.push_back(shader);			// 着色器 ID 添加到列表
 		}
 
-		m_RendererID = glCreateProgram();			// 创建程序
-		unsigned int program = m_RendererID;
-		glAttachShader(program, vertexShader);		// 将顶点着色器添加到程序
-		glAttachShader(program, fragmentShader);	// 将片元着色器添加到程序
-		glLinkProgram(program);						// 链接程序
+		glLinkProgram(program);		// 链接程序
 
 		int isLinked = 0;
 		glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);	// 获取链接状态
 
-		if (isLinked == GL_FALSE)
+		if (isLinked == GL_FALSE)	// 链接失败
 		{
 			int maxLength = 0;
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
@@ -75,8 +100,11 @@ namespace Lucky
 			glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
 
 			glDeleteProgram(program);
-			glDeleteShader(vertexShader);
-			glDeleteShader(fragmentShader);
+
+			// 删除着色器
+			for (auto id : glShaderIDs) {
+				glDeleteShader(id);
+			}
 
 			LC_CORE_ERROR("{0}", infoLog.data());			// 失败信息
 			LC_CORE_ASSERT(false, "Shader Link Failure!");	// 着色器链接失败
@@ -85,13 +113,11 @@ namespace Lucky
 		}
 
 		// 分离着色器
-		glDetachShader(program, vertexShader);
-		glDetachShader(program, fragmentShader);
-	}
+		for (auto id : glShaderIDs) {
+			glDetachShader(program, id);
+		}
 
-	Shader::~Shader()
-	{
-		glDeleteProgram(m_RendererID);	// 删除着色器程序
+		m_RendererID = program;
 	}
 
 	void Shader::Bind() const
