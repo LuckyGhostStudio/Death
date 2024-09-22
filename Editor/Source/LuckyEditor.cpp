@@ -13,7 +13,9 @@ private:
 
 	std::shared_ptr<Lucky::Shader> m_FlatColorShader, m_TextureShader;
 	std::shared_ptr<Lucky::VertexArray> m_SquareVA;
+
 	std::shared_ptr<Lucky::Texture2D> m_Texture;
+	std::shared_ptr<Lucky::Texture2D> m_LuckyLogoTexture;
 
 	Lucky::Camera m_Camera;								// 相机
 
@@ -182,7 +184,8 @@ public:
 
 		m_TextureShader.reset(new Lucky::Shader(textureVertexSrc, textureFragmentSrc));	// 创建着色器
 
-		m_Texture.reset(new Lucky::Texture2D("Assets/Textures/Checkerboard.png"));		// 创建纹理
+		m_Texture.reset(new Lucky::Texture2D("Assets/Textures/Checkerboard.png"));				// 创建纹理
+		m_LuckyLogoTexture.reset(new Lucky::Texture2D("Assets/Textures/LuckyLogoBlue.png"));	// 创建纹理
 
 		m_TextureShader->Bind();
 		m_TextureShader->UploadUniformInt("u_Texture", 0);
@@ -190,28 +193,28 @@ public:
 
 	virtual void OnUpdate(Lucky::DeltaTime dt) override
 	{
-		LC_TRACE("Delta Time: {0}s ({1}ms)", dt.GetSeconds(), dt.GetMilliseconds());
+		LC_TRACE("FPS: {0}", (int)(1000.0f / dt.GetMilliseconds()));
 
 		if (Lucky::Input::IsKeyPressed(Lucky::Key::Left)) {			// 左键
-			m_CameraPosition.x += m_CameraMoveSpeed * dt;
+			m_CameraPosition.x -= m_CameraMoveSpeed * dt;
 		}
 		else if (Lucky::Input::IsKeyPressed(Lucky::Key::Right)) {	// 右键
-			m_CameraPosition.x -= m_CameraMoveSpeed * dt;
+			m_CameraPosition.x += m_CameraMoveSpeed * dt;
 		}
 
 		if (Lucky::Input::IsKeyPressed(Lucky::Key::Up)) {			// 上键
-			m_CameraPosition.y -= m_CameraMoveSpeed * dt;
+			m_CameraPosition.y += m_CameraMoveSpeed * dt;
 		}
 		else if (Lucky::Input::IsKeyPressed(Lucky::Key::Down)) {	// 下键
-			m_CameraPosition.y += m_CameraMoveSpeed * dt;
+			m_CameraPosition.y -= m_CameraMoveSpeed * dt;
 		}
 
 		if (Lucky::Input::IsKeyPressed(Lucky::Key::A)) {
-			m_CameraRotation -= m_CameraRotationSpeed * dt;
+			m_CameraRotation += m_CameraRotationSpeed * dt;
 		}
 
 		if (Lucky::Input::IsKeyPressed(Lucky::Key::D)) {
-			m_CameraRotation += m_CameraRotationSpeed * dt;
+			m_CameraRotation -= m_CameraRotationSpeed * dt;
 		}
 
 		Lucky::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
@@ -230,13 +233,16 @@ public:
 		for (int y = 0; y < 20; y++) {
 			for (int x = 0; x < 20; x++) {
 				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
-				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;		//三角形的变换矩阵
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;		// 三角形的变换矩阵
 
-				Lucky::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);	//提交渲染指令
+				Lucky::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);		// 提交渲染指令
 			}
 		}
 
 		m_Texture->Bind();
+		Lucky::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+		m_LuckyLogoTexture->Bind();
 		Lucky::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 

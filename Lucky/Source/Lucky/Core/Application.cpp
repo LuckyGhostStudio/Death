@@ -18,6 +18,8 @@ namespace Lucky
 		m_Window = std::unique_ptr<Window>(Window::Create());					// 创建窗口
 		m_Window->SetEventCallback(LC_BIND_EVENT_FUNC(Application::OnEvent));	// 设置回调函数
 
+		Renderer::Init();	// 初始化渲染器
+
 		m_ImGuiLayer = new ImGuiLayer();		// 创建ImGui层
 		PushOverlay(m_ImGuiLayer);				// 添加ImGuiLayer到覆盖层
 	}
