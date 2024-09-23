@@ -13,6 +13,7 @@ namespace Lucky
 	{
 	private:
 		uint32_t m_RendererID;	// 着色器 ID
+		std::string m_Name;		// 着色器名字
 
 		/// <summary>
 		/// 读文件
@@ -30,9 +31,8 @@ namespace Lucky
 		/// <summary>
 		/// 着色器
 		/// </summary>
-		/// <param name="vertexShaderPath">顶点着色器文件路径</param>
-		/// <param name="fragmentShaderPath">片段着色器文件路径</param>
-		Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+		/// <param name="filepath">着色器文件路径(不含后缀名)</param>
+		Shader(const std::string& filepath);
 		
 		~Shader();
 
@@ -46,6 +46,8 @@ namespace Lucky
 		/// </summary>
 		void UnBind() const;
 
+		const std::string GetName() const { return m_Name; }
+
 		// ---- 下列方法：上传 Uniform 变量到 Shader ---- |（变量在 Shader 中的变量名，变量值）
 
 		void UploadUniformInt(const std::string& name, int value);
@@ -57,5 +59,56 @@ namespace Lucky
 
 		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+	};
+
+	/// <summary>
+	/// 着色器库 TODO 可视化查看当前着色器库的所有着色器
+	/// </summary>
+	class ShaderLibrary
+	{
+	private:
+		std::unordered_map<std::string, std::shared_ptr<Shader>> m_Shaders;		// 着色器 map：着色器名 - 着色器
+	public:
+		/// <summary>
+		/// 添加着色器
+		/// </summary>
+		/// <param name="name">着色器名</param>
+		/// <param name="shader">着色器</param>
+		void Add(const std::string& name, const std::shared_ptr<Shader>& shader);
+
+		/// <summary>
+		/// 添加着色器
+		/// </summary>
+		/// <param name="shader">着色器</param>
+		void Add(const std::shared_ptr<Shader>& shader);
+
+		/// <summary>
+		/// 加载着色器
+		/// </summary>
+		/// <param name="filepath">文件路径</param>
+		/// <returns>着色器</returns>
+		std::shared_ptr<Shader> Load(const std::string& filepath);
+
+		/// <summary>
+		/// 加载着色器
+		/// </summary>
+		/// <param name="name">着色器名称</param>
+		/// <param name="filepath">文件路径</param>
+		/// <returns>着色器</returns>
+		std::shared_ptr<Shader> Load(const std::string& name, const std::string& filepath);
+
+		/// <summary>
+		/// 返回着色器
+		/// </summary>
+		/// <param name="name">着色器名称</param>
+		/// <returns>着色器</returns>
+		std::shared_ptr<Shader> Get(const std::string& name);
+
+		/// <summary>
+		/// 着色器是否存在
+		/// </summary>
+		/// <param name="name">着色器名</param>
+		/// <returns>是否存在</returns>
+		bool Exists(const std::string& name) const;
 	};
 }

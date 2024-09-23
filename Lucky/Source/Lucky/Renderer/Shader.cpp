@@ -6,11 +6,11 @@
 
 namespace Lucky
 {
-	Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+	Shader::Shader(const std::string& filepath)
 		: m_RendererID(0)
 	{
-		std::string vertexSrc = ReadFile(vertexShaderPath);		// 读取顶点着色器文件
-		std::string fragmentSrc = ReadFile(fragmentShaderPath);	// 读取片元着色器文件
+		std::string vertexSrc = ReadFile(filepath + ".vert");	// 读取顶点着色器文件
+		std::string fragmentSrc = ReadFile(filepath + ".frag");	// 读取片元着色器文件
 
 		std::unordered_map<GLenum, std::string> shaderSources;	// 着色器类型 - 源码 map
 
@@ -18,6 +18,11 @@ namespace Lucky
 		shaderSources[GL_FRAGMENT_SHADER] = fragmentSrc;		// 片元着色器
 
 		Compile(shaderSources);									// 编译着色器源码
+
+		//计算着色器名
+		auto lastSlash = filepath.find_last_of("/\\");						// 最后一个 / 的索引
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;		// 最后一个/不存在 最后一个/存在
+		m_Name = filepath.substr(lastSlash, filepath.size() - lastSlash);	// 着色器名称
 	}
 
 	Shader::~Shader()
@@ -29,7 +34,7 @@ namespace Lucky
 	{
 		std::string result;		// 文件内容
 
-		std::ifstream in(filepath, std::ios::in, std::ios::binary);	// 输入流 二进制
+		std::ifstream in(filepath, std::ios::in | std::ios::binary);	// 输入流 二进制
 
 		if (in) {
 			in.seekg(0, std::ios::end);			// 文件指针移动到文件末尾
@@ -48,8 +53,13 @@ namespace Lucky
 
 	void Shader::Compile(std::unordered_map<GLenum, std::string>& shaderSources)
 	{
-		unsigned int program = glCreateProgram();				// 创建程序;
-		std::vector<GLenum> glShaderIDs(shaderSources.size());	// 着色器 ID 列表
+		LC_CORE_ASSERT(shaderSources.size() <= 2, "Only support 2 shaders now!");
+
+		unsigned int program = glCreateProgram();	// 创建程序;
+
+		std::array<GLenum, 2> glShaderIDs;			// 着色器 ID 列表
+
+		int shaderIDIndex = 0;
 
 		// 遍历所有类型着色器源码
 		for (auto& kv : shaderSources) {
@@ -83,7 +93,7 @@ namespace Lucky
 			}
 
 			glAttachShader(program, shader);		// 将着色器添加到程序
-			glShaderIDs.push_back(shader);			// 着色器 ID 添加到列表
+			glShaderIDs[shaderIDIndex] = shader;	// 着色器 ID 添加到列表
 		}
 
 		glLinkProgram(program);		// 链接程序
@@ -172,5 +182,44 @@ namespace Lucky
 	{
 		int location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	void ShaderLibrary::Add(const std::string& name, const std::shared_ptr<Shader>& shader)
+	{
+		LC_CORE_ASSERT(!Exists(name), "Shader already exist!");	// 着色器已存在
+
+		m_Shaders[name] = shader;		// 添加着色器到map
+	}
+	void ShaderLibrary::Add(const std::shared_ptr<Shader>& shader)
+	{
+		auto& name = shader->GetName();
+		Add(name, shader);
+	}
+	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& filepath)
+	{
+		auto shader = std::make_shared<Shader>(filepath);	// 创建着色器
+		Add(shader);										// 添加着色器
+
+		return shader;
+	}
+	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath)
+	{
+		auto shader = std::make_shared<Shader>(filepath);
+		// TODO: m_Name = name
+		Add(name, shader);
+
+		return shader;
+	}
+
+	std::shared_ptr<Shader> ShaderLibrary::Get(const std::string& name)
+	{
+		LC_CORE_ASSERT(Exists(name), "Shader not found!");	// 着色器找不到
+
+		return m_Shaders[name];
+	}
+
+	bool ShaderLibrary::Exists(const std::string& name) const
+	{
+		return m_Shaders.find(name) != m_Shaders.end();
 	}
 }

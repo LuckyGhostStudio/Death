@@ -9,9 +9,11 @@ class ExampleLayer : public Lucky::Layer
 {
 private:
 	std::shared_ptr<Lucky::Shader> m_Shader;			// 着色器
+	Lucky::ShaderLibrary m_ShaderLibrary;				// 着色器库
+
 	std::shared_ptr<Lucky::VertexArray> m_VertexArray;	// 顶点数组
 
-	std::shared_ptr<Lucky::Shader> m_FlatColorShader, m_TextureShader;
+	std::shared_ptr<Lucky::Shader> m_FlatColorShader;
 	std::shared_ptr<Lucky::VertexArray> m_SquareVA;
 
 	std::shared_ptr<Lucky::Texture2D> m_Texture;
@@ -57,7 +59,7 @@ public:
 		indexBuffer.reset(new Lucky::IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));	// 创建索引缓冲
 		m_VertexArray->SetIndexBuffer(indexBuffer);												// 设置 EBO 到 VAO
 
-		m_Shader.reset(new Lucky::Shader("Assets/Shaders/Triangle.vert", "Assets/Shaders/Triangle.frag"));	// 创建着色器
+		m_Shader.reset(new Lucky::Shader("Assets/Shaders/Triangle"));	// 创建着色器
 
 		//Square
 		m_SquareVA.reset(new Lucky::VertexArray());		// 创建顶点数组对象
@@ -88,15 +90,15 @@ public:
 		m_SquareVA->SetIndexBuffer(squareIB);																// 设置 EBO 到 VAO
 
 		
-		m_FlatColorShader.reset(new Lucky::Shader("Assets/Shaders/Color.vert", "Assets/Shaders/Color.frag"));	// 创建着色器
+		m_FlatColorShader.reset(new Lucky::Shader("Assets/Shaders/FlatColor"));		// 创建着色器
 
-		m_TextureShader.reset(new Lucky::Shader("Assets/Shaders/Texture.vert", "Assets/Shaders/Texture.frag"));	// 创建着色器
+		auto textureShader = m_ShaderLibrary.Load("Assets/Shaders/Texture");		// 加载着色器
 
 		m_Texture.reset(new Lucky::Texture2D("Assets/Textures/Checkerboard.png"));				// 创建纹理
 		m_LuckyLogoTexture.reset(new Lucky::Texture2D("Assets/Textures/LuckyLogoBlue.png"));	// 创建纹理
 
-		m_TextureShader->Bind();
-		m_TextureShader->UploadUniformInt("u_Texture", 0);
+		textureShader->Bind();
+		textureShader->UploadUniformInt("u_Texture", 0);
 	}
 
 	virtual void OnUpdate(Lucky::DeltaTime dt) override
@@ -147,11 +149,13 @@ public:
 			}
 		}
 
+		auto textureShader = m_ShaderLibrary.Get("Texture");
+
 		m_Texture->Bind();
-		Lucky::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Lucky::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		m_LuckyLogoTexture->Bind();
-		Lucky::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Lucky::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 
 		Lucky::Renderer::EndScene();						// 结束渲染场景
