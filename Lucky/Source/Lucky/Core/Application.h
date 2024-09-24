@@ -21,6 +21,8 @@ namespace Lucky
 		ImGuiLayer* m_ImGuiLayer;			// ImGui层指针
 
 		bool m_Running = true;				// 是否正在运行
+		bool m_Minimized = false;			// 是否最小化
+
 		LayerStack m_LayerStack;			// 层栈
 
 		float m_LastFrameTime = 0.0f;		// 上一帧时间
@@ -66,6 +68,13 @@ namespace Lucky
 		/// <param name="e">窗口关闭事件</param>
 		/// <returns>是否已关闭</returns>
 		bool OnWindowClose(WindowCloseEvent& e);
+
+		/// <summary>
+		/// 窗口缩放时调用
+		/// </summary>
+		/// <param name="e">窗口缩放事件</param>
+		/// <returns>事件处理结果</returns>
+		bool OnWindowResize(WindowResizeEvent& e);
 	};
 
 	/// <summary>

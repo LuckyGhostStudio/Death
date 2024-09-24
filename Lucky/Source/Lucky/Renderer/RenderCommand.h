@@ -24,6 +24,15 @@ namespace Lucky
 		static void SetClearColor(const glm::vec4& color);
 
 		/// <summary>
+		/// 设置视口大小
+		/// </summary>
+		/// <param name="x">左下 x</param>
+		/// <param name="y">左下 y</param>
+		/// <param name="width">宽</param>
+		/// <param name="height">高</param>
+		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+
+		/// <summary>
 		/// 清屏
 		/// </summary>
 		static void Clear();
