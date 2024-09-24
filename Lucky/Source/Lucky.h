@@ -8,6 +8,7 @@
 #include "Lucky/Input/Input.h"
 #include "Lucky/Input/KeyCodes.h"
 #include "Lucky/Input/MouseButtonCodes.h"
+#include "Lucky/CameraController.h"
 
 #include "Lucky/ImGui/ImGuiLayer.h"
 

@@ -19,18 +19,12 @@ private:
 	std::shared_ptr<Lucky::Texture2D> m_Texture;
 	std::shared_ptr<Lucky::Texture2D> m_LuckyLogoTexture;
 
-	Lucky::Camera m_Camera;								// 相机
-
-	glm::vec3 m_CameraPosition;
-
-	float m_CameraRotation = 0.0f;
-	float m_CameraMoveSpeed = 1.0f;
-	float m_CameraRotationSpeed = 90.0f;
+	Lucky::CameraController m_CameraController;			// 相机控制器
 
 	glm::vec3 m_SquareColor = { 0.2f,0.3f,0.8f };
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
+		: Layer("Example"), m_CameraController(1280.0f / 720.0f)
 	{
 		m_VertexArray.reset(new Lucky::VertexArray());		// 创建顶点数组对象
 
@@ -105,36 +99,15 @@ public:
 	{
 		LC_TRACE("FPS: {0}", (int)(1000.0f / dt.GetMilliseconds()));
 
-		if (Lucky::Input::IsKeyPressed(Lucky::Key::Left)) {			// 左键
-			m_CameraPosition.x -= m_CameraMoveSpeed * dt;
-		}
-		else if (Lucky::Input::IsKeyPressed(Lucky::Key::Right)) {	// 右键
-			m_CameraPosition.x += m_CameraMoveSpeed * dt;
-		}
-
-		if (Lucky::Input::IsKeyPressed(Lucky::Key::Up)) {			// 上键
-			m_CameraPosition.y += m_CameraMoveSpeed * dt;
-		}
-		else if (Lucky::Input::IsKeyPressed(Lucky::Key::Down)) {	// 下键
-			m_CameraPosition.y -= m_CameraMoveSpeed * dt;
-		}
-
-		if (Lucky::Input::IsKeyPressed(Lucky::Key::A)) {
-			m_CameraRotation += m_CameraRotationSpeed * dt;
-		}
-
-		if (Lucky::Input::IsKeyPressed(Lucky::Key::D)) {
-			m_CameraRotation -= m_CameraRotationSpeed * dt;
-		}
+		
 
 		Lucky::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Lucky::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
+		m_CameraController.OnUpdate(dt);	// 更新相机控制器
 
-		Lucky::Renderer::BeginScene(m_Camera);				// 开始渲染场景
-		
+		Lucky::Renderer::BeginScene(m_CameraController.GetCamera());			// 开始渲染场景
+
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
 		m_FlatColorShader->Bind();
@@ -172,10 +145,7 @@ public:
 
 	virtual void OnEvent(Lucky::Event& event) override
 	{
-		if (event.GetEventType() == Lucky::EventType::KeyPressed) {		// 按键按下事件
-			Lucky::KeyPressedEvent& e = (Lucky::KeyPressedEvent&)event;
-			LC_TRACE("{0}", (char)e.GetKeyCode());
-		}
+		m_CameraController.OnEvent(event);		// 调用相机事件函数
 	}
 };
 
