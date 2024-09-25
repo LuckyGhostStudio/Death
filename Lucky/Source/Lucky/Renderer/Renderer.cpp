@@ -1,13 +1,16 @@
 #include "lcpch.h"
 #include "Renderer.h"
 
+#include "Renderer2D.h"
+
 namespace Lucky
 {
-	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData();		// 场景数据
+	std::unique_ptr<Renderer::SceneData> Renderer::m_SceneData = std::unique_ptr<Renderer::SceneData>();	// 场景数据
 
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
+		Renderer2D::Init();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
