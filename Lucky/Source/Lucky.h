@@ -20,6 +20,3 @@
 #include "Lucky/Renderer/Texture.h"
 #include "Lucky/Renderer/VertexArray.h"
 #include "Lucky/Renderer/Camera.h"
-
-// Entry Point
-#include "Lucky/Core/EntryPoint.h"
