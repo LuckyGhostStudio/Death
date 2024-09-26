@@ -32,7 +32,9 @@ void ExampleLayer::OnUpdate(Lucky::DeltaTime dt)
 
 	Lucky::Renderer2D::BeginScene(m_CameraController.GetCamera());			// 开始渲染场景
 
-	Lucky::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColor);	// 绘制四边形
+	Lucky::Renderer2D::DrawQuad(m_SquarePosition, m_SquareRotation.z, m_SquareScale, m_SquareColor);	// 绘制四边形
+	Lucky::Renderer2D::DrawQuad({ -1.0f, 0.0f }, 0.0f, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });		// 绘制四边形
+	Lucky::Renderer2D::DrawQuad({ 0.5f, -0.5f }, 0.0f, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.3f, 1.0f });	// 绘制四边形
 
 	Lucky::Renderer2D::EndScene();						// 结束渲染场景
 }
@@ -41,7 +43,11 @@ void ExampleLayer::OnImGuiRender()
 {
 	ImGui::Begin("Settings");
 
-	ImGui::ColorEdit4("Triangle Color", glm::value_ptr(m_SquareColor));
+	ImGui::ColorEdit4("Color", glm::value_ptr(m_SquareColor));
+
+	ImGui::SliderFloat3("Position", glm::value_ptr(m_SquarePosition), -1.0f, 1.0f);
+	ImGui::SliderFloat3("Rotation", glm::value_ptr(m_SquareRotation), -360.0f, 360.0f);
+	ImGui::SliderFloat3("Scale", glm::value_ptr(m_SquareScale), 0.0f, 4.0f);
 
 	ImGui::End();
 }

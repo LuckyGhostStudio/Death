@@ -46,6 +46,24 @@ namespace Lucky
 		/// </summary>
 		void UnBind() const;
 
+		/// <summary>
+		/// 设置 uniform Float3 变量
+		/// </summary>
+		/// <param name="value">变量</param>
+		void SetFloat3(const std::string& name, const glm::vec3 value);
+
+		/// <summary>
+		/// 设置 uniform Float4 变量
+		/// </summary>
+		/// <param name="value">变量</param>
+		void SetFloat4(const std::string& name, const glm::vec4 value);
+
+		/// <summary>
+		/// 设置 uniform Matrix4 变量
+		/// </summary>
+		/// <param name="value">变量</param>
+		void SetMat4(const std::string& name, const glm::mat4 value);
+
 		const std::string GetName() const { return m_Name; }
 
 		// ---- 下列方法：上传 Uniform 变量到 Shader ---- |（变量在 Shader 中的变量名，变量值）

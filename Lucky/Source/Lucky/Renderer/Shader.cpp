@@ -140,6 +140,21 @@ namespace Lucky
 		glUseProgram(0);
 	}
 
+	void Shader::SetFloat3(const std::string& name, const glm::vec3 value)
+	{
+		UploadUniformFloat3(name, value);
+	}
+
+	void Shader::SetFloat4(const std::string& name, const glm::vec4 value)
+	{
+		UploadUniformFloat4(name, value);
+	}
+
+	void Shader::SetMat4(const std::string& name, const glm::mat4 value)
+	{
+		UploadUniformMat4(name, value);
+	}
+
 	// ---- 下列方法：上传 Uniform 变量到 Shader ----
 
 	void Shader::UploadUniformInt(const std::string& name, int value)
