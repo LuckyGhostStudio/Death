@@ -9,6 +9,8 @@ private:
 
 	Lucky::CameraController m_CameraController;			// 相机控制器
 
+	std::shared_ptr<Lucky::Texture2D> m_CheckerboardTexture;	//棋盘纹理
+
 	glm::vec3 m_SquarePosition = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 m_SquareRotation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 m_SquareScale = { 1.0f, 1.0f, 1.0f };

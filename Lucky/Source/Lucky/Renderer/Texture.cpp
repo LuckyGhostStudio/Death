@@ -37,9 +37,15 @@ namespace Lucky
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);						// 创建 2D 纹理
 		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);	// 存储 2D 纹理 - - 内部格式 - -
 
-		// 设置纹理参数
+		// 设置纹理参数 TODO 设置自定义资产格式后 可在编辑器中设置资产参数
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// 缩小过滤器 线性插值
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);	// 放大过滤器 最近滤波
+
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);		//x超过0-1 重复
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);		//y超过0-1 重复
+		//glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	//x超过0-1 延伸
+		//glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);	//y超过0-1 延伸
+
 
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);	// 生成纹理到 GPU
 

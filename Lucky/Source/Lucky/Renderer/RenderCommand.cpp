@@ -9,6 +9,8 @@ namespace Lucky
 	{
 		glEnable(GL_BLEND);									// 启用颜色混合
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	// 最终颜色 = src * alpha + des * (1 - alpha)
+
+		glEnable(GL_DEPTH_TEST);							// 启用深度测试
 	}
 
 	void RenderCommand::SetClearColor(const glm::vec4& color)

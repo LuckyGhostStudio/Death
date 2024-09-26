@@ -47,22 +47,32 @@ namespace Lucky
 		void UnBind() const;
 
 		/// <summary>
+		/// 设置 uniform Int 变量
+		/// </summary>
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetInt(const std::string& name, int value);
+
+		/// <summary>
 		/// 设置 uniform Float3 变量
 		/// </summary>
-		/// <param name="value">变量</param>
-		void SetFloat3(const std::string& name, const glm::vec3 value);
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetFloat3(const std::string& name, const glm::vec3& value);
 
 		/// <summary>
 		/// 设置 uniform Float4 变量
 		/// </summary>
-		/// <param name="value">变量</param>
-		void SetFloat4(const std::string& name, const glm::vec4 value);
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetFloat4(const std::string& name, const glm::vec4& value);
 
 		/// <summary>
 		/// 设置 uniform Matrix4 变量
 		/// </summary>
-		/// <param name="value">变量</param>
-		void SetMat4(const std::string& name, const glm::mat4 value);
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetMat4(const std::string& name, const glm::mat4& value);
 
 		const std::string GetName() const { return m_Name; }
 
