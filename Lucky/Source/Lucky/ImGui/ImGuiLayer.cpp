@@ -56,12 +56,6 @@ namespace Lucky
 		ImGui::DestroyContext();		// 毁上下文
 	}
 
-	void ImGuiLayer::OnImGuiRender()
-	{
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);	// 显示 Demo 窗口
-	}
-
 	void ImGuiLayer::Begin()
 	{
 		// 开启新帧

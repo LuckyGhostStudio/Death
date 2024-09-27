@@ -54,6 +54,20 @@ namespace Lucky
 		void SetInt(const std::string& name, int value);
 
 		/// <summary>
+		/// 设置 uniform Float 变量
+		/// </summary>
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetFloat(const std::string& name, float value);
+
+		/// <summary>
+		/// 设置 uniform Float2 变量
+		/// </summary>
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetFloat2(const std::string& name, const glm::vec2& value);
+
+		/// <summary>
 		/// 设置 uniform Float3 变量
 		/// </summary>
 		/// <param name="name">变量名</param>

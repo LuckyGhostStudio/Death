@@ -165,6 +165,7 @@ namespace Lucky
 	void Window::Shutdown()
 	{
 		glfwDestroyWindow(m_Window);	// Ïú»Ù´°¿Ú
+		glfwTerminate();
 	}
 
 	void Window::OnUpdate()

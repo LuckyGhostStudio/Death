@@ -32,7 +32,7 @@ void ExampleLayer::OnUpdate(Lucky::DeltaTime dt)
 
 	Lucky::Renderer2D::BeginScene(m_CameraController.GetCamera());			// 开始渲染场景
 
-	Lucky::Renderer2D::DrawQuad(m_SquarePosition, m_SquareRotation.z, m_SquareScale, m_SquareColor, m_CheckerboardTexture);	// 绘制四边形
+	//Lucky::Renderer2D::DrawQuad(m_SquarePosition, m_SquareRotation.z, m_SquareScale, m_SquareColor, m_CheckerboardTexture);	// 绘制四边形
 	Lucky::Renderer2D::DrawQuad({ -1.0f, 0.0f }, 0.0f, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });		// 绘制四边形
 	Lucky::Renderer2D::DrawQuad({ 0.5f, -0.5f }, 0.0f, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.3f, 1.0f });	// 绘制四边形
 

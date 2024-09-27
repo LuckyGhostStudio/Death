@@ -29,11 +29,6 @@ namespace Lucky
 		/// </summary>
 		virtual void OnDetach() override;
 
-		/// <summary>
-		/// ‰÷»æImGui
-		/// </summary>
-		virtual void OnImGuiRender() override;
-		
 		void Begin();
 
 		void End();
