@@ -25,22 +25,25 @@ namespace Lucky
 	/// </summary>
 	struct Renderer2DData
 	{
-		uint32_t MaxQuads = 10000;						// 最大四边形数量
-		uint32_t MaxVertices = MaxQuads * 4;			// 最大顶点数
-		uint32_t MaxIndices = MaxQuads * 6;				// 最大索引数（4个顶点6个索引）
-		static const uint32_t MaxTextureSlots = 32;		// 最大纹理槽数
+		static const uint32_t MaxQuads = 10000;				// 最大四边形数量
+		static const uint32_t MaxVertices = MaxQuads * 4;	// 最大顶点数
+		static const uint32_t MaxIndices = MaxQuads * 6;	// 最大索引数（4个顶点6个索引）
+		static const uint32_t MaxTextureSlots = 32;			// 最大纹理槽数
 
-		std::shared_ptr<VertexArray> QuadVertexArray;	// 四边形顶点数组
-		std::shared_ptr<VertexBuffer> QuadVertexBuffer;	// 四边形顶点缓冲区
-		std::shared_ptr<Shader> TextureShader;			// 纹理着色器
-		std::shared_ptr<Texture2D>	WhiteTexture;		// 白色纹理
+		std::shared_ptr<VertexArray> QuadVertexArray;		// 四边形顶点数组
+		std::shared_ptr<VertexBuffer> QuadVertexBuffer;		// 四边形顶点缓冲区
+		std::shared_ptr<Shader> TextureShader;				// 纹理着色器
+		std::shared_ptr<Texture2D>	WhiteTexture;			// 白色纹理
 
-		uint32_t QuadIndexCount = 0;					// 四边形索引个数
-		QuadVertex* QuadVertexBufferBase = nullptr;		// 顶点数据
-		QuadVertex* QuadVertexBufferPtr = nullptr;		// 顶点数据指针
+		uint32_t QuadIndexCount = 0;						// 四边形索引个数
+		QuadVertex* QuadVertexBufferBase = nullptr;			// 顶点数据
+		QuadVertex* QuadVertexBufferPtr = nullptr;			// 顶点数据指针
 
 		std::array<std::shared_ptr<Texture2D>, MaxTextureSlots> TextureSlots;	// 纹理槽列表 存储纹理
 		uint32_t TextureSlotIndex = 1;											// 纹理槽索引 0 = White
+
+		glm::vec4 QuadVerticesPositions[4];
+		Renderer2D::Statistics Stats;			// 统计数据
 	};
 
 	static Renderer2DData s_Data;	// 渲染器数据
@@ -98,6 +101,11 @@ namespace Lucky
 
 		s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);	// 设置 textures 变量 所有纹理槽
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;	// 0 号纹理槽为白色纹理（默认）
+
+		s_Data.QuadVerticesPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVerticesPositions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVerticesPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.QuadVerticesPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 	}
 
 	void Renderer2D::Shutdown()
@@ -132,6 +140,17 @@ namespace Lucky
 		}
 
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);	// 绘制
+
+		s_Data.Stats.DrawCalls++;	// 绘制调用次数 ++
+	}
+
+	void Renderer2D::FlushAndReset()
+	{
+		EndScene();	// 结束上一次批渲染
+
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		s_Data.TextureSlotIndex = 1;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color)
@@ -141,51 +160,49 @@ namespace Lucky
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color)
 	{
+		// 索引个数超过最大索引数
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
+			FlushAndReset();	// 开始新一次批渲染
+		}
+
 		const float texIndex = 0.0f;					// 白色纹理索引
 
-		//s_Data->TextureShader->SetFloat4("u_Color", color);		// 设置color
-		//s_Data->WhiteTexture->Bind();							// 绑定白色纹理（默认纹理）
-		
-		// 左下角顶点数据：锚点在左下角
-		s_Data.QuadVertexBufferPtr->Position = position;
+		// Transform 矩阵
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
+			* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
+
+		// 左下角顶点数据
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[0];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 0.0f };
 		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
 		s_Data.QuadVertexBufferPtr++;
 
 		// 右下角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y, 0.0f };
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[1];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 0.0f };
 		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
 		s_Data.QuadVertexBufferPtr++;
 
 		// 右上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y + scale.y, 0.0f };
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[2];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 1.0f };
 		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
 		s_Data.QuadVertexBufferPtr++;
 
 		// 左上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x, position.y + scale.y, 0.0f };
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[3];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 1.0f };
 		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
 		s_Data.QuadVertexBufferPtr++;
-		s_Data.QuadIndexCount += 6;		// 索引个数增加
+		
+		s_Data.QuadIndexCount += 6;	// 索引个数增加
 
-		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-		//	* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
-		//	* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
-
-		//s_Data->TextureShader->SetMat4("u_Transform", transform);		// 设置 transform 矩阵
-
-		//s_Data->QuadVertexArray->Bind();						// 绑定顶点数组
-
-		//RenderCommand::DrawIndexed(s_Data->QuadVertexArray);	// 绘制
-
-
+		s_Data.Stats.QuadCount++;	// 四边形个数++
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture)
@@ -195,63 +212,73 @@ namespace Lucky
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture)
 	{
-		//constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		float textureIndex = 0.0f;	// 当前纹理索引
+		// 索引个数超过最大索引数
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
+			FlushAndReset();	// 开始新一次批渲染
+		}
+
+		float texIndex = 0.0f;					// 白色纹理索引
+
+		// Transform 矩阵
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
+			* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
 
 		// 遍历所有已存在的纹理
 		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++) {
 			if (*s_Data.TextureSlots[i].get() == *texture.get()) {	// texture 在纹理槽中
-				textureIndex = (float)i;							// 设置当前纹理索引
+				texIndex = (float)i;								// 设置当前纹理索引
 				break;
 			}
 		}
 
 		// 当前纹理不在纹理槽中
-		if (textureIndex == 0.0f) {
-			textureIndex = (float)s_Data.TextureSlotIndex;
+		if (texIndex == 0.0f) {
+			texIndex = (float)s_Data.TextureSlotIndex;
 			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;	// 添加texture到 第 s_Data.TextureSlotIndex 个纹理槽
 			s_Data.TextureSlotIndex++;	// 纹理槽索引++
 		}
 
 		// 左下角顶点数据：锚点在左下角
-		s_Data.QuadVertexBufferPtr->Position = position;
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[0];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 0.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
 		s_Data.QuadVertexBufferPtr++;
 
 		// 右下角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y, 0.0f };
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[1];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 0.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
 		s_Data.QuadVertexBufferPtr++;
 
 		// 右上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y + scale.y, 0.0f };
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[2];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 1.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
 		s_Data.QuadVertexBufferPtr++;
 
 		// 左上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x, position.y + scale.y, 0.0f };
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[3];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 1.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
 		s_Data.QuadVertexBufferPtr++;
+
 		s_Data.QuadIndexCount += 6;		// 索引个数增加
 
-		//s_Data.TextureShader->SetFloat4("u_Color", color);		// 设置颜色（默认颜色）
-		//texture->Bind();										// 绑定纹理
+		s_Data.Stats.QuadCount++;		// 四边形个数++
+	}
 
-		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-		//	* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
-		//	* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
+	Renderer2D::Statistics Renderer2D::GetStats()
+	{
+		return s_Data.Stats;
+	}
 
-		//s_Data.TextureShader->SetMat4("u_Transform", transform);		// 设置 transform 矩阵
-
-		//s_Data.QuadVertexArray->Bind();						// 绑定顶点数组
-		//RenderCommand::DrawIndexed(s_Data.QuadVertexArray);	// 绘制
+	void Renderer2D::ResetStats()
+	{
+		memset(&s_Data.Stats, 0, sizeof(Statistics));
 	}
 }
