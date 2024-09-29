@@ -73,5 +73,15 @@ namespace Lucky
 		/// </summary>
 		/// <param name="slot">绑定槽位</param>
 		virtual void Bind(uint32_t slot = 0) const override;
+
+		/// <summary>
+		/// 比较两个纹理是否相等
+		/// </summary>
+		/// <param name="other">另一个纹理</param>
+		/// <returns>比较结果</returns>
+		virtual bool operator==(const Texture2D& other) const
+		{
+			return m_RendererID == other.m_RendererID;	// 纹理 ID 相等
+		}
 	};
 }

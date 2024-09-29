@@ -37,8 +37,8 @@ namespace Lucky
 
 	void VertexBuffer::SetData(const void* data, uint32_t size)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);		//绑定顶点缓冲区
-		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);	//设置数据
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);		// 绑定顶点缓冲区
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);	// 设置数据
 	}
 
 	IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count) :m_Count(count)

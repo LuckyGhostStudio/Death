@@ -7,7 +7,7 @@ namespace Lucky
 {
 	void RenderCommand::Init()
 	{
-		glEnable(GL_BLEND);									// 启用颜色混合
+		glEnable(GL_BLEND);									// 启用颜色混合 TODO 透明度存在问题
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	// 最终颜色 = src * alpha + des * (1 - alpha)
 
 		glEnable(GL_DEPTH_TEST);							// 启用深度测试

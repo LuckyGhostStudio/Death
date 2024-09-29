@@ -21,7 +21,7 @@ namespace Lucky
 
 		//计算着色器名
 		auto lastSlash = filepath.find_last_of("/\\");						// 最后一个 / 的索引
-		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;		// 最后一个/不存在 最后一个/存在
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;		// 最后一个 / 不存在 最后一个 / 存在
 		m_Name = filepath.substr(lastSlash, filepath.size() - lastSlash);	// 着色器名称
 	}
 
@@ -145,6 +145,11 @@ namespace Lucky
 		UploadUniformInt(name, value);
 	}
 
+	void Shader::SetIntArray(const std::string& name, int* values, uint32_t count)
+	{
+		UploadUniformIntArray(name, values, count);
+	}
+
 	void Shader::SetFloat(const std::string& name, float value)
 	{
 		UploadUniformFloat(name, value);
@@ -176,6 +181,12 @@ namespace Lucky
 	{
 		int location = glGetUniformLocation(m_RendererID, name.c_str());	// 获取 Uniform 变量位置
 		glUniform1i(location, value);										// 设置 Uniform 变量（位置，变量个数，是否转置，变量地址）
+	}
+
+	void Shader::UploadUniformIntArray(const std::string& name, int* values, uint32_t count)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform1iv(location, count, values);
 	}
 
 	void Shader::UploadUniformFloat(const std::string& name, float value)
@@ -220,11 +231,13 @@ namespace Lucky
 
 		m_Shaders[name] = shader;		// 添加着色器到map
 	}
+
 	void ShaderLibrary::Add(const std::shared_ptr<Shader>& shader)
 	{
 		auto& name = shader->GetName();
 		Add(name, shader);
 	}
+
 	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& filepath)
 	{
 		auto shader = std::make_shared<Shader>(filepath);	// 创建着色器
@@ -232,6 +245,7 @@ namespace Lucky
 
 		return shader;
 	}
+
 	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath)
 	{
 		auto shader = std::make_shared<Shader>(filepath);

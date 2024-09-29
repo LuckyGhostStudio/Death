@@ -54,6 +54,14 @@ namespace Lucky
 		void SetInt(const std::string& name, int value);
 
 		/// <summary>
+		/// 设置 uniform Int Array 变量
+		/// </summary>
+		/// <param name="name">变量名</param>
+		/// <param name="values">变量值</param>
+		/// <param name="count">Array 元素数量</param>
+		void SetIntArray(const std::string& name, int* values, uint32_t count);
+
+		/// <summary>
 		/// 设置 uniform Float 变量
 		/// </summary>
 		/// <param name="name">变量名</param>
@@ -93,6 +101,7 @@ namespace Lucky
 		// ---- 下列方法：上传 Uniform 变量到 Shader ---- |（变量在 Shader 中的变量名，变量值）
 
 		void UploadUniformInt(const std::string& name, int value);
+		void UploadUniformIntArray(const std::string& name, int* values, uint32_t count);
 
 		void UploadUniformFloat(const std::string& name, float value);
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& value);
