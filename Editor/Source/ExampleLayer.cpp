@@ -23,7 +23,7 @@ void ExampleLayer::OnDetach()
 
 void ExampleLayer::OnUpdate(Lucky::DeltaTime dt)
 {
-	LC_TRACE("FPS: {0}", (int)(1000.0f / dt.GetMilliseconds()));
+	fps = 1000.0f / dt.GetMilliseconds();
 
 	m_CameraController.OnUpdate(dt);	// 更新相机控制器
 
@@ -64,7 +64,11 @@ void ExampleLayer::OnImGuiRender()
 
 	// 批渲染数据统计
 	ImGui::Text("\nRenderer2D Stats:");
+
 	auto stats = Lucky::Renderer2D::GetStats();
+
+	ImGui::Text("FPS: %.3f", fps);	// 帧率
+
 	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 	ImGui::Text("Quad: %d", stats.QuadCount);
 	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());

@@ -165,40 +165,23 @@ namespace Lucky
 			FlushAndReset();	// 开始新一次批渲染
 		}
 
-		const float texIndex = 0.0f;					// 白色纹理索引
+		const int quadVertexCount = 4;	// 顶点个数
+		const glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };	//纹理坐标
+		const float texIndex = 0.0f;	// 白色纹理索引
 
 		// Transform 矩阵
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
 			* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
 
-		// 左下角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[0];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 0.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr++;
-
-		// 右下角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[1];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 0.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr++;
-
-		// 右上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[2];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 1.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr++;
-
-		// 左上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[3];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 1.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr++;
+		// 4个顶点数据
+		for (int i = 0; i < quadVertexCount; i++) {
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[i];
+			s_Data.QuadVertexBufferPtr->Color = color;
+			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
+			s_Data.QuadVertexBufferPtr++;
+		}
 		
 		s_Data.QuadIndexCount += 6;	// 索引个数增加
 
@@ -217,6 +200,8 @@ namespace Lucky
 			FlushAndReset();	// 开始新一次批渲染
 		}
 
+		const int quadVertexCount = 4;	// 顶点个数
+		const glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };	//纹理坐标
 		float texIndex = 0.0f;					// 白色纹理索引
 
 		// Transform 矩阵
@@ -239,33 +224,14 @@ namespace Lucky
 			s_Data.TextureSlotIndex++;	// 纹理槽索引++
 		}
 
-		// 左下角顶点数据：锚点在左下角
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[0];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 0.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr++;
-
-		// 右下角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[1];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 0.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr++;
-
-		// 右上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[2];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 1.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr++;
-
-		// 左上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[3];
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 1.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr++;
+		// 4个顶点数据
+		for (int i = 0; i < quadVertexCount; i++) {
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[i];
+			s_Data.QuadVertexBufferPtr->Color = color;
+			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
+			s_Data.QuadVertexBufferPtr++;
+		}
 
 		s_Data.QuadIndexCount += 6;		// 索引个数增加
 
