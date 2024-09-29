@@ -3,13 +3,13 @@
 
 namespace Lucky
 {
-	Layer::Layer(const std::string& name) : m_DebugName(name)
-	{
+    Layer::Layer(const std::string& name) : m_DebugName(name)
+    {
 
-	}
+    }
 
-	Layer::~Layer()
-	{
+    Layer::~Layer()
+    {
 
-	}
+    }
 }

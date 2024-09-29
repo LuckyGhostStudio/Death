@@ -10,6 +10,6 @@ out vec3 v_Position;
 
 void main()
 {
-	v_Position = a_Position;
-	gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
+    v_Position = a_Position;
+    gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
 }

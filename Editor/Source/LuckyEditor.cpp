@@ -6,18 +6,18 @@
 class LuckyEditor : public Lucky::Application
 {
 public:
-	LuckyEditor()
-	{
-		PushLayer(new ExampleLayer());
-	}
+    LuckyEditor()
+    {
+        PushLayer(new ExampleLayer());
+    }
 
-	~LuckyEditor()
-	{
+    ~LuckyEditor()
+    {
 
-	}
+    }
 };
 
 Lucky::Application* Lucky::CreateApplication()
 {
-	return new LuckyEditor();
+    return new LuckyEditor();
 }

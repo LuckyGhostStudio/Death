@@ -7,84 +7,85 @@
 
 namespace Lucky
 {
-	/// <summary>
-	/// ShaderDataType 转换为 OpenGL 基本类型
-	/// </summary>
-	/// <param name="">ShaderDataType</param>
-	/// <returns>OpenGL 基本类型</returns>
-	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-	{
-		switch (type)
-		{
-		case ShaderDataType::Float:		return GL_FLOAT;
-		case ShaderDataType::Float2:	return GL_FLOAT;
-		case ShaderDataType::Float3:	return GL_FLOAT;
-		case ShaderDataType::Float4:	return GL_FLOAT;
-		case ShaderDataType::Mat3:		return GL_FLOAT;
-		case ShaderDataType::Mat4:		return GL_FLOAT;
-		case ShaderDataType::Int:		return GL_INT;
-		case ShaderDataType::Int2:		return GL_INT;
-		case ShaderDataType::Int3:		return GL_INT;
-		case ShaderDataType::Int4:		return GL_INT;
-		case ShaderDataType::Bool:		return GL_BOOL;
-		}
+    /// <summary>
+    /// ShaderDataType 转换为 OpenGL 基本类型
+    /// </summary>
+    /// <param name="">ShaderDataType</param>
+    /// <returns>OpenGL 基本类型</returns>
+    static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+    {
+        switch (type)
+        {
+            case ShaderDataType::Float:     return GL_FLOAT;
+            case ShaderDataType::Float2:    return GL_FLOAT;
+            case ShaderDataType::Float3:    return GL_FLOAT;
+            case ShaderDataType::Float4:    return GL_FLOAT;
+            case ShaderDataType::Mat3:      return GL_FLOAT;
+            case ShaderDataType::Mat4:      return GL_FLOAT;
+            case ShaderDataType::Int:       return GL_INT;
+            case ShaderDataType::Int2:      return GL_INT;
+            case ShaderDataType::Int3:      return GL_INT;
+            case ShaderDataType::Int4:      return GL_INT;
+            case ShaderDataType::Bool:      return GL_BOOL;
+        }
 
-		LC_CORE_ASSERT(false, "Unknow ShaderDataType!");
-		return 0;
-	}
+        LC_CORE_ASSERT(false, "Unknow ShaderDataType!");
 
-	VertexArray::VertexArray()
-	{
-		glCreateVertexArrays(1, &m_RendererID);	// 创建顶点数组
-	}
+        return 0;
+    }
 
-	VertexArray::~VertexArray()
-	{
-		glDeleteVertexArrays(1, &m_RendererID);	// 删除顶点数组
-	}
+    VertexArray::VertexArray()
+    {
+        glCreateVertexArrays(1, &m_RendererID); // 创建顶点数组
+    }
 
-	void VertexArray::Bind() const
-	{
-		glBindVertexArray(m_RendererID);		// 绑定顶点数组
-	}
+    VertexArray::~VertexArray()
+    {
+        glDeleteVertexArrays(1, &m_RendererID); // 删除顶点数组
+    }
 
-	void VertexArray::Unbind() const
-	{
-		glBindVertexArray(0);					// 解除绑定
-	}
+    void VertexArray::Bind() const
+    {
+        glBindVertexArray(m_RendererID);        // 绑定顶点数组
+    }
 
-	void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
-	{
-		LC_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");	// 布局元素为零
+    void VertexArray::Unbind() const
+    {
+        glBindVertexArray(0);                   // 解除绑定
+    }
 
-		glBindVertexArray(m_RendererID);	// 绑定顶点数组
-		vertexBuffer->Bind();				// 绑定VBO到VAO
+    void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+    {
+        LC_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!"); // 布局元素为零
 
-		// 设置顶点缓冲区布局
-		const auto& layout = vertexBuffer->GetLayout();			// 顶点缓冲区布局
+        glBindVertexArray(m_RendererID);    // 绑定顶点数组
+        vertexBuffer->Bind();               // 绑定 VertexBuffer
 
-		uint32_t index = 0;
-		for (const auto& element : layout) {
-			glEnableVertexAttribArray(index);					// 启用顶点属性
+        // 设置顶点缓冲区布局
+        const auto& layout = vertexBuffer->GetLayout();         // 顶点缓冲区布局
 
-			glVertexAttribPointer(index,						// 顶点属性位置编号
-				element.GetComponentCount(),					// 顶点属性数据个数
-				ShaderDataTypeToOpenGLBaseType(element.Type), 	// 数据类型
-				element.Normalized ? GL_TRUE : GL_FALSE, 		// 是否标准化
-				layout.GetStride(), 							// 顶点大小（字节）
-				(const void*)element.Offset);					// 顶点属性偏移量（字节）
+        uint32_t index = 0;
+        for (const auto& element : layout) {
+            glEnableVertexAttribArray(index);                   // 启用顶点属性
 
-			index++;
-		}
+            glVertexAttribPointer(index,                        // 顶点属性位置编号
+                element.GetComponentCount(),                    // 顶点属性数据个数
+                ShaderDataTypeToOpenGLBaseType(element.Type),   // 数据类型
+                element.Normalized ? GL_TRUE : GL_FALSE,        // 是否标准化
+                layout.GetStride(),                             // 顶点大小（字节）
+                (const void*)element.Offset);                   // 顶点属性偏移量（字节）
 
-		m_VertexBuffers.push_back(vertexBuffer);	// 添加 VBO 到列表
-	}
+            index++;
+        }
 
-	void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
-	{
-		glBindVertexArray(m_RendererID);	// 绑定顶点数组
-		indexBuffer->Bind();				// 绑定 EBO 到 VAO
+        m_VertexBuffers.push_back(vertexBuffer);    // 添加 VertexBuffer 到列表
+    }
 
-		m_IndexBuffer = indexBuffer;		//设置EBO
-	}
+    void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+    {
+        glBindVertexArray(m_RendererID);    // 绑定顶点数组
+
+        indexBuffer->Bind();                // 绑定 IndexBuffer
+        m_IndexBuffer = indexBuffer;        // 设置 IndexBuffer
+    }
 }
