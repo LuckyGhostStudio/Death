@@ -14,7 +14,8 @@ namespace Lucky
     class ImGuiLayer : public Layer
     {
     private:
-        float m_Time = 0.0f;    // 当前帧时间
+        float m_Time = 0.0f;        // 当前帧时间
+        bool m_BlockEvents = true;  // 是否阻止接收事件
     public:
         ImGuiLayer();
         ~ImGuiLayer();
@@ -29,8 +30,20 @@ namespace Lucky
         /// </summary>
         virtual void OnDetach() override;
 
+        /// <summary>
+        /// 事件回调函数
+        /// </summary>
+        /// <param name="e">事件</param>
+        virtual void OnEvent(Event& e) override;
+
         void Begin();
 
         void End();
+
+        /// <summary>
+        /// 阻止事件：阻止接收事件
+        /// </summary>
+        /// <param name="block">是否阻止</param>
+        void BlockEvents(bool block) { m_BlockEvents = block; }
     };
 }

@@ -3,21 +3,24 @@
 
 #include "EditorLayer.h"
 
-class LuckyEditor : public Lucky::Application
+namespace Lucky
 {
-public:
-    LuckyEditor()
+    class LuckyEditor : public Application
     {
-        PushLayer(new EditorLayer());
-    }
+    public:
+        LuckyEditor()
+        {
+            PushLayer(new EditorLayer());
+        }
 
-    ~LuckyEditor()
+        ~LuckyEditor()
+        {
+
+        }
+    };
+
+    Application* CreateApplication()
     {
-
+        return new LuckyEditor();
     }
-};
-
-Lucky::Application* Lucky::CreateApplication()
-{
-    return new LuckyEditor();
 }

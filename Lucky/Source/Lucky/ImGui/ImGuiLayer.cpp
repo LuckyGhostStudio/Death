@@ -56,6 +56,19 @@ namespace Lucky
         ImGui::DestroyContext();        // 销毁上下文
     }
 
+    void ImGuiLayer::OnEvent(Event& e)
+    {
+        // 阻止接收事件
+        if (m_BlockEvents)
+        {
+            ImGuiIO& io = ImGui::GetIO();
+
+            e.m_Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;        // 捕获鼠标事件
+            e.m_Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;  // 捕获键盘事件
+        }
+    }
+
+
     void ImGuiLayer::Begin()
     {
         // 开启新帧

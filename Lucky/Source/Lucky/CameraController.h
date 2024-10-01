@@ -9,18 +9,6 @@
 namespace Lucky
 {
     /// <summary>
-    /// 相机边界
-    /// </summary>
-    struct CameraBounds
-    {
-        float Left, Right;
-        float Bottom, Top;
-
-        float GetWidth() { return Right - Left; }
-        float GetHeight() { return Top - Bottom; }
-    };
-
-    /// <summary>
     /// 相机控制器
     /// </summary>
     class CameraController
@@ -29,7 +17,6 @@ namespace Lucky
         float m_AspectRatio;        // 宽高比（X/Y）
         float m_ZoomLevel = 1.0f;   // 缩放比例（Y）
 
-        CameraBounds m_Bounds;		// 相机边界
         Camera m_Camera;            // 相机
 
         bool m_Rotation;            // 是否可旋转
@@ -58,17 +45,19 @@ namespace Lucky
         /// <param name="e">事件</param>
         void OnEvent(Event& e);
 
+        /// <summary>
+        /// 重置相机大小
+        /// </summary>
+        /// <param name="width">宽</param>
+        /// <param name="height">高</param>
+        void OnResize(float width, float height);
+
         Camera& GetCamera() { return m_Camera; }
         const Camera& GetCamera() const { return m_Camera; }
 
         float GetZoomLevel() const { return m_ZoomLevel; }
-        void SetZoomLevel(float level) { m_ZoomLevel = level; CalculateView(); }
+        void SetZoomLevel(float level) { m_ZoomLevel = level;}
     private:
-        /// <summary>
-        /// 计算视图大小
-        /// </summary>
-        void CalculateView();
-
         /// <summary>
         /// 鼠标滚轮滚动
         /// </summary>

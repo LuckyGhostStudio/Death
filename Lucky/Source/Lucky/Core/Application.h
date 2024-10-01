@@ -70,6 +70,12 @@ namespace Lucky
         /// </summary>
         /// <returns></returns>
         inline Window& GetWindow() { return *m_Window; }
+
+        /// <summary>
+        /// 返回 ImGui 层
+        /// </summary>
+        /// <returns>ImGui 层</returns>
+        ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
     private:
         /// <summary>
         /// 窗口关闭回调函数

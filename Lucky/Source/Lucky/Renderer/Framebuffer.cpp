@@ -14,10 +14,20 @@ namespace Lucky
     Framebuffer::~Framebuffer()
     {
         glDeleteFramebuffers(1, &m_RendererID);     // 删除帧缓冲区
+        glDeleteTextures(1, &m_ColorAttachment);    // 删除颜色缓冲区
+        glDeleteTextures(1, &m_DepthAttachment);    // 删除深度缓冲区 
     }
 
     void Framebuffer::Invalidate()
     {
+        //帧缓冲区存在
+        if (m_RendererID)
+        {
+            glDeleteFramebuffers(1, &m_RendererID);     // 删除帧缓冲区
+            glDeleteTextures(1, &m_ColorAttachment);    // 删除颜色缓冲区
+            glDeleteTextures(1, &m_DepthAttachment);    // 删除深度缓冲区
+        }
+
         glCreateFramebuffers(1, &m_RendererID);                 // 创建帧缓冲区
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);        // 绑定帧缓冲区
 
@@ -47,10 +57,20 @@ namespace Lucky
     void Framebuffer::Bind() const
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);    // 绑定帧缓冲区
+
+        glViewport(0, 0, m_Specification.Width, m_Specification.Height);    // 设置视口大小
     }
 
     void Framebuffer::Unbind() const
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);   // 解除绑定
+    }
+
+    void Framebuffer::Resize(uint32_t width, uint32_t height)
+    {
+        m_Specification.Width = width;
+        m_Specification.Height = height;
+
+        Invalidate();
     }
 }
