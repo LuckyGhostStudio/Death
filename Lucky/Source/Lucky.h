@@ -19,5 +19,6 @@
 #include "Lucky/Renderer/Buffer.h"
 #include "Lucky/Renderer/Shader.h"
 #include "Lucky/Renderer/Texture.h"
+#include "Lucky/Renderer/Framebuffer.h"
 #include "Lucky/Renderer/VertexArray.h"
 #include "Lucky/Renderer/Camera.h"

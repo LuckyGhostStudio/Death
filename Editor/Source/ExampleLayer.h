@@ -11,6 +11,8 @@ private:
 
     std::shared_ptr<Lucky::Texture2D> m_CheckerboardTexture;    // ∆Â≈ÃŒ∆¿Ì
 
+    std::shared_ptr<Lucky::Framebuffer> m_Framebuffer;          // ÷°ª∫≥Â«¯
+
     glm::vec3 m_SquarePosition = { 0.0f, 0.0f, 0.0f };
     glm::vec3 m_SquareRotation = { 0.0f, 0.0f, 0.0f };
     glm::vec3 m_SquareScale = { 1.0f, 1.0f, 1.0f };

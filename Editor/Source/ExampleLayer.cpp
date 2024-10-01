@@ -14,6 +14,11 @@ ExampleLayer::ExampleLayer()
 void ExampleLayer::OnAttach()
 {
     m_CheckerboardTexture = std::make_shared<Lucky::Texture2D>("Assets/Textures/Checkerboard.png");    // 创建纹理
+
+    Lucky::FramebufferSpecification fbSpec; // 帧缓冲区规范
+    fbSpec.Width = 1280;
+    fbSpec.Height = 720;
+    m_Framebuffer = std::make_shared<Lucky::Framebuffer>(fbSpec);   // 创建帧缓冲区
 }
 
 void ExampleLayer::OnDetach()
@@ -23,14 +28,18 @@ void ExampleLayer::OnDetach()
 
 void ExampleLayer::OnUpdate(Lucky::DeltaTime dt)
 {
-    fps = 1000.0f / dt.GetMilliseconds();
+    fps = 1.0f / dt;
 
     m_CameraController.OnUpdate(dt);    // 更新相机控制器
+
+    Lucky::Renderer2D::ResetStats();    // 重置统计数据
+
+    m_Framebuffer->Bind();  // 绑定帧缓冲区
 
     Lucky::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
     Lucky::RenderCommand::Clear();
 
-    Lucky::Renderer2D::ResetStats();    // 重置统计数据
+    
 
     Lucky::Renderer2D::BeginScene(m_CameraController.GetCamera());  // 开始渲染场景
 
@@ -52,6 +61,8 @@ void ExampleLayer::OnUpdate(Lucky::DeltaTime dt)
     }
 
     Lucky::Renderer2D::EndScene();  // 结束渲染场景
+
+    m_Framebuffer->Unbind();        // 解除绑定帧缓冲区
 }
 
 void ExampleLayer::OnImGuiRender()
@@ -116,7 +127,7 @@ void ExampleLayer::OnImGuiRender()
             ImGui::EndMenuBar();
         }
 
-
+        // 检视面板
         ImGui::Begin("Inspector");
         {
             ImGui::ColorEdit4("Color", glm::value_ptr(m_SquareColor));
@@ -138,6 +149,15 @@ void ExampleLayer::OnImGuiRender()
             ImGui::Text("Quad: %d", stats.QuadCount);
             ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
             ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+        }
+        ImGui::End();
+
+        // 场景视口
+        ImGui::Begin("Scene");
+        {
+            uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(); // 颜色缓冲区 ID
+
+            ImGui::Image((void*)textureID, ImVec2{ 720.0f, 405.0f });
         }
         ImGui::End();
     }
