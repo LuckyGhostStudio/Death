@@ -12,6 +12,10 @@
 
 #include "Lucky/ImGui/ImGuiLayer.h"
 
+#include "Lucky/Scene/Scene.h"
+#include "Lucky/Scene/Components/SpriteRenderer.h"
+#include "Lucky/Scene/Components/Transform.h"
+
 // Renderer
 #include "Lucky/Renderer/Renderer.h"
 #include "Lucky/Renderer/Renderer2D.h"

@@ -19,7 +19,7 @@ IncludeDir["GLAD"] = "Lucky/Vendor/GLAD/include"
 IncludeDir["ImGui"] = "Lucky/Vendor/imgui"
 IncludeDir["glm"] = "Lucky/Vendor/glm"
 IncludeDir["stb_image"] = "Lucky/Vendor/stb_image"
--- IncludeDir["entt"] = "Lucky/Vendor/entt/include"
+IncludeDir["entt"] = "Lucky/Vendor/entt/include"
 -- IncludeDir["yaml_cpp"] = "Lucky/Vendor/yaml-cpp/include"
 -- IncludeDir["ImGuizmo"] = "Lucky/Vendor/ImGuizmo"
 
@@ -72,7 +72,7 @@ project "Lucky"         -- 项目
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
-        -- "%{IncludeDir.entt}",
+        "%{IncludeDir.entt}",
         -- "%{IncludeDir.yaml_cpp}",
         -- "%{IncludeDir.ImGuizmo}"
     }
@@ -136,7 +136,7 @@ project "LuckyEditor"
         "Lucky/Vendor",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.glm}",
-        -- "%{IncludeDir.entt}",
+        "%{IncludeDir.entt}",
         -- "%{IncludeDir.ImGuizmo}"
     }
 

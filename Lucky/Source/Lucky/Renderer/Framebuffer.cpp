@@ -5,6 +5,8 @@
 
 namespace Lucky
 {
+    static uint32_t s_MaxFramebufferSize = 8192;    // 帧缓冲区最大大小
+
     Framebuffer::Framebuffer(const FramebufferSpecification& spec)
         : m_Specification(spec)
     {
@@ -68,6 +70,12 @@ namespace Lucky
 
     void Framebuffer::Resize(uint32_t width, uint32_t height)
     {
+        if (width == 0 || height == 0 || width > s_MaxFramebufferSize || height > s_MaxFramebufferSize)
+        {
+            LC_CORE_WARN("Attempted to resize framebuffer to {0}, {1}", width, height);
+            return;
+        }
+
         m_Specification.Width = width;
         m_Specification.Height = height;
 

@@ -33,6 +33,12 @@ namespace Lucky
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // Enable Docking
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;     // Enable Multi-Viewport / Platform Windows
 
+        float fontSize = 24.0f;
+        io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/OpenSans-Bold.ttf", fontSize);   // 添加粗体（0号）
+        
+        // 默认字体 添加 TTF 字体
+        io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/OpenSans-Regular.ttf", fontSize);   // 1号
+
         ImGui::StyleColorsDark();   // 深色样式
 
         ImGuiStyle& style = ImGui::GetStyle();
