@@ -34,11 +34,15 @@ namespace Lucky
         m_Width = width;
         m_Height = height;
 
-        if (channels == 4) {                // 4 颜色通道
+        // 4 颜色通道
+        if (channels == 4)
+        {
             m_InternalFormat = GL_RGBA8;    // 每个通道 8 位
             m_DataFormat = GL_RGBA;
         }
-        else if (channels == 3) {           // 3 颜色通道
+        // 3 颜色通道
+        else if (channels == 3)
+        {
             m_InternalFormat = GL_RGB8;     // 每个通道 8 位
             m_DataFormat = GL_RGB;
         }
@@ -56,7 +60,6 @@ namespace Lucky
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);        // y 超过0-1 重复
         //glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);   // x 超过0-1 延伸
         //glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);   // y 超过0-1 延伸
-
 
         glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);    // 生成纹理到 GPU
 

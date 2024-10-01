@@ -11,7 +11,8 @@ namespace Lucky
     LayerStack::~LayerStack()
     {
         // 删除所有层
-        for (Layer* layer : m_Layers) {
+        for (Layer* layer : m_Layers)
+        {
             delete layer;
         }
     }
@@ -34,7 +35,8 @@ namespace Lucky
         std::vector<Layer*>::iterator it = std::find(m_Layers.begin(), m_Layers.end(), layer);      // 查找 layer
 
         // 找到 layer
-        if (it != m_Layers.end()) {
+        if (it != m_Layers.end())
+        {
             layer->OnDetach();
             m_Layers.erase(it);         // 移除 it 指向的 layer
             m_LayerInsertIndex--;
@@ -45,7 +47,8 @@ namespace Lucky
     {
         std::vector<Layer*>::iterator it = std::find(m_Layers.begin(), m_Layers.end(), overlay);    // 查找 overlay
 
-        if (it != m_Layers.end()) {
+        if (it != m_Layers.end())
+        {
             overlay->OnDetach();
             m_Layers.erase(it);         // 移除 it 指向的 overlay
         }

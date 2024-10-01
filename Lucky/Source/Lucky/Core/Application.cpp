@@ -57,20 +57,24 @@ namespace Lucky
 
     void Application::Run()
     {
-        while (m_Running) {
+        while (m_Running)
+        {
             float time = (float)glfwGetTime();              // 当前时间
             DeltaTime deltaTime = time - m_LastFrameTime;   // 帧间隔 = 当前时间 - 上一帧时间
             m_LastFrameTime = time;                         // 更新上一帧时间
 
-            if (!m_Minimized) {     // 窗口未最小化
+            if (!m_Minimized)
+            {     // 窗口未最小化
                 // 更新层栈中所有层
-                for (Layer* layer : m_LayerStack) {
+                for (Layer* layer : m_LayerStack)
+                {
                     layer->OnUpdate(deltaTime);
                 }
 
                 // ImGui渲染
                 m_ImGuiLayer->Begin();
-                for (Layer* layer : m_LayerStack) {
+                for (Layer* layer : m_LayerStack)
+                {
                     layer->OnImGuiRender(); // 渲染每个 Layer 的 ImGui
                 }
                 m_ImGuiLayer->End();
@@ -93,7 +97,8 @@ namespace Lucky
 
     bool Application::OnWindowResize(WindowResizeEvent& e)
     {
-        if (e.GetWidth() == 0 || e.GetHeight() == 0) {
+        if (e.GetWidth() == 0 || e.GetHeight() == 0)
+        {
             m_Minimized = true;        // 窗口最小化
             return false;
         }

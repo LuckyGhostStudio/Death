@@ -36,7 +36,8 @@ namespace Lucky
 
         std::ifstream in(filepath, std::ios::in | std::ios::binary);    // 输入流 二进制
 
-        if (in) {
+        if (in)
+        {
             in.seekg(0, std::ios::end);         // 文件指针移动到文件末尾
             result.resize(in.tellg());          // 重置 string 大小为文件大小
             in.seekg(0, std::ios::beg);         // 文件指针移动到文件开头
@@ -44,7 +45,8 @@ namespace Lucky
 
             in.close();                         // 关闭文件输入流
         }
-        else {
+        else
+        {
             LC_CORE_ERROR("Could not open file '{0}'", filepath);    // 无法打开文件
         }
 
@@ -62,7 +64,8 @@ namespace Lucky
         int shaderIDIndex = 0;
 
         // 遍历所有类型着色器源码
-        for (auto& kv : shaderSources) {
+        for (auto& kv : shaderSources)
+        {
             GLenum type = kv.first;                         // 着色器类型
             const std::string& source = kv.second;          // 着色器源码
 
@@ -123,7 +126,8 @@ namespace Lucky
         }
 
         // 分离着色器
-        for (auto id : glShaderIDs) {
+        for (auto id : glShaderIDs)
+        {
             glDetachShader(program, id);
         }
 

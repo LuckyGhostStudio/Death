@@ -65,7 +65,8 @@ namespace Lucky
         const auto& layout = vertexBuffer->GetLayout();         // 顶点缓冲区布局
 
         uint32_t index = 0;
-        for (const auto& element : layout) {
+        for (const auto& element : layout)
+        {
             glEnableVertexAttribArray(index);                   // 启用顶点属性
 
             glVertexAttribPointer(index,                        // 顶点属性位置编号

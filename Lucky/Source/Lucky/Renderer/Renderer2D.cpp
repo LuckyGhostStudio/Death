@@ -55,7 +55,8 @@ namespace Lucky
         s_Data.QuadVertexBuffer = std::make_shared<VertexBuffer>(s_Data.MaxVertices * sizeof(QuadVertex));  // 创建顶点缓冲
 
         // 设置顶点缓冲区布局
-        s_Data.QuadVertexBuffer->SetLayout({
+        s_Data.QuadVertexBuffer->SetLayout(
+        {
             { ShaderDataType::Float3, "a_Position" },   // 位置
             { ShaderDataType::Float4, "a_Color" },      // 颜色
             { ShaderDataType::Float2, "a_Texture" },    // 纹理坐标
@@ -69,7 +70,8 @@ namespace Lucky
         uint32_t* quadIndices = new uint32_t[s_Data.MaxIndices];            // 顶点索引
 
         uint32_t offset = 0;
-        for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6) {
+        for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6)
+        {
             quadIndices[i + 0] = offset + 0;    // 左下
             quadIndices[i + 1] = offset + 1;    // 右下
             quadIndices[i + 2] = offset + 2;    // 右上
@@ -91,7 +93,8 @@ namespace Lucky
 
         // 纹理采样器 0 - 31
         int samplers[s_Data.MaxTextureSlots];
-        for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++) {
+        for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
+        {
             samplers[i] = i;
         }
 
@@ -135,7 +138,8 @@ namespace Lucky
     void Renderer2D::Flush()
     {
         // 绑定所有纹理
-        for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++) {
+        for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+        {
             s_Data.TextureSlots[i]->Bind(i);    // 绑定 i 号纹理槽
         }
 
@@ -161,7 +165,8 @@ namespace Lucky
     void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color)
     {
         // 索引个数超过最大索引数
-        if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
+        if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
+        {
             FlushAndReset();    // 开始新一次批渲染
         }
 
@@ -175,7 +180,8 @@ namespace Lucky
             * glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
 
         // 4 个顶点数据
-        for (int i = 0; i < quadVertexCount; i++) {
+        for (int i = 0; i < quadVertexCount; i++)
+        {
             s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[i];
             s_Data.QuadVertexBufferPtr->Color = color;
             s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
@@ -196,7 +202,8 @@ namespace Lucky
     void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture)
     {
         // 索引个数超过最大索引数
-        if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
+        if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
+        {
             FlushAndReset();    // 开始新一次批渲染
         }
 
@@ -210,8 +217,11 @@ namespace Lucky
             * glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
 
         // 遍历所有已存在的纹理
-        for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++) {
-            if (*s_Data.TextureSlots[i].get() == *texture.get()) {  // texture 在纹理槽中
+        for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
+        {
+            // texture 在纹理槽中
+            if (*s_Data.TextureSlots[i].get() == *texture.get())
+            {
                 texIndex = (float)i;                                // 设置当前纹理索引
                 break;
             }
@@ -225,7 +235,8 @@ namespace Lucky
         }
 
         // 4 个顶点数据
-        for (int i = 0; i < quadVertexCount; i++) {
+        for (int i = 0; i < quadVertexCount; i++)
+        {
             s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[i];
             s_Data.QuadVertexBufferPtr->Color = color;
             s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];

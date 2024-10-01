@@ -17,24 +17,31 @@ namespace Lucky
     void CameraController::OnUpdate(DeltaTime dt)
     {
         // Ïà»úÒÆ¶¯
-        if (Input::IsKeyPressed(Key::Left)) {
+        if (Input::IsKeyPressed(Key::Left))
+        {
             m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
         }
-        else if (Input::IsKeyPressed(Key::Right)) {
+        else if (Input::IsKeyPressed(Key::Right))
+        {
             m_CameraPosition.x += m_CameraTranslationSpeed * dt;
         }
-        if (Input::IsKeyPressed(Key::Up)) {
+        if (Input::IsKeyPressed(Key::Up))
+        {
             m_CameraPosition.y += m_CameraTranslationSpeed * dt;
         }
-        else if (Input::IsKeyPressed(Key::Down)) {
+        else if (Input::IsKeyPressed(Key::Down))
+        {
             m_CameraPosition.y -= m_CameraTranslationSpeed * dt;
         }
 
-        if (m_Rotation) {
-            if (Input::IsKeyPressed(Key::Q)) {
+        if (m_Rotation)
+        {
+            if (Input::IsKeyPressed(Key::Q))
+            {
                 m_CameraRotation += m_CameraRotationSpeed * dt;
             }
-            if (Input::IsKeyPressed(Key::E)) {
+            if (Input::IsKeyPressed(Key::E))
+            {
                 m_CameraRotation -= m_CameraRotationSpeed * dt;
             }
 

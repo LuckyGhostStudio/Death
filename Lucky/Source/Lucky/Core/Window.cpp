@@ -44,7 +44,8 @@ namespace Lucky
 
         glfwSetErrorCallback(GLFWErrorCallback);    // 设置错误回调函数
 
-        if (!s_GLFWInitialized) {   // 未初始化
+        if (!s_GLFWInitialized) // 未初始化
+        {
             // TODO: glfwTerminate on system shutdown
             int success = glfwInit();                               // 初始化 GLFW 窗口
             LC_CORE_ASSERT(success, "Could not initialize GLFW!");  // 初始化失败 不能初始化 GLFW
@@ -176,10 +177,12 @@ namespace Lucky
 
     void Window::SetVSync(bool enabled)
     {
-        if (enabled) {
+        if (enabled)
+        {
             glfwSwapInterval(1);        // 交换间隔为 1 帧
         }
-        else {
+        else
+        {
             glfwSwapInterval(0);
         }
 
