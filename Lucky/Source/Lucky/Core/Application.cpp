@@ -9,13 +9,13 @@ namespace Lucky
 {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application()
+    Application::Application(const std::string& name)
     {
         LC_CORE_ASSERT(!s_Instance, "Application already exists!");
 
         s_Instance = this;
 
-        m_Window = std::unique_ptr<Window>(Window::Create());                   // 创建窗口
+        m_Window = std::unique_ptr<Window>(Window::Create(WindowProps(name)));  // 创建窗口
         m_Window->SetEventCallback(LC_BIND_EVENT_FUNC(Application::OnEvent));   // 设置回调函数
 
         Renderer::Init();   // 初始化渲染器

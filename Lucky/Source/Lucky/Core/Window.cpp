@@ -46,8 +46,8 @@ namespace Lucky
 
         if (!s_GLFWInitialized) {   // 未初始化
             // TODO: glfwTerminate on system shutdown
-            int success = glfwInit();                               // 初始化GLFW窗口
-            LC_CORE_ASSERT(success, "Could not initialize GLFW!");  // 初始化失败 不能初始化GLFW
+            int success = glfwInit();                               // 初始化 GLFW 窗口
+            LC_CORE_ASSERT(success, "Could not initialize GLFW!");  // 初始化失败 不能初始化 GLFW
 
             s_GLFWInitialized = true;
         }

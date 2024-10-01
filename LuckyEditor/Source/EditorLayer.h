@@ -2,7 +2,7 @@
 
 #include <Lucky.h>
 
-class ExampleLayer : public Lucky::Layer
+class EditorLayer : public Lucky::Layer
 {
 private:
     Lucky::ShaderLibrary m_ShaderLibrary;                       // 着色器库
@@ -19,11 +19,11 @@ private:
 
     glm::vec4 m_SquareColor = { 0.2f,0.3f,0.8f, 1.0f };
 
-    float fps;
+    float fps = 0.0f;
 public:
-    ExampleLayer();
+    EditorLayer();
 
-    virtual ~ExampleLayer() = default;
+    virtual ~EditorLayer() = default;
 
     /// <summary>
     /// 将该层添加到层栈时调用

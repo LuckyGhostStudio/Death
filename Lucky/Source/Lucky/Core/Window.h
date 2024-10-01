@@ -17,7 +17,7 @@ namespace Lucky
         unsigned int Width;     // ¿í
         unsigned int Height;    // ¸ß
 
-        WindowProps(const std::string& title = "Lucky Engine", unsigned int width = 1280, unsigned int height = 720)
+        WindowProps(const std::string& title = "Lucky Editor", unsigned int width = 1280, unsigned int height = 720)
             : Title(title), Width(width), Height(height) {}
     };
 

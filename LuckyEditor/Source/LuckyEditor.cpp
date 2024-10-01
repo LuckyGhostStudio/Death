@@ -1,14 +1,14 @@
 #include <Lucky.h>
 #include <Lucky/Core/EntryPoint.h>
 
-#include "ExampleLayer.h"
+#include "EditorLayer.h"
 
 class LuckyEditor : public Lucky::Application
 {
 public:
     LuckyEditor()
     {
-        PushLayer(new ExampleLayer());
+        PushLayer(new EditorLayer());
     }
 
     ~LuckyEditor()

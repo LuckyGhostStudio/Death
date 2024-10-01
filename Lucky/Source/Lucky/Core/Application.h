@@ -27,7 +27,8 @@ namespace Lucky
 
         float m_LastFrameTime = 0.0f;       // 上一帧时间
     public:
-        Application();
+        Application(const std::string& name = "Lucky Editor");
+
         virtual ~Application();
 
         /// <summary>

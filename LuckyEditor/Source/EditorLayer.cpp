@@ -1,17 +1,17 @@
-#include "ExampleLayer.h"
+#include "EditorLayer.h"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <imgui/imgui.h>
 
-ExampleLayer::ExampleLayer()
-    : Layer("Example"), m_CameraController(1280.0f / 720.0f)
+EditorLayer::EditorLayer()
+    : Layer("Editor"), m_CameraController(1280.0f / 720.0f)
 {
 
 }
 
-void ExampleLayer::OnAttach()
+void EditorLayer::OnAttach()
 {
     m_CheckerboardTexture = std::make_shared<Lucky::Texture2D>("Assets/Textures/Checkerboard.png");    // 创建纹理
 
@@ -21,12 +21,12 @@ void ExampleLayer::OnAttach()
     m_Framebuffer = std::make_shared<Lucky::Framebuffer>(fbSpec);   // 创建帧缓冲区
 }
 
-void ExampleLayer::OnDetach()
+void EditorLayer::OnDetach()
 {
 
 }
 
-void ExampleLayer::OnUpdate(Lucky::DeltaTime dt)
+void EditorLayer::OnUpdate(Lucky::DeltaTime dt)
 {
     fps = 1.0f / dt;
 
@@ -65,7 +65,7 @@ void ExampleLayer::OnUpdate(Lucky::DeltaTime dt)
     m_Framebuffer->Unbind();        // 解除绑定帧缓冲区
 }
 
-void ExampleLayer::OnImGuiRender()
+void EditorLayer::OnImGuiRender()
 {
     static bool dockSpaceOpen = true;   // 停靠空间是否开启
     static bool opt_fullscreen_persistant = true;
@@ -164,7 +164,7 @@ void ExampleLayer::OnImGuiRender()
     ImGui::End();
 }
 
-void ExampleLayer::OnEvent(Lucky::Event& event)
+void EditorLayer::OnEvent(Lucky::Event& event)
 {
     m_CameraController.OnEvent(event);  // 调用相机事件函数
 }
