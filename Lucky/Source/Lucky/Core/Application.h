@@ -48,7 +48,15 @@ namespace Lucky
         /// <param name="e">事件</param>
         void OnEvent(Event& e);
 
+        /// <summary>
+        /// 运行：主循环
+        /// </summary>
         void Run();
+
+        /// <summary>
+        /// 关闭程序
+        /// </summary>
+        void Close();
 
         /// <summary>
         /// 返回Application的实例

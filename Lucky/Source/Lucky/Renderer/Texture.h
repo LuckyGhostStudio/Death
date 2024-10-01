@@ -14,6 +14,7 @@ namespace Lucky
 
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
+        virtual uint32_t GetRendererID() const = 0;
 
         /// <summary>
         /// 设置纹理数据
@@ -32,7 +33,7 @@ namespace Lucky
     /// <summary>
     /// 2D 纹理
     /// </summary>
-    class Texture2D :public Texture
+    class Texture2D : public Texture
     {
     private:
         uint32_t m_RendererID;      // 纹理 ID
@@ -60,6 +61,7 @@ namespace Lucky
 
         virtual uint32_t GetWidth() const override { return m_Width; }
         virtual uint32_t GetHeight() const  override { return m_Height; }
+        virtual uint32_t GetRendererID() const  override { return m_RendererID; }
 
         /// <summary>
         /// 设置纹理数据
