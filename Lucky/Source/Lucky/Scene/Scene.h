@@ -6,24 +6,31 @@
 
 namespace Lucky
 {
+    class Object;
+
     /// <summary>
     /// 场景
     /// </summary>
     class Scene
     {
     private:
+        friend class Object;        // 友元类 Object
+
         entt::registry m_Registry;  // 实体集合：实体 id 集合（unsigned int 集合）
+        std::string m_Name;         // 场景名
     public:
-        Scene();
+        Scene(const std::string& name = "New Scene");
         ~Scene();
 
-        entt::registry& Reg() { return m_Registry; }
+        inline const std::string& GetName() const { return m_Name; }
+        inline void SetName(const std::string& name) { m_Name = name; }
 
         /// <summary>
-        /// 创建实体
+        /// 创建物体
         /// </summary>
-        /// <returns>实体</returns>
-        entt::entity CreateEntity();
+        /// <param name="name">物体名</param>
+        /// <returns>物体</returns>
+        Object CreateObject(const std::string& name = "Object");
 
         /// <summary>
         /// 更新：每帧调用

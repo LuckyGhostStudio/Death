@@ -20,13 +20,12 @@ namespace Lucky
         FramebufferSpecification fbSpec; // 帧缓冲区规范
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
-        m_Framebuffer = std::make_shared<Framebuffer>(fbSpec);   // 创建帧缓冲区
+        m_Framebuffer = std::make_shared<Framebuffer>(fbSpec);  // 创建帧缓冲区
 
         m_ActiveScene = std::make_shared<Scene>();              // 创建场景
 
-        m_SquareEntity = m_ActiveScene->CreateEntity();         // 创建正方形实体
-        m_ActiveScene->Reg().emplace<Transform>(m_SquareEntity);                                            // 添加 Transform 组件
-        m_ActiveScene->Reg().emplace<SpriteRenderer>(m_SquareEntity, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
+        m_SquareObject = m_ActiveScene->CreateObject();         // 创建正方形物体
+        m_SquareObject.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
     }
 
     void EditorLayer::OnDetach()
@@ -126,11 +125,11 @@ namespace Lucky
             // 检视面板
             ImGui::Begin("Inspector");
             {
-                auto& squarePos = m_ActiveScene->Reg().get<Transform>(m_SquareEntity).GetPosition();        //位置
-                auto& squareRot = m_ActiveScene->Reg().get<Transform>(m_SquareEntity).GetRotation();        //旋转
-                auto& squareScale = m_ActiveScene->Reg().get<Transform>(m_SquareEntity).GetScale();         //缩放
+                auto& squarePos = m_SquareObject.GetComponent<TransformComponent>().Position;   //位置
+                auto& squareRot = m_SquareObject.GetComponent<TransformComponent>().Rotation;   //旋转
+                auto& squareScale = m_SquareObject.GetComponent<TransformComponent>().Scale;    //缩放
                 
-                auto& squareColor = m_ActiveScene->Reg().get<SpriteRenderer>(m_SquareEntity).GetColor();    //颜色
+                auto& squareColor = m_SquareObject.GetComponent<SpriteRendererComponent>().Color;   //颜色
 
                 ImGui::SliderFloat3("Position", glm::value_ptr(squarePos), -10.0f, 10.0f);
                 ImGui::SliderFloat3("Rotation", glm::value_ptr(squareRot), -360.0f, 360.0f);
@@ -171,6 +170,7 @@ namespace Lucky
                     m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };                          // 视口大小
                     m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);                  // 重置相机大小
                 }
+
                 uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(); // 颜色缓冲区 ID
 
                 ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));   // 场景视口图像
