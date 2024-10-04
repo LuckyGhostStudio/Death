@@ -1,71 +1,24 @@
-#pragma once
+ï»¿#pragma once
 
 #include <glm/glm.hpp>
 
 namespace Lucky
 {
     /// <summary>
-    /// Ïà»ú
+    /// ç›¸æœº
     /// </summary>
     class Camera
     {
-    private:
-        glm::mat4 m_ProjectionMatrix;               // Í¶Ó°¾ØÕó
-        glm::mat4 m_ViewMatrix;                     // ÊÓÍ¼¾ØÕó£¨Ïà»ú±ä»»µÄÄæ¾ØÕó£©
-        glm::mat4 m_ViewProjectionMatrix;           // ÊÓÍ¼Í¶Ó°¾ØÕó£ºp * v
-
-        glm::vec3 m_Position = { 0.0f,0.0f,0.0f };  // Î»ÖÃ
-        float m_Rotation = 0.0f;                    // Ğı×ª£¨z Öá£©
-
-        /// <summary>
-        /// ¸üĞÂÊÓÍ¼¾ØÕó
-        /// </summary>
-        void RecalculateViewMatrix();
+    protected:
+        glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f); // æŠ•å½±çŸ©é˜µ
     public:
-        /// <summary>
-        /// Õı½»Ïà»ú
-        /// </summary>
-        /// <param name="left">×ó±ß½ç</param>
-        /// <param name="right">ÓÒ±ß½ç</param>
-        /// <param name="bottom">ÏÂ±ß½ç</param>
-        /// <param name="top">ÉÏ±ß½ç</param>
-        Camera(float left, float right, float bottom, float top);
+        Camera() = default;
+        
+        Camera(const glm::mat4& projection)
+            : m_ProjectionMatrix(projection) {}
 
-        /// <summary>
-        /// ÉèÖÃÍ¶Ó°¾ØÕó
-        /// </summary>
-        /// <param name="left">×ó±ß½ç</param>
-        /// <param name="right">ÓÒ±ß½ç</param>
-        /// <param name="bottom">ÏÂ±ß½ç</param>
-        /// <param name="top">ÉÏ±ß½ç</param>
-        void SetProjection(float left, float right, float bottom, float top);
-
-        const glm::vec3& GetPosition() const { return m_Position; }
-
-        /// <summary>
-        /// ÉèÖÃÏà»úÎ»ÖÃ
-        /// </summary>
-        /// <param name="position">Î»ÖÃ</param>
-        void SetPosition(const glm::vec3& position)
-        {
-            m_Position = position;
-            RecalculateViewMatrix();
-        }
-
-        float GetRotation() const { return m_Rotation; }
-
-        /// <summary>
-        /// ÉèÖÃÏà»úĞı×ª£¨z Öá£©
-        /// </summary>
-        /// <param name="rotation">Ğı×ª½Ç¶È£¨z Öá£©</param>
-        void SetRotation(float rotation)
-        {
-            m_Rotation = rotation;
-            RecalculateViewMatrix();
-        }
+        virtual ~Camera() = default;
 
         const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
-        const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
-        const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
     };
 }

@@ -13,6 +13,7 @@ namespace Lucky
 
         Transform,
         SpriteRenderer,
+        Camera,
     };
 
     /// <summary>

@@ -19,7 +19,8 @@ namespace Lucky
         /// 开始渲染场景：设置场景参数
         /// </summary>
         /// <param name="camera">相机</param>
-        static void BeginScene(const Camera& camera);
+        /// <param name="transform">Transform</param>
+        static void BeginScene(const Camera& camera, const glm::mat4& transform);
 
         /// <summary>
         /// 结束渲染场景

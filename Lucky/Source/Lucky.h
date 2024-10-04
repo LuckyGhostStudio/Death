@@ -8,7 +8,6 @@
 #include "Lucky/Input/Input.h"
 #include "Lucky/Input/KeyCodes.h"
 #include "Lucky/Input/MouseButtonCodes.h"
-#include "Lucky/CameraController.h"
 
 #include "Lucky/ImGui/ImGuiLayer.h"
 
@@ -16,8 +15,10 @@
 #include "Lucky/Scene/Object.h"
 
 // Components
-#include "Lucky/Scene/Components/SpriteRendererComponent.h"
+#include "Lucky/Scene/Components/SelfComponent.h"
 #include "Lucky/Scene/Components/TransformComponent.h"
+#include "Lucky/Scene/Components/SpriteRendererComponent.h"
+#include "Lucky/Scene/Components/CameraComponent.h"
 
 // Renderer
 #include "Lucky/Renderer/Renderer.h"

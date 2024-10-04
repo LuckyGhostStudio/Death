@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <functional>
 #include <utility>
+#include <cmath>
 
 #include <string>
 #include <sstream>

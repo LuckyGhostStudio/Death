@@ -6,6 +6,7 @@
 #include "Components/SelfComponent.h"
 #include "Components/TransformComponent.h"
 #include "Components/SpriteRendererComponent.h"
+#include "Components/CameraComponent.h"
 
 #include "Object.h"
 
@@ -34,13 +35,57 @@ namespace Lucky
 
     void Scene::OnUpdate(DeltaTime dt)
     {
-        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+        Camera* mainCamera = nullptr;           // 主相机
+        TransformComponent* cameraTransform = nullptr;  // 相机 transform
 
-        for (auto entity : group)
+        // 返回有 Transform 和 Camera 的所有实体
+        auto cameraView = m_Registry.view<TransformComponent, CameraComponent>();   // 相机实体集合
+
+        for (auto entity : cameraView)
         {
-            const auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+            const auto& [transform, camera] = cameraView.get<TransformComponent, CameraComponent>(entity);
+            
+            // 找到主相机
+            if (camera.Primary)
+            {
+                mainCamera = &camera.Camera;
+                cameraTransform = &transform;
 
-            Renderer2D::DrawQuad(transform.Position, transform.Rotation.z, transform.Scale, sprite.Color);
+                break;
+            }
+        }
+
+        // 主相机存在
+        if (mainCamera)
+        {
+            // 返回有 Transform 和 SpriteRenderer 的所有实体
+            auto spriteGroup = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);    // Sprite 实体集合
+            
+            // 开始渲染场景
+            Renderer2D::BeginScene(*mainCamera, (*cameraTransform).GetTransform());
+            {
+                for (auto entity : spriteGroup)
+                {
+                    const auto& [transform, sprite] = spriteGroup.get<TransformComponent, SpriteRendererComponent>(entity);
+
+                    Renderer2D::DrawQuad(transform.Position, transform.Rotation.z, transform.Scale, sprite.Color);
+                }
+            }
+            Renderer2D::EndScene(); // 结束渲染场景
+        }
+    }
+
+    void Scene::OnViewportResize(uint32_t width, uint32_t height)
+    {
+        m_ViewportWidth = width;
+        m_ViewportHeight = height;
+
+        auto cameraView = m_Registry.view<CameraComponent>();   // 所有有 Camera 组件的实体
+
+        for (auto entity : cameraView)
+        {
+            auto& cameraComponent = cameraView.get<CameraComponent>(entity);    // 获得 Camera 组件
+            cameraComponent.Camera.SetViewportSize(width, height);              // 设置视口大小
         }
     }
 }
