@@ -2,6 +2,8 @@
 
 #include <Lucky.h>
 
+#include "Panels/SceneHierarchyPanel.h"
+
 namespace Lucky
 {
     class EditorLayer : public Layer
@@ -21,6 +23,8 @@ namespace Lucky
         bool m_ViewportHovered = false;     // 鼠标悬停在视口
 
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };  // 视口大小
+
+        SceneHierarchyPanel m_HierarchyPanel;   // 场景 Hierarchy 面板
 
         float fps = 0.0f;
     public:
