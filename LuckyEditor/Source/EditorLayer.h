@@ -3,6 +3,9 @@
 #include <Lucky.h>
 
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ObjectPropertiesPanel.h"
+
+#include "Panels/Selection.h"
 
 namespace Lucky
 {
@@ -24,7 +27,10 @@ namespace Lucky
 
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };  // 视口大小
 
-        SceneHierarchyPanel m_HierarchyPanel;   // 场景 Hierarchy 面板
+        Selection m_Selection;                      // 当前选中项
+
+        SceneHierarchyPanel m_HierarchyPanel;       // 场景 Hierarchy 面板
+        ObjectPropertiesPanel m_PropertiesPanel;    // 物体属性面板
 
         float fps = 0.0f;
     public:

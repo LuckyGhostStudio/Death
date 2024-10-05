@@ -42,6 +42,10 @@ namespace Lucky
     {
         fps = 1.0f / dt;
 
+        // 设置当前选中项
+        m_Selection.SetSelection(m_HierarchyPanel.GetSelectionObject());
+        m_PropertiesPanel.SetSelection(m_Selection.GetSelection());
+
         if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
             m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
             (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
@@ -64,7 +68,7 @@ namespace Lucky
         RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
         RenderCommand::Clear();
 
-        m_ActiveScene->OnUpdate(dt);    // 更新场景
+        m_ActiveScene->OnUpdate(dt);// 更新场景
 
         m_Framebuffer->Unbind();    // 解除绑定帧缓冲区
     }
@@ -133,19 +137,12 @@ namespace Lucky
             }
 
             m_HierarchyPanel.OnImGuiRender();   // 渲染 Hierarchy 面板
+            m_PropertiesPanel.OnImGuiRender();  // 渲染 Properties 面板
 
             // 检视面板
             ImGui::Begin("Inspector");
             {
-                auto& squarePos = m_SquareObject.GetComponent<TransformComponent>().Position;   // 位置
-                auto& squareRot = m_SquareObject.GetComponent<TransformComponent>().Rotation;   // 旋转
-                auto& squareScale = m_SquareObject.GetComponent<TransformComponent>().Scale;    // 缩放
-                
                 auto& squareColor = m_SquareObject.GetComponent<SpriteRendererComponent>().Color;   // 颜色
-
-                ImGui::DragFloat3("Position", glm::value_ptr(squarePos));
-                ImGui::DragFloat3("Rotation", glm::value_ptr(squareRot));
-                ImGui::DragFloat3("Scale", glm::value_ptr(squareScale));
 
                 ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));
 
