@@ -42,6 +42,6 @@ namespace Lucky
         /// </summary>
         /// <param name="vertexArray">待绘制的顶点数组</param>
         /// <param name="indexCount">索引个数</param>
-        static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount = 0);
+        static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0);
     };
 }

@@ -15,17 +15,17 @@ namespace Lucky
     class Application
     {
     private:
-        static Application* s_Instance;     // 静态实例
+        static Application* s_Instance; // 静态实例
 
-        std::unique_ptr<Window> m_Window;   // 窗口指针
-        ImGuiLayer* m_ImGuiLayer;           // ImGui层指针
+        Scope<Window> m_Window;         // 窗口
+        ImGuiLayer* m_ImGuiLayer;       // ImGui 层指针
 
-        bool m_Running = true;              // 是否正在运行
-        bool m_Minimized = false;           // 是否最小化
+        bool m_Running = true;          // 是否正在运行
+        bool m_Minimized = false;       // 是否最小化
 
-        LayerStack m_LayerStack;            // 层栈
+        LayerStack m_LayerStack;        // 层栈
 
-        float m_LastFrameTime = 0.0f;       // 上一帧时间
+        float m_LastFrameTime = 0.0f;   // 上一帧时间
     public:
         Application(const std::string& name = "Lucky Editor");
 

@@ -30,17 +30,17 @@ namespace Lucky
         static const uint32_t MaxIndices = MaxQuads * 6;    // 最大索引数（4 个顶点 6 个索引）
         static const uint32_t MaxTextureSlots = 32;         // 最大纹理槽数
 
-        std::shared_ptr<VertexArray> QuadVertexArray;       // 四边形顶点数组
-        std::shared_ptr<VertexBuffer> QuadVertexBuffer;     // 四边形顶点缓冲区
-        std::shared_ptr<Shader> TextureShader;              // 纹理着色器
-        std::shared_ptr<Texture2D>    WhiteTexture;         // 白色纹理
+        Ref<VertexArray> QuadVertexArray;   // 四边形顶点数组
+        Ref<VertexBuffer> QuadVertexBuffer; // 四边形顶点缓冲区
+        Ref<Shader> TextureShader;          // 纹理着色器
+        Ref<Texture2D>    WhiteTexture;     // 白色纹理
 
-        uint32_t QuadIndexCount = 0;                        // 四边形索引个数
-        QuadVertex* QuadVertexBufferBase = nullptr;         // 顶点数据
-        QuadVertex* QuadVertexBufferPtr = nullptr;          // 顶点数据指针
+        uint32_t QuadIndexCount = 0;                    // 四边形索引个数
+        QuadVertex* QuadVertexBufferBase = nullptr;     // 顶点数据
+        QuadVertex* QuadVertexBufferPtr = nullptr;      // 顶点数据指针
 
-        std::array<std::shared_ptr<Texture2D>, MaxTextureSlots> TextureSlots;   // 纹理槽列表 存储纹理
-        uint32_t TextureSlotIndex = 1;                                          // 纹理槽索引 0 = White
+        std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;   // 纹理槽列表 存储纹理
+        uint32_t TextureSlotIndex = 1;                              // 纹理槽索引 0 = White
 
         glm::vec4 QuadVerticesPositions[4];     // 顶点位置
         Renderer2D::Statistics Stats;           // 统计数据
@@ -50,9 +50,9 @@ namespace Lucky
 
     void Renderer2D::Init()
     {
-        s_Data.QuadVertexArray = std::make_shared<VertexArray>();   // 创建顶点数组对象
+        s_Data.QuadVertexArray = CreateRef<VertexArray>();  // 创建顶点数组对象
 
-        s_Data.QuadVertexBuffer = std::make_shared<VertexBuffer>(s_Data.MaxVertices * sizeof(QuadVertex));  // 创建顶点缓冲
+        s_Data.QuadVertexBuffer = CreateRef<VertexBuffer>(s_Data.MaxVertices * sizeof(QuadVertex)); // 创建顶点缓冲
 
         // 设置顶点缓冲区布局
         s_Data.QuadVertexBuffer->SetLayout(
@@ -83,11 +83,11 @@ namespace Lucky
             offset += 4;    // 偏移 4 个顶点
         }
 
-        std::shared_ptr<IndexBuffer> quadIB = std::make_shared<IndexBuffer>(quadIndices, s_Data.MaxIndices);    // 创建索引缓冲
-        s_Data.QuadVertexArray->SetIndexBuffer(quadIB);                                                         // 设置 IndexBuffer
+        Ref<IndexBuffer> quadIB = CreateRef<IndexBuffer>(quadIndices, s_Data.MaxIndices);   // 创建索引缓冲
+        s_Data.QuadVertexArray->SetIndexBuffer(quadIB);                                     // 设置 IndexBuffer
         delete[] quadIndices;
 
-        s_Data.WhiteTexture = std::make_shared<Texture2D>(1, 1);            // 创建宽高为 1 的纹理
+        s_Data.WhiteTexture = CreateRef<Texture2D>(1, 1);                   // 创建宽高为 1 的纹理
         uint32_t whitTextureData = 0xffffffff;                              // 255 白色
         s_Data.WhiteTexture->SetData(&whitTextureData, sizeof(uint32_t));   // 设置纹理数据 size = 1 * 1 * 4 == sizeof(uint32_t)
 
@@ -98,7 +98,7 @@ namespace Lucky
             samplers[i] = i;
         }
 
-        s_Data.TextureShader = std::make_shared<Shader>("Assets/Shaders/TextureShader");    // 创建 Texture 着色器
+        s_Data.TextureShader = CreateRef<Shader>("Assets/Shaders/TextureShader");   // 创建 Texture 着色器
 
         s_Data.TextureShader->Bind();                    // 绑定 Texture 着色器
 
@@ -196,12 +196,12 @@ namespace Lucky
         s_Data.Stats.QuadCount++;   // 四边形个数 ++
     }
 
-    void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture)
+    void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const Ref<Texture2D>& texture)
     {
         DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color, texture);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture)
+    void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const Ref<Texture2D>& texture)
     {
         // 索引个数超过最大索引数
         if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)

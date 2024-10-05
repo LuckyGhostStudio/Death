@@ -229,20 +229,20 @@ namespace Lucky
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
     }
 
-    void ShaderLibrary::Add(const std::string& name, const std::shared_ptr<Shader>& shader)
+    void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
     {
         LC_CORE_ASSERT(!Exists(name), "Shader already exist!"); // 着色器已存在
 
         m_Shaders[name] = shader;   // 添加着色器到map
     }
 
-    void ShaderLibrary::Add(const std::shared_ptr<Shader>& shader)
+    void ShaderLibrary::Add(const Ref<Shader>& shader)
     {
         auto& name = shader->GetName();
         Add(name, shader);
     }
 
-    std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& filepath)
+    Ref<Shader> ShaderLibrary::Load(const std::string& filepath)
     {
         auto shader = std::make_shared<Shader>(filepath);   // 创建着色器
         Add(shader);                                        // 添加着色器
@@ -250,7 +250,7 @@ namespace Lucky
         return shader;
     }
 
-    std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath)
+    Ref<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath)
     {
         auto shader = std::make_shared<Shader>(filepath);
         // TODO: m_Name = name
@@ -259,7 +259,7 @@ namespace Lucky
         return shader;
     }
 
-    std::shared_ptr<Shader> ShaderLibrary::Get(const std::string& name)
+    Ref<Shader> ShaderLibrary::Get(const std::string& name)
     {
         LC_CORE_ASSERT(Exists(name), "Shader not found!");  // 着色器找不到
 

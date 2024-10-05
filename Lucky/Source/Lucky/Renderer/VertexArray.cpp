@@ -54,7 +54,7 @@ namespace Lucky
         glBindVertexArray(0);                   // 解除绑定
     }
 
-    void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+    void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
     {
         LC_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!"); // 布局元素为零
 
@@ -82,7 +82,7 @@ namespace Lucky
         m_VertexBuffers.push_back(vertexBuffer);    // 添加 VertexBuffer 到列表
     }
 
-    void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+    void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
     {
         glBindVertexArray(m_RendererID);    // 绑定顶点数组
 

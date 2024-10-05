@@ -15,16 +15,16 @@ namespace Lucky
 
     void EditorLayer::OnAttach()
     {
-        m_CheckerboardTexture = std::make_shared<Texture2D>("Assets/Textures/Checkerboard.png"); // 创建纹理
+        m_CheckerboardTexture = CreateRef<Texture2D>("Assets/Textures/Checkerboard.png");   // 创建纹理
 
         FramebufferSpecification fbSpec; // 帧缓冲区规范
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
-        m_Framebuffer = std::make_shared<Framebuffer>(fbSpec);  // 创建帧缓冲区
+        m_Framebuffer = CreateRef<Framebuffer>(fbSpec); // 创建帧缓冲区
 
-        m_ActiveScene = std::make_shared<Scene>();              // 创建场景
+        m_ActiveScene = CreateRef<Scene>();             // 创建场景
 
-        m_SquareObject = m_ActiveScene->CreateObject();         // 创建正方形物体
+        m_SquareObject = m_ActiveScene->CreateObject(); // 创建正方形物体
         m_SquareObject.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
 
         m_CameraObject = m_ActiveScene->CreateObject("Main Camera");    // 创建相机对象

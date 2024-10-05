@@ -59,7 +59,7 @@ namespace Lucky
         /// <param name="scale">大小</param>
         /// <param name="color">颜色</param>
         /// <param name="texture">纹理</param>
-        static void DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture);
+        static void DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const Ref<Texture2D>& texture);
         
         /// <summary>
         /// 绘制长方形
@@ -69,7 +69,7 @@ namespace Lucky
         /// <param name="scale">大小</param>
         /// <param name="color">颜色</param>
         /// <param name="texture">纹理</param>
-        static void DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture);
+        static void DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const Ref<Texture2D>& texture);
     
         /// <summary>
         /// 统计数据

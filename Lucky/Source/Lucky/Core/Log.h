@@ -21,16 +21,16 @@ namespace Lucky
         /// 返回内核 Log
         /// </summary>
         /// <returns>内核 Log</returns>
-        inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+        inline static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
 
         /// <summary>
         /// 返回客户端 Log
         /// </summary>
         /// <returns>客户端 Log</returns>
-        inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+        inline static Ref<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
     private:
-        static std::shared_ptr<spdlog::logger> s_CoreLogger;    // 内核 Log
-        static std::shared_ptr<spdlog::logger> s_ClientLogger;  // 客户端 Log
+        static Ref<spdlog::logger> s_CoreLogger;    // 内核 Log
+        static Ref<spdlog::logger> s_ClientLogger;  // 客户端 Log
     };
 }
 

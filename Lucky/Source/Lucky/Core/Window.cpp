@@ -19,9 +19,9 @@ namespace Lucky
         LC_CORE_ERROR("GLFW Error ({0}): {1}", error, description); // ¥ÌŒÛ»’÷æ
     }
 
-    Window* Window::Create(const WindowProps& props)
+    Scope<Window> Window::Create(const WindowProps& props)
     {
-        return new Window(props);
+        return CreateScope<Window>(props);
     }
 
     Window::Window(const WindowProps& props)

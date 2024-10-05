@@ -7,15 +7,15 @@ namespace Lucky
     class EditorLayer : public Layer
     {
     private:
-        ShaderLibrary m_ShaderLibrary;                      // 着色器库
+        ShaderLibrary m_ShaderLibrary;          // 着色器库
 
-        std::shared_ptr<Texture2D> m_CheckerboardTexture;   // 棋盘纹理
+        Ref<Texture2D> m_CheckerboardTexture;   // 棋盘纹理
 
-        std::shared_ptr<Framebuffer> m_Framebuffer;         // 帧缓冲区
+        Ref<Framebuffer> m_Framebuffer;         // 帧缓冲区
 
-        std::shared_ptr<Scene> m_ActiveScene;   // 活动场景
-        Object m_SquareObject;                  // 正方形物体
-        Object m_CameraObject;                  // 相机对象
+        Ref<Scene> m_ActiveScene;           // 活动场景
+        Object m_SquareObject;              // 正方形物体
+        Object m_CameraObject;              // 相机对象
 
         bool m_ViewportFocused = false;     // 视口被聚焦
         bool m_ViewportHovered = false;     // 鼠标悬停在视口

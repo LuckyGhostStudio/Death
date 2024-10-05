@@ -34,7 +34,7 @@ namespace Lucky
         /// </summary>
         /// <param name="props">窗口属性</param>
         /// <returns>窗口</returns>
-        static Window* Create(const WindowProps& props = WindowProps());
+        static Scope<Window> Create(const WindowProps& props = WindowProps());
 
         /// <summary>
         /// 窗口

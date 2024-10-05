@@ -118,27 +118,27 @@ namespace Lucky
     class ShaderLibrary
     {
     private:
-        std::unordered_map<std::string, std::shared_ptr<Shader>> m_Shaders;        // 着色器 map：着色器名 - 着色器
+        std::unordered_map<std::string, Ref<Shader>> m_Shaders;        // 着色器 map：着色器名 - 着色器
     public:
         /// <summary>
         /// 添加着色器
         /// </summary>
         /// <param name="name">着色器名</param>
         /// <param name="shader">着色器</param>
-        void Add(const std::string& name, const std::shared_ptr<Shader>& shader);
+        void Add(const std::string& name, const Ref<Shader>& shader);
 
         /// <summary>
         /// 添加着色器
         /// </summary>
         /// <param name="shader">着色器</param>
-        void Add(const std::shared_ptr<Shader>& shader);
+        void Add(const Ref<Shader>& shader);
 
         /// <summary>
         /// 加载着色器
         /// </summary>
         /// <param name="filepath">文件路径</param>
         /// <returns>着色器</returns>
-        std::shared_ptr<Shader> Load(const std::string& filepath);
+        Ref<Shader> Load(const std::string& filepath);
 
         /// <summary>
         /// 加载着色器
@@ -146,14 +146,14 @@ namespace Lucky
         /// <param name="name">着色器名称</param>
         /// <param name="filepath">文件路径</param>
         /// <returns>着色器</returns>
-        std::shared_ptr<Shader> Load(const std::string& name, const std::string& filepath);
+        Ref<Shader> Load(const std::string& name, const std::string& filepath);
 
         /// <summary>
         /// 返回着色器
         /// </summary>
         /// <param name="name">着色器名称</param>
         /// <returns>着色器</returns>
-        std::shared_ptr<Shader> Get(const std::string& name);
+        Ref<Shader> Get(const std::string& name);
 
         /// <summary>
         /// 着色器是否存在
