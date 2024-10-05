@@ -10,8 +10,6 @@ namespace Lucky
     /// </summary>
     struct CameraComponent : public Component
     {
-        bool Primary = true;    // 是否是主相机
-
         SceneCamera Camera;     // 场景相机
 
         CameraComponent()

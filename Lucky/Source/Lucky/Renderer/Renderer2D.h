@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Camera.h"
+#include "Transform.h"
 #include "Texture.h"
 
 namespace Lucky
@@ -20,7 +21,7 @@ namespace Lucky
         /// </summary>
         /// <param name="camera">相机</param>
         /// <param name="transform">Transform</param>
-        static void BeginScene(const Camera& camera, const glm::mat4& transform);
+        static void BeginScene(const Camera& camera, const Transform& transform);
 
         /// <summary>
         /// 结束渲染场景
@@ -31,7 +32,6 @@ namespace Lucky
         /// 刷新
         /// </summary>
         static void Flush();
-
 
         /// <summary>
         /// 绘制长方形
@@ -45,11 +45,9 @@ namespace Lucky
         /// <summary>
         /// 绘制长方形
         /// </summary>
-        /// <param name="position">位置</param>
-        /// <param name="rotation">旋转</param>
-        /// <param name="scale">大小</param>
+        /// <param name="transform">Transform</param>
         /// <param name="color">颜色</param>
-        static void DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color);
+        static void DrawQuad(const Transform& transform, const glm::vec4& color);
 
         /// <summary>
         /// 绘制长方形

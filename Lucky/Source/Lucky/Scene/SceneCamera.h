@@ -30,15 +30,17 @@ namespace Lucky
             Orthographic = 1    // 正交投影
         };
     private:
+        bool m_Primary = true;              // 是否是主相机
+
         glm::vec4 m_BackgroundColor = { 0.2f, 0.3f, 0.5f, 1.0f };       // 清屏颜色
 
         ClearFlag m_ClearFlag = ClearFlag::Color;                       // 清屏类型
-        ProjectionType m_ProjectionType = ProjectionType::Orthographic; // 投影类型
+        ProjectionType m_ProjectionType = ProjectionType::Perspective;  // 投影类型
 
         float m_Fov = glm::radians(45.0f);  // 透视相机张角：垂直方向（弧度）
         float m_Size = 5.0f;                // 正交相机尺寸：垂直方向一半长度
 
-        float m_Near = -0.01f;              // 近裁剪平面
+        float m_Near = 0.01f;               // 近裁剪平面
         float m_Far = 1000.0f;              // 远裁剪平面
 
         float m_AspectRatio = 0.0f;         // 屏幕宽高比（X/Y）
@@ -73,14 +75,18 @@ namespace Lucky
         /// <param name="height">高</param>
         void SetViewportSize(uint32_t width, uint32_t height);
 
+        bool IsPrimary() const { return m_Primary; }
+        bool& IsPrimary_Ref() { return m_Primary; }
+        void SetPrimary(bool primary) { m_Primary = primary; }
+
         const glm::vec4& GetBackgroundColor() const { return m_BackgroundColor; }
         void SetBackgroundColor(const glm::vec4& background) { m_BackgroundColor = background; }
 
         ClearFlag GetClearFlag() const { return m_ClearFlag; }
         void SetClearFlag(ClearFlag clearFlag) { m_ClearFlag = clearFlag; }
 
-        ProjectionType GetType() const { return m_ProjectionType; }
-        void SetType(ProjectionType type) { m_ProjectionType = type; RecalculateProjection(); }
+        ProjectionType GetProjectionType() const { return m_ProjectionType; }
+        void SetProjectionType(ProjectionType type) { m_ProjectionType = type; RecalculateProjection(); }
 
         float GetFOV() const { return m_Fov; }
         void SetFOV(float fov) { m_Fov = fov; RecalculateProjection(); }

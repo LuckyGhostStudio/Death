@@ -116,9 +116,9 @@ namespace Lucky
         
     }
 
-    void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
+    void Renderer2D::BeginScene(const Camera& camera, const Transform& transform)
     {
-        glm::mat4 viewProjectMatrix = camera.GetProjectionMatrix() * glm::inverse(transform);   // vp = p * v
+        glm::mat4 viewProjectMatrix = camera.GetProjectionMatrix() * glm::inverse(transform.GetTransform());    // vp = p * v
 
         s_Data.TextureShader->Bind();   // 绑定 Texture 着色器
         s_Data.TextureShader->SetMat4("u_ViewProjectionMatrix", viewProjectMatrix);   // 设置 vp 矩阵
@@ -161,10 +161,10 @@ namespace Lucky
 
     void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color)
     {
-        DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color);
+        //DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const Transform& transform, const glm::vec4& color)
     {
         // 索引个数超过最大索引数
         if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
@@ -177,14 +177,12 @@ namespace Lucky
         const float texIndex = 0.0f;    // 白色纹理索引
 
         // Transform 矩阵
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-            * glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
-            * glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
+        glm::mat4 transformMat = transform.GetTransform();
 
         // 4 个顶点数据
         for (int i = 0; i < quadVertexCount; i++)
         {
-            s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[i];
+            s_Data.QuadVertexBufferPtr->Position = transformMat * s_Data.QuadVerticesPositions[i];
             s_Data.QuadVertexBufferPtr->Color = color;
             s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
             s_Data.QuadVertexBufferPtr->TexIndex = texIndex;

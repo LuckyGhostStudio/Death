@@ -29,6 +29,7 @@ namespace Lucky
 
         m_CameraObject = m_ActiveScene->CreateObject("Main Camera");    // 创建相机对象
         m_CameraObject.AddComponent<CameraComponent>();                 // 添加 Camera 组件
+        m_CameraObject.GetComponent<TransformComponent>().Transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
         m_HierarchyPanel.SetScene(m_ActiveScene);   // 设置 Hierarchy 面板的场景
     }
@@ -145,26 +146,6 @@ namespace Lucky
                 auto& squareColor = m_SquareObject.GetComponent<SpriteRendererComponent>().Color;   // 颜色
 
                 ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));
-
-                ImGui::Separator();
-
-                auto& camera = m_CameraObject.GetComponent<CameraComponent>().Camera;
-                float cameraSize = camera.GetSize();        // 尺寸
-                float cameraNear = camera.GetNearClip();    // 近裁剪平面
-                float cameraFar = camera.GetFarClip();      // 远裁剪平面
-
-                ImGui::Separator();
-
-                ImGui::Text("Camera");
-                if (ImGui::DragFloat("Size", &cameraSize)) {
-                    camera.SetSize(cameraSize);
-                }
-                if (ImGui::DragFloat("Near", &cameraNear)) {
-                    camera.SetNearClip(cameraNear);
-                }
-                if (ImGui::DragFloat("Far", &cameraFar)) {
-                    camera.SetFarClip(cameraFar);
-                }
             }
             ImGui::End();
 

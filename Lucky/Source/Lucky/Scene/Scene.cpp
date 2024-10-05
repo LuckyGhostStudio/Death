@@ -36,7 +36,7 @@ namespace Lucky
     void Scene::OnUpdate(DeltaTime dt)
     {
         Camera* mainCamera = nullptr;           // 主相机
-        TransformComponent* cameraTransform = nullptr;  // 相机 transform
+        Transform* cameraTransform = nullptr;   // 相机 transform
 
         // 返回有 Transform 和 Camera 的所有实体
         auto cameraView = m_Registry.view<TransformComponent, CameraComponent>();   // 相机实体集合
@@ -46,10 +46,10 @@ namespace Lucky
             const auto& [transform, camera] = cameraView.get<TransformComponent, CameraComponent>(entity);
             
             // 找到主相机
-            if (camera.Primary)
+            if (camera.Camera.IsPrimary())
             {
                 mainCamera = &camera.Camera;
-                cameraTransform = &transform;
+                cameraTransform = &transform.Transform;
 
                 break;
             }
@@ -62,13 +62,13 @@ namespace Lucky
             auto spriteGroup = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);    // Sprite 实体集合
             
             // 开始渲染场景
-            Renderer2D::BeginScene(*mainCamera, (*cameraTransform).GetTransform());
+            Renderer2D::BeginScene(*mainCamera, *cameraTransform);
             {
                 for (auto entity : spriteGroup)
                 {
                     const auto& [transform, sprite] = spriteGroup.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                    Renderer2D::DrawQuad(transform.Position, transform.Rotation.z, transform.Scale, sprite.Color);
+                    Renderer2D::DrawQuad(transform.Transform, sprite.Color);
                 }
             }
             Renderer2D::EndScene(); // 结束渲染场景
