@@ -27,6 +27,9 @@ namespace Lucky
         m_SquareObject = m_ActiveScene->CreateObject("Square");         // 创建正方形物体
         m_SquareObject.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
 
+        //m_SquareObject = m_ActiveScene->CreateObject("Square");         // 创建正方形物体
+        //m_SquareObject.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
+
         m_CameraObject = m_ActiveScene->CreateObject("Main Camera");    // 创建相机对象
         m_CameraObject.AddComponent<CameraComponent>();                 // 添加 Camera 组件
         m_CameraObject.GetComponent<TransformComponent>().Transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -42,10 +45,6 @@ namespace Lucky
     void EditorLayer::OnUpdate(DeltaTime dt)
     {
         fps = 1.0f / dt;
-
-        // 设置当前选中项
-        m_Selection.SetSelection(m_HierarchyPanel.GetSelectionObject());
-        m_PropertiesPanel.SetSelection(m_Selection.GetSelection());
 
         if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
             m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
@@ -139,15 +138,6 @@ namespace Lucky
 
             m_HierarchyPanel.OnImGuiRender();   // 渲染 Hierarchy 面板
             m_PropertiesPanel.OnImGuiRender();  // 渲染 Properties 面板
-
-            // 检视面板
-            ImGui::Begin("Inspector");
-            {
-                auto& squareColor = m_SquareObject.GetComponent<SpriteRendererComponent>().Color;   // 颜色
-
-                ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));
-            }
-            ImGui::End();
 
             // 批渲染数据统计
             ImGui::Begin("Renderer2D Stats");

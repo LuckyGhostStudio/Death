@@ -10,7 +10,7 @@ namespace Lucky
     {
         glCreateBuffers(1, &m_RendererID);                              // 创建缓冲区
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);                    // 绑定顶点缓冲
-        glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);   // 绑定顶点数据（动态）
+        glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);  // 绑定顶点数据（动态）
     }
 
     VertexBuffer::VertexBuffer(float* vertices, uint32_t size)
@@ -41,20 +41,23 @@ namespace Lucky
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);    // 设置数据
     }
 
-    IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count) :m_Count(count)
+    IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count) : m_Count(count)
     {
         glCreateBuffers(1, &m_RendererID);                                                          // 创建缓冲区
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);                                        // 绑定索引缓冲
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);   // 绑定索引数据
     }
+
     IndexBuffer::~IndexBuffer()
     {
         glDeleteBuffers(1, &m_RendererID);  // 删除缓冲区
     }
+
     void IndexBuffer::Bind() const
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);    // 绑定索引缓冲
     }
+
     void IndexBuffer::Unbind() const
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

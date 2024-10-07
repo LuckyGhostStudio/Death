@@ -31,7 +31,10 @@ namespace Lucky
         {
             LC_CORE_ASSERT(!HasComponent<T>(), "Object already has component!");    // 该组件已存在
 
-            return m_Scene->m_Registry.emplace<T>(m_ObjectID, std::forward<Args>(args)...); // 向 m_Scene 场景的实体注册表添加 T 类型组件
+            T& component = m_Scene->m_Registry.emplace<T>(m_ObjectID, std::forward<Args>(args)...); // 向 m_Scene 场景的实体注册表添加 T 类型组件
+            m_Scene->OnComponentAdded<T>(*this, component); // m_Scene 向 this 物体添加 T 组件时调用
+
+            return component;
         }
 
         /// <summary>
@@ -71,5 +74,17 @@ namespace Lucky
         }
 
         operator bool() const { return m_ObjectID != entt::null; }
+        operator entt::entity() const { return m_ObjectID; }
+        operator uint32_t() const { return (uint32_t)m_ObjectID; }
+
+        bool operator==(const Object& other)
+        {
+            return m_ObjectID == other.m_ObjectID && m_Scene == other.m_Scene;  // 物体 id 相同 && 所属场景相同
+        }
+
+        bool operator!=(const Object& other)
+        {
+            return !(*this == other);
+        }
     };
 }

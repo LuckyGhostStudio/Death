@@ -29,7 +29,7 @@ namespace Lucky
         static void EndScene();
 
         /// <summary>
-        /// 刷新
+        /// 刷新：绘制批渲染数据
         /// </summary>
         static void Flush();
 
@@ -96,11 +96,15 @@ namespace Lucky
         /// 重置统计数据
         /// </summary>
         static void ResetStats();
-
     private:
         /// <summary>
-        /// 开始新一次批渲染
+        /// 开始批渲染：初始化批渲染数据
         /// </summary>
-        static void FlushAndReset();
+        static void StartBatch();
+
+        /// <summary>
+        /// 下一次批渲染
+        /// </summary>
+        static void NextBatch();
     };
 }

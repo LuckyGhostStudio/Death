@@ -3,38 +3,64 @@
 #include "Lucky/Scene/Components/SelfComponent.h"
 #include "Lucky/Scene/Components/TransformComponent.h"
 #include "Lucky/Scene/Components/CameraComponent.h"
+#include "Lucky/Scene/Components/SpriteRendererComponent.h"
+
+#include "Lucky/Scene/Selection.h"
 
 #include <imgui/imgui.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Lucky
 {
-    ObjectPropertiesPanel::ObjectPropertiesPanel(Selection selection)
-    {
-        SetSelection(selection);
-    }
-
-    void ObjectPropertiesPanel::SetSelection(Selection selection)
-    {
-        m_Selection = selection;
-    }
-
     void ObjectPropertiesPanel::OnImGuiRender()
     {
         // 属性面板
         ImGui::Begin("Properties");
         {
             // 被选中的物体存在 TODO 添加资产信息绘制
-            if (m_Selection.GetSelection())
+            if (Selection::Object)
             {
-                DrawComponents(m_Selection.GetSelection()); // 绘制组件
+                DrawComponents(Selection::Object);  // 绘制组件 UI
             }
         }
         ImGui::End();
     }
 
+    void ObjectPropertiesPanel::AddComponents(Object object)
+    {
+        // 添加组件
+        if (ImGui::Button("Add Component"))
+        {
+            ImGui::OpenPopup("AddComponent");   // 打开弹出框
+        }
+
+        // 渲染弹出框
+        if (ImGui::BeginPopup("AddComponent"))
+        {
+            // 添加 Camera 组件
+            if (ImGui::MenuItem("Camera"))
+            {
+                object.AddComponent<CameraComponent>();
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            // 添加 SpriteRenderer 组件
+            if (ImGui::MenuItem("Sprite Renderer"))
+            {
+                object.AddComponent<SpriteRendererComponent>();
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+
     void ObjectPropertiesPanel::DrawComponents(Object object)
     {
+        AddComponents(object);  // 添加组件 UI
+
         // Self 组件
         if (object.HasComponent<SelfComponent>())
         {
@@ -51,11 +77,14 @@ namespace Lucky
             }
         }
 
+        // 树节点标志：打开|允许重叠
+        const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+
         // Transform 组件
         if (object.HasComponent<TransformComponent>())
         {
-            // Transform 组件结点：Transform 组件类的哈希值作为结点 id 默认打开
-            if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
+            // Transform 组件结点：Transform 组件类的哈希值作为结点 id
+            if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), treeNodeFlags, "Transform"))
             {
                 auto& transform = object.GetComponent<TransformComponent>().Transform;
 
@@ -71,10 +100,9 @@ namespace Lucky
         if (object.HasComponent<CameraComponent>())
         {
             // Camera 组件结点
-            if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera")) 
+            if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), treeNodeFlags, "Camera"))
             {
-                auto& cameraComponent = object.GetComponent<CameraComponent>();
-                SceneCamera& camera = cameraComponent.Camera;
+                auto& camera= object.GetComponent<CameraComponent>().Camera;
 
                 ImGui::Checkbox("Main Camera", &camera.IsPrimary_Ref());    // 主相机设置框
 
@@ -139,6 +167,53 @@ namespace Lucky
                 }
 
                 ImGui::TreePop();
+            }
+        }
+
+        // SpriteRenderer组件
+        if (object.HasComponent<SpriteRendererComponent>())
+        {
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));  // 设置边框样式
+
+            // SpriteRenderer 组件结点
+            bool opened = ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(), treeNodeFlags, "Sprite Renderer");
+
+            ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);   // 同一行：获取窗口宽度
+                
+            // 组件设置按钮
+            if (ImGui::Button("+", ImVec2(20, 20)))
+            {
+                ImGui::OpenPopup("ComponentSettings");  // 打开弹出框
+            }
+
+            ImGui::PopStyleVar();
+
+            // 移除组件
+            bool componentRemoved = false;
+            // 渲染弹出框
+            if (ImGui::BeginPopup("ComponentSettings"))
+            {
+                // 移除组件菜单项
+                if (ImGui::MenuItem("Remove Component"))
+                {
+                    componentRemoved = true;    // 组件标记为移除
+                }
+
+                ImGui::EndPopup();
+            }
+
+            if (opened)
+            {
+                auto& spriteRenderer = object.GetComponent<SpriteRendererComponent>();
+
+                ImGui::ColorEdit4("Color", glm::value_ptr(spriteRenderer.Color));   // 颜色编辑器
+
+                ImGui::TreePop();
+            }
+
+            if (componentRemoved)
+            {
+                object.RemoveComponent<SpriteRendererComponent>();  // 移除 SpriteRenderer 组件
             }
         }
     }

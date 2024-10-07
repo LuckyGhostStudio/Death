@@ -8,6 +8,8 @@
 
 #include "ObjectPropertiesPanel.h"
 
+#include "Lucky/Scene/Selection.h"
+
 namespace Lucky
 {
     /// <summary>
@@ -17,7 +19,7 @@ namespace Lucky
     {
     private:
         Ref<Scene> m_Scene;         // 面板显示的场景
-        Object m_SelectionObject;   // 当前选中项
+        Object& m_SelectionObject = Selection::Object;; // 当前选中项
     private:
         /// <summary>
         /// 绘制物体结点
@@ -49,7 +51,5 @@ namespace Lucky
         /// 渲染ImGui
         /// </summary>
         void OnImGuiRender();
-
-        Object GetSelectionObject() const { return m_SelectionObject; }
     };
 }

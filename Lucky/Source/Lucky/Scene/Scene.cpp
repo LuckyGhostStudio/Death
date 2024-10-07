@@ -26,11 +26,18 @@ namespace Lucky
     Object Scene::CreateObject(const std::string& name)
     {
         Object object = { m_Registry.create(), this };  // 创建实体
-
-        object.AddComponent<SelfComponent>(name);       // 添加 Self 组件（默认组件）
+        std::string n = name + std::to_string((uint32_t)object);
+        object.AddComponent<SelfComponent>(n);       // 添加 Self 组件（默认组件）
         object.AddComponent<TransformComponent>();      // 添加 Transform 组件（默认组件）
 
         return object;
+    }
+
+    void Scene::DeleteObject(Object object)
+    {
+        LC_TRACE("当前已删除物体：{0} ", (uint32_t)object);
+
+        m_Registry.destroy(object);
     }
 
     void Scene::OnUpdate(DeltaTime dt)
@@ -43,7 +50,7 @@ namespace Lucky
 
         for (auto entity : cameraView)
         {
-            const auto& [transform, camera] = cameraView.get<TransformComponent, CameraComponent>(entity);
+            auto [transform, camera] = cameraView.get<TransformComponent, CameraComponent>(entity);
             
             // 找到主相机
             if (camera.Camera.IsPrimary())
@@ -66,7 +73,7 @@ namespace Lucky
             {
                 for (auto entity : spriteGroup)
                 {
-                    const auto& [transform, sprite] = spriteGroup.get<TransformComponent, SpriteRendererComponent>(entity);
+                    auto [transform, sprite] = spriteGroup.get<TransformComponent, SpriteRendererComponent>(entity);
 
                     Renderer2D::DrawQuad(transform.Transform, sprite.Color);
                 }
@@ -87,5 +94,35 @@ namespace Lucky
             auto& cameraComponent = cameraView.get<CameraComponent>(entity);    // 获得 Camera 组件
             cameraComponent.Camera.SetViewportSize(width, height);              // 设置视口大小
         }
+    }
+
+    template<typename T>
+    void Scene::OnComponentAdded(Object object, T& component)
+    {
+        static_assert(sizeof(T) == 0);
+    }
+
+    template<>
+    void Scene::OnComponentAdded<SelfComponent>(Object object, SelfComponent& component)
+    {
+
+    }
+
+    template<>
+    void Scene::OnComponentAdded<TransformComponent>(Object object, TransformComponent& component)
+    {
+
+    }
+
+    template<>
+    void Scene::OnComponentAdded<CameraComponent>(Object object, CameraComponent& component)
+    {
+        component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);    // 设置视口
+    }
+
+    template<>
+    void Scene::OnComponentAdded<SpriteRendererComponent>(Object object, SpriteRendererComponent& component)
+    {
+
     }
 }

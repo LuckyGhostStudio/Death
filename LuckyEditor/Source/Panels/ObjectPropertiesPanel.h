@@ -4,7 +4,6 @@
 #include "Lucky/Core/Log.h"
 
 #include "Lucky/Scene/Object.h"
-#include "Selection.h"
 
 namespace Lucky
 {
@@ -14,23 +13,19 @@ namespace Lucky
     class ObjectPropertiesPanel
     {
     private:
-        Selection m_Selection;  // 当前选中项
-    private:
         /// <summary>
-        /// 绘制物体的所有组件
+        /// 添加组件 UI
+        /// </summary>
+        /// <param name="object"></param>
+        void AddComponents(Object object);
+
+        /// <summary>
+        /// 绘制物体的所有组件 UI
         /// </summary>
         /// <param name="object">物体</param>
         void DrawComponents(Object object);
     public:
         ObjectPropertiesPanel() = default;
-
-        ObjectPropertiesPanel(Selection selection);
-
-        /// <summary>
-        /// 设置选中项
-        /// </summary>
-        /// <param name="selection">选中项</param>
-        void SetSelection(Selection selection);
 
         /// <summary>
         /// 渲染ImGui

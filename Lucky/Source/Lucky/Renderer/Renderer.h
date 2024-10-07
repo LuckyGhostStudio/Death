@@ -17,6 +17,8 @@ namespace Lucky
         /// </summary>
         static void Init();
 
+        static void Shutdown();
+
         /// <summary>
         /// 窗口缩放时调用
         /// </summary>

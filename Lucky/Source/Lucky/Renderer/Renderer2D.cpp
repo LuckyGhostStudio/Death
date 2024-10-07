@@ -6,6 +6,7 @@
 #include "RenderCommand.h"
 
 #include <glm/ext/matrix_transform.hpp>
+#include <glad/glad.h>
 
 namespace Lucky
 {
@@ -113,7 +114,7 @@ namespace Lucky
 
     void Renderer2D::Shutdown()
     {
-        
+        delete[] s_Data.QuadVertexBufferBase;
     }
 
     void Renderer2D::BeginScene(const Camera& camera, const Transform& transform)
@@ -123,22 +124,58 @@ namespace Lucky
         s_Data.TextureShader->Bind();   // 绑定 Texture 着色器
         s_Data.TextureShader->SetMat4("u_ViewProjectionMatrix", viewProjectMatrix);   // 设置 vp 矩阵
 
+        StartBatch();   // 开始批渲染
+    }
+
+    void Renderer2D::EndScene()
+    {
+        Flush();
+    }
+
+    void Renderer2D::StartBatch()
+    {
+        // Bug：在删除对象之后，顶点数据总大小小于删除之前，无法覆盖之前的数据，会导致之前的数据依然被渲染。
+        // Temp 解决方案 清空缓冲区内存
+        /*void* data = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+        if (data)
+        {
+            
+            memset(data, 0, 8 * sizeof(QuadVertex));
+            
+            glUnmapBuffer(GL_ARRAY_BUFFER);
+        }*/
+
+        // Temp 打印缓冲区数据
+        QuadVertex* data = new QuadVertex[8];
+        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 8 * sizeof(QuadVertex), data);
+
+        for (int i = 0; i < 8; i++)
+        {
+            std::cout << "Vertex " << i << ": (" << data[i].Color.r << ", " << data[i].Color.g << ", " << data[i].Color.b << ")" << std::endl;
+        }
+
+        // 释放内存
+        delete[] data;
+        // -----------------------------
+
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;   // 初始化顶点数据指针
 
         s_Data.TextureSlotIndex = 1;    // 纹理槽索引从 1 开始 0 为白色纹理
     }
 
-    void Renderer2D::EndScene()
-    {
-        uint32_t dataSize = (uint32_t)s_Data.QuadVertexBufferPtr - (uint32_t)s_Data.QuadVertexBufferBase;   // 数据大小（字节）
-        s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);    // 设置顶点缓冲区数据
-
-        Flush();
-    }
-
     void Renderer2D::Flush()
     {
+        if (s_Data.QuadIndexCount == 0)
+        {
+            return;
+        }
+        
+        uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);   // 数据大小（字节）
+        s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);    // 设置顶点缓冲区数据
+
+        LC_TRACE("QuadVertexBufferPtr dataSize {0} ", dataSize);
+
         // 绑定所有纹理
         for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
         {
@@ -150,13 +187,11 @@ namespace Lucky
         s_Data.Stats.DrawCalls++;   // 绘制调用次数 ++
     }
 
-    void Renderer2D::FlushAndReset()
+    void Renderer2D::NextBatch()
     {
-        EndScene(); // 结束上一次批渲染
+        Flush();
 
-        s_Data.QuadIndexCount = 0;
-        s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-        s_Data.TextureSlotIndex = 1;
+        StartBatch();
     }
 
     void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color)
@@ -169,7 +204,7 @@ namespace Lucky
         // 索引个数超过最大索引数
         if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
         {
-            FlushAndReset();    // 开始新一次批渲染
+            NextBatch();    // 开始新一次批渲染
         }
 
         const int quadVertexCount = 4;  // 顶点个数
@@ -204,7 +239,7 @@ namespace Lucky
         // 索引个数超过最大索引数
         if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
         {
-            FlushAndReset();    // 开始新一次批渲染
+            NextBatch();    // 开始新一次批渲染
         }
 
         const int quadVertexCount = 4;  // 顶点个数
@@ -228,7 +263,13 @@ namespace Lucky
         }
 
         // 当前纹理不在纹理槽中
-        if (texIndex == 0.0f) {
+        if (texIndex == 0.0f)
+        {
+            //if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
+            //{
+            //    NextBatch();
+            //}
+
             texIndex = (float)s_Data.TextureSlotIndex;
             s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture; // 添加 texture 到 第 s_Data.TextureSlotIndex 个纹理槽
             s_Data.TextureSlotIndex++;  // 纹理槽索引++
