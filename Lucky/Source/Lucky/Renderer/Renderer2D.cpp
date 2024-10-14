@@ -134,7 +134,7 @@ namespace Lucky
 
     void Renderer2D::StartBatch()
     {
-#ifdef 0
+#if 0
         // Temp 打印缓冲区数据
         QuadVertex* data = new QuadVertex[8];
         glGetBufferSubData(GL_ARRAY_BUFFER, 0, 8 * sizeof(QuadVertex), data);
