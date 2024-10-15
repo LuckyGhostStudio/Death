@@ -134,17 +134,7 @@ namespace Lucky
 
     void Renderer2D::StartBatch()
     {
-        // Bug：在删除对象之后，顶点数据总大小小于删除之前，无法覆盖之前的数据，会导致之前的数据依然被渲染。
-        // Temp 解决方案 清空缓冲区内存
-        /*void* data = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-        if (data)
-        {
-            
-            memset(data, 0, 8 * sizeof(QuadVertex));
-            
-            glUnmapBuffer(GL_ARRAY_BUFFER);
-        }*/
-
+#if 0
         // Temp 打印缓冲区数据
         QuadVertex* data = new QuadVertex[8];
         glGetBufferSubData(GL_ARRAY_BUFFER, 0, 8 * sizeof(QuadVertex), data);
@@ -157,6 +147,7 @@ namespace Lucky
         // 释放内存
         delete[] data;
         // -----------------------------
+#endif
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;   // 初始化顶点数据指针
@@ -185,6 +176,16 @@ namespace Lucky
         RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);  // 绘制
 
         s_Data.Stats.DrawCalls++;   // 绘制调用次数 ++
+
+        // 清空顶点缓冲区 Temp
+        void* data = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+        if (data)
+        {
+
+            memset(data, 0, dataSize);
+
+            glUnmapBuffer(GL_ARRAY_BUFFER);
+        }
     }
 
     void Renderer2D::NextBatch()
@@ -212,7 +213,7 @@ namespace Lucky
         const float texIndex = 0.0f;        // 白色纹理索引
 
         // Transform 矩阵
-        glm::mat4 transformMat = transform.GetTransform();
+        const glm::mat4& transformMat = transform.GetTransform();
 
         // 4 个顶点数据
         for (int i = 0; i < quadVertexCount; i++)
