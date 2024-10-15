@@ -17,7 +17,9 @@ namespace Lucky
         Ref<Framebuffer> m_Framebuffer;         // 帧缓冲区
 
         Ref<Scene> m_ActiveScene;           // 活动场景
-        Object m_SquareObject;              // 正方形物体
+
+        Object m_SquareObject1;             // 正方形物体
+        Object m_SquareObject2;             // 正方形物体
         Object m_CameraObject;              // 相机对象
 
         bool m_ViewportFocused = false;     // 视口被聚焦

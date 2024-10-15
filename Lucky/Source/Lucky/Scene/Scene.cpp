@@ -27,7 +27,7 @@ namespace Lucky
     {
         Object object = { m_Registry.create(), this };  // 创建实体
         std::string n = name + std::to_string((uint32_t)object);
-        object.AddComponent<SelfComponent>(n);       // 添加 Self 组件（默认组件）
+        object.AddComponent<SelfComponent>(n);          // 添加 Self 组件（默认组件）
         object.AddComponent<TransformComponent>();      // 添加 Transform 组件（默认组件）
 
         return object;
@@ -42,8 +42,8 @@ namespace Lucky
 
     void Scene::OnUpdate(DeltaTime dt)
     {
-        Camera* mainCamera = nullptr;           // 主相机
-        Transform* cameraTransform = nullptr;   // 相机 transform
+        Camera* mainCamera = nullptr;   // 主相机
+        Transform cameraTransform;      // 相机 transform
 
         // 返回有 Transform 和 Camera 的所有实体
         auto cameraView = m_Registry.view<TransformComponent, CameraComponent>();   // 相机实体集合
@@ -56,7 +56,7 @@ namespace Lucky
             if (camera.Camera.IsPrimary())
             {
                 mainCamera = &camera.Camera;
-                cameraTransform = &transform.Transform;
+                cameraTransform = transform.Transform;
 
                 break;
             }
@@ -65,12 +65,12 @@ namespace Lucky
         // 主相机存在
         if (mainCamera)
         {
-            // 返回有 Transform 和 SpriteRenderer 的所有实体
-            auto spriteGroup = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);    // Sprite 实体集合
-            
             // 开始渲染场景
-            Renderer2D::BeginScene(*mainCamera, *cameraTransform);
+            Renderer2D::BeginScene(*mainCamera, cameraTransform);
             {
+                // 返回有 Transform 和 SpriteRenderer 的所有实体
+                auto spriteGroup = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);    // Sprite 实体集合
+
                 for (auto entity : spriteGroup)
                 {
                     auto [transform, sprite] = spriteGroup.get<TransformComponent, SpriteRendererComponent>(entity);

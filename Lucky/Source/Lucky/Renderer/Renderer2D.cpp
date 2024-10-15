@@ -207,9 +207,9 @@ namespace Lucky
             NextBatch();    // 开始新一次批渲染
         }
 
-        const int quadVertexCount = 4;  // 顶点个数
-        const glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };   //纹理坐标
-        const float texIndex = 0.0f;    // 白色纹理索引
+        constexpr int quadVertexCount = 4;  // 顶点个数
+        constexpr glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };   //纹理坐标
+        const float texIndex = 0.0f;        // 白色纹理索引
 
         // Transform 矩阵
         glm::mat4 transformMat = transform.GetTransform();

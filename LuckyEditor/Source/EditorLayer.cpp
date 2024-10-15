@@ -24,11 +24,11 @@ namespace Lucky
 
         m_ActiveScene = CreateRef<Scene>();             // 创建场景
 
-        m_SquareObject = m_ActiveScene->CreateObject("Square");         // 创建正方形物体
-        m_SquareObject.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
+        m_SquareObject1 = m_ActiveScene->CreateObject("Square");         // 创建正方形物体
+        m_SquareObject1.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
 
-        //m_SquareObject = m_ActiveScene->CreateObject("Square");         // 创建正方形物体
-        //m_SquareObject.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
+        m_SquareObject2 = m_ActiveScene->CreateObject("Square");         // 创建正方形物体
+        m_SquareObject2.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
 
         m_CameraObject = m_ActiveScene->CreateObject("Main Camera");    // 创建相机对象
         m_CameraObject.AddComponent<CameraComponent>();                 // 添加 Camera 组件
@@ -168,7 +168,13 @@ namespace Lucky
 
                 uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(); // 颜色缓冲区 ID
 
-                ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));   // 场景视口图像
+                ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));   // 场景视口图像
+                
+                /*static int c = 0;
+                c++;
+                if (c==5 && m_SquareObject1) {
+                    m_ActiveScene->DeleteObject(m_SquareObject1);
+                }*/
             }
             ImGui::End();
             ImGui::PopStyleVar();
