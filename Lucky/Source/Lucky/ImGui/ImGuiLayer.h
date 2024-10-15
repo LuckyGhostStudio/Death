@@ -45,5 +45,10 @@ namespace Lucky
         /// </summary>
         /// <param name="block">是否阻止</param>
         void BlockEvents(bool block) { m_BlockEvents = block; }
+
+        /// <summary>
+        /// 设置深色主题
+        /// </summary>
+        void SetDarkThemeColors();
     };
 }

@@ -55,6 +55,8 @@ namespace Lucky
 
         // 树结点标志（绘制的节点是否被选中 ？被选中的标志 ：0 | 单击箭头时打开）
         ImGuiTreeNodeFlags flags = (m_SelectionObject == object ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+        flags |= ImGuiTreeNodeFlags_SpanAvailWidth;	//水平延伸到边框
+
         bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)object, flags, name.c_str());    // 树节点：结点 id 结点标志 结点名（实体名）
 
         // 树结点被点击

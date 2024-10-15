@@ -8,7 +8,7 @@
 namespace Lucky
 {
     /// <summary>
-    /// 物体属性面板 TODO 修改为 Inspector
+    /// 物体属性面板 TODO 修改为 AssetsInspector
     /// </summary>
     class ObjectPropertiesPanel
     {
