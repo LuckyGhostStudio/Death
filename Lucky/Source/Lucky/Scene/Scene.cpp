@@ -26,8 +26,10 @@ namespace Lucky
     Object Scene::CreateObject(const std::string& name)
     {
         Object object = { m_Registry.create(), this };  // 创建实体
-        std::string n = name + std::to_string((uint32_t)object);
-        object.AddComponent<SelfComponent>(n);          // 添加 Self 组件（默认组件）
+
+        // std::string n = name + std::to_string((uint32_t)object);
+        
+        object.AddComponent<SelfComponent>(name);       // 添加 Self 组件（默认组件）
         object.AddComponent<TransformComponent>();      // 添加 Transform 组件（默认组件）
 
         return object;

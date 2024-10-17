@@ -1,5 +1,7 @@
 #include "EditorLayer.h"
 
+#include "Lucky/Scene/SceneSerializer.h"
+
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -103,7 +105,7 @@ namespace Lucky
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-        // 停靠空间
+        // 停靠空间 TODO ImGuiLayer
         ImGui::Begin("DockSpace", &dockSpaceOpen, windowFlags);
         {
             ImGui::PopStyleVar();
@@ -125,17 +127,34 @@ namespace Lucky
                 ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
             }
 
-            // 菜单条
+            // 菜单条 TODO MenuBarPanel
             if (ImGui::BeginMenuBar())
             {
                 // 菜单：File
                 if (ImGui::BeginMenu("File"))
                 {
+                    // 菜单项：加载场景
+                    if (ImGui::MenuItem("Open"))
+                    {
+                        SceneSerializer serializer(m_ActiveScene);                  // m_ActiveScene 场景序列化器
+
+                        serializer.Deserialize("Assets/Scenes/SampleScene.lucky");  // 反序列化
+                    }
+
+                    // 菜单项：保存场景
+                    if (ImGui::MenuItem("Save"))
+                    {
+                        SceneSerializer serializer(m_ActiveScene);                  // m_ActiveScene 场景序列化器
+
+                        serializer.Serialize("Assets/Scenes/SampleScene.lucky");    // 序列化
+                    }
+
                     // 菜单项：退出
                     if (ImGui::MenuItem("Exit"))
                     {
-                        Application::GetInstance().Close();	// 退出程序
+                        Application::GetInstance().Close();    // 退出程序
                     }
+
                     ImGui::EndMenu();
                 }
                 ImGui::EndMenuBar();
@@ -144,12 +163,12 @@ namespace Lucky
             m_HierarchyPanel.OnImGuiRender();   // 渲染 Hierarchy 面板
             m_PropertiesPanel.OnImGuiRender();  // 渲染 Properties 面板
 
-            // 批渲染数据统计
+            // 批渲染数据统计 TODO RendererStatsPanel
             ImGui::Begin("Renderer2D Stats");
             {
                 auto stats = Renderer2D::GetStats();
 
-                ImGui::Text("FPS: %.3f", fps);      // 帧率
+                ImGui::Text("FPS: %.3f", fps);  // 帧率
 
                 ImGui::Text("Draw Calls: %d", stats.DrawCalls);
                 ImGui::Text("Quad: %d", stats.QuadCount);
@@ -158,7 +177,7 @@ namespace Lucky
             }
             ImGui::End();
 
-            // 场景视口
+            // 场景视口 TODO SceneViewportPanel
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // 设置 Gui 窗口样式：边界 = 0
             ImGui::Begin("Scene");
             {

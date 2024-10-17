@@ -20,7 +20,7 @@ IncludeDir["ImGui"] = "Lucky/Vendor/imgui"
 IncludeDir["glm"] = "Lucky/Vendor/glm"
 IncludeDir["stb_image"] = "Lucky/Vendor/stb_image"
 IncludeDir["entt"] = "Lucky/Vendor/entt/include"
--- IncludeDir["yaml_cpp"] = "Lucky/Vendor/yaml-cpp/include"
+IncludeDir["yaml_cpp"] = "Lucky/Vendor/yaml-cpp/include"
 -- IncludeDir["ImGuizmo"] = "Lucky/Vendor/ImGuizmo"
 
 group "Dependencies"
@@ -28,7 +28,7 @@ group "Dependencies"
     include "Lucky/Vendor/GLFW"         -- 包含 GLFW 目录
     include "Lucky/Vendor/GLAD"         -- 包含 GLAD 目录
     include "Lucky/Vendor/imgui"        -- 包含 imgui 目录
-    -- include "Lucky/Vendor/yaml-cpp"
+    include "Lucky/Vendor/yaml-cpp"
 
 group ""
 
@@ -73,7 +73,7 @@ project "Lucky"         -- 项目
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.entt}",
-        -- "%{IncludeDir.yaml_cpp}",
+        "%{IncludeDir.yaml_cpp}",
         -- "%{IncludeDir.ImGuizmo}"
     }
 
@@ -83,7 +83,7 @@ project "Lucky"         -- 项目
         "GLFW",         -- 引用 GLFW
         "GLAD",         -- 引用 GLAD
         "ImGui",        -- 引用 imgui
-        -- "yaml-cpp",  -- 引用 yaml-cpp
+        "yaml-cpp",     -- 引用 yaml-cpp
         "opengl32.lib"
     }
 

@@ -16,6 +16,7 @@ namespace Lucky
     private:
         friend class Object;                // 友元类 Object
         friend class SceneHierarchyPanel;   // 友元类 SceneHierarchyPanel
+        friend class SceneSerializer;       // 友元类 SceneSerializer
 
         entt::registry m_Registry;          // 实体集合：实体 id 集合（unsigned int 集合）
         std::string m_Name;                 // 场景名

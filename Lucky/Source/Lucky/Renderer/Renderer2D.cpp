@@ -165,7 +165,7 @@ namespace Lucky
         uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);   // 数据大小（字节）
         s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);    // 设置顶点缓冲区数据
 
-        LC_TRACE("QuadVertexBufferPtr dataSize {0} ", dataSize);
+        // LC_TRACE("QuadVertexBufferPtr dataSize {0} ", dataSize);
 
         // 绑定所有纹理
         for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
