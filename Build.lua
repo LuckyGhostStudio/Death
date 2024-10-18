@@ -21,7 +21,7 @@ IncludeDir["glm"] = "Lucky/Vendor/glm"
 IncludeDir["stb_image"] = "Lucky/Vendor/stb_image"
 IncludeDir["entt"] = "Lucky/Vendor/entt/include"
 IncludeDir["yaml_cpp"] = "Lucky/Vendor/yaml-cpp/include"
--- IncludeDir["ImGuizmo"] = "Lucky/Vendor/ImGuizmo"
+IncludeDir["ImGuizmo"] = "Lucky/Vendor/ImGuizmo"
 
 group "Dependencies"
     -- include "Lucky/Vendor/Box2D"     -- 包含 Box2D 目录
@@ -53,8 +53,8 @@ project "Lucky"         -- 项目
         "%{prj.name}/Vendor/stb_image/**.cpp",
         "%{prj.name}/Vendor/glm/glm/**.hpp",
         "%{prj.name}/Vendor/glm/glm/**.inl",
-        -- "%{prj.name}/Vendor/ImGuizmo/ImGuizmo.h",
-        -- "%{prj.name}/Vendor/ImGuizmo/ImGuizmo.cpp"
+        "%{prj.name}/Vendor/ImGuizmo/ImGuizmo.h",
+        "%{prj.name}/Vendor/ImGuizmo/ImGuizmo.cpp"
     }
 
     defines
@@ -74,7 +74,7 @@ project "Lucky"         -- 项目
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.entt}",
         "%{IncludeDir.yaml_cpp}",
-        -- "%{IncludeDir.ImGuizmo}"
+        "%{IncludeDir.ImGuizmo}"
     }
 
     links
@@ -87,8 +87,8 @@ project "Lucky"         -- 项目
         "opengl32.lib"
     }
 
-    -- filter "files:Lucky/Vendor/ImGuizmo/**.cpp"
-    -- flags {"NoPCH"}      -- 该 cpp 文件不使用预编译头文件
+    filter "files:Lucky/Vendor/ImGuizmo/**.cpp"
+    flags {"NoPCH"}      -- 该 cpp 文件不使用预编译头文件
 
     filter "system:windows"     -- windows 系统
         systemversion "latest"  -- sdk版本
@@ -137,7 +137,7 @@ project "LuckyEditor"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.entt}",
-        -- "%{IncludeDir.ImGuizmo}"
+        "%{IncludeDir.ImGuizmo}"
     }
 
     links

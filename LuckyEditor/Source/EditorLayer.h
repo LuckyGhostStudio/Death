@@ -10,11 +10,7 @@ namespace Lucky
     class EditorLayer : public Layer
     {
     private:
-        ShaderLibrary m_ShaderLibrary;          // 着色器库
-
-        Ref<Texture2D> m_CheckerboardTexture;   // 棋盘纹理
-
-        Ref<Framebuffer> m_Framebuffer;         // 帧缓冲区
+        Ref<Framebuffer> m_Framebuffer;     // 帧缓冲区
 
         Ref<Scene> m_ActiveScene;           // 活动场景
 
@@ -29,6 +25,8 @@ namespace Lucky
 
         SceneHierarchyPanel m_HierarchyPanel;       // 场景 Hierarchy 面板
         ObjectPropertiesPanel m_PropertiesPanel;    // 物体属性面板
+
+        int m_GizmoType = -1;   // Gizmo 操作类型 -1无 0平移 1旋转 2缩放
 
         float fps = 0.0f;
     public:

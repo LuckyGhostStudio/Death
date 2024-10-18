@@ -13,3 +13,6 @@
 [submodule "Lucky/Vendor/yaml-cpp"]
 	path = Lucky/Vendor/yaml-cpp
 	url = https://github.com/TheCherno/yaml-cpp.git
+[submodule "Lucky/Vendor/ImGuizmo"]
+	path = Lucky/Vendor/ImGuizmo
+	url = https://github.com/TheCherno/ImGuizmo

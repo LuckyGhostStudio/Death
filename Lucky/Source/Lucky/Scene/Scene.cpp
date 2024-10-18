@@ -98,6 +98,23 @@ namespace Lucky
         }
     }
 
+    Object Scene::GetPrimaryCameraObject()
+    {
+        auto view = m_Registry.view<CameraComponent>();  // 返回有 Camera 组件的物体
+        
+        for (auto object : view)
+        {
+            const auto& camera = view.get<CameraComponent>(object).Camera;  // Camera
+            // 主相机
+            if (camera.IsPrimary())
+            {
+                return Object{ object, this };  // 相机实体
+            }
+        }
+        
+        return {};
+    }
+
     template<typename T>
     void Scene::OnComponentAdded(Object object, T& component)
     {
