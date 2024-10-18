@@ -1,11 +1,13 @@
 #include "EditorLayer.h"
 
-#include "Lucky/Scene/SceneSerializer.h"
-
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <imgui/imgui.h>
+
+#include "Lucky/Scene/SceneSerializer.h"
+#include "Lucky/Utils/PlatformUtils.h"
+
 
 namespace Lucky
 {
@@ -133,24 +135,42 @@ namespace Lucky
                 // 菜单：File
                 if (ImGui::BeginMenu("File"))
                 {
-                    // 菜单项：加载场景
-                    if (ImGui::MenuItem("Open"))
+                    // 创建新场景
+                    if (ImGui::MenuItem("New", "Ctrl N"))
                     {
-                        SceneSerializer serializer(m_ActiveScene);                  // m_ActiveScene 场景序列化器
-
-                        serializer.Deserialize("Assets/Scenes/SampleScene.lucky");  // 反序列化
+                        NewScene();
                     }
 
-                    // 菜单项：保存场景
-                    if (ImGui::MenuItem("Save"))
+                    // 打开文件：加载场景
+                    if (ImGui::MenuItem("Open...", "Ctrl O"))
                     {
-                        SceneSerializer serializer(m_ActiveScene);                  // m_ActiveScene 场景序列化器
-
-                        serializer.Serialize("Assets/Scenes/SampleScene.lucky");    // 序列化
+                        OpenScene();
                     }
+
+                    // 另存为：保存场景
+                    if (ImGui::MenuItem("Save As...", "Shift Ctrl S"))
+                    {
+                        SaveSceneAs();
+                    }
+
+                    //// 菜单项：加载场景
+                    //if (ImGui::MenuItem("Open"))
+                    //{
+                    //    SceneSerializer serializer(m_ActiveScene);                  // m_ActiveScene 场景序列化器
+
+                    //    serializer.Deserialize("Assets/Scenes/SampleScene.lucky");  // 反序列化
+                    //}
+
+                    //// 菜单项：保存场景
+                    //if (ImGui::MenuItem("Save"))
+                    //{
+                    //    SceneSerializer serializer(m_ActiveScene);                  // m_ActiveScene 场景序列化器
+
+                    //    serializer.Serialize("Assets/Scenes/SampleScene.lucky");    // 序列化
+                    //}
 
                     // 菜单项：退出
-                    if (ImGui::MenuItem("Exit"))
+                    if (ImGui::MenuItem("Quit"))
                     {
                         Application::GetInstance().Close();    // 退出程序
                     }
@@ -202,6 +222,77 @@ namespace Lucky
 
     void EditorLayer::OnEvent(Event& event)
     {
+        EventDispatcher dispatcher(event);
 
+        dispatcher.Dispatch<KeyPressedEvent>(LC_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));    // 调用按键按下事件
+    }
+
+    bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+    {
+        // 快捷键：重复次数 == 0
+        if (e.GetRepeatCount() > 0)
+        {
+            return false;
+        }
+
+        bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl); // Ctrl 键按下
+        bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);       // Shift 键按下
+
+        switch (e.GetKeyCode())
+        {
+            case Key::N:
+                if (control)
+                {
+                    NewScene();     // 创建新场景：Ctrl N
+                }
+                break;
+            case Key::O:
+                if (control)
+                {
+                    OpenScene();    // 打开场景：Ctrl O
+                }
+                break;
+            case Key::S:
+                if (control && shift)
+                {
+                    SaveSceneAs();  // 场景另存为：Shift Ctrl S
+                }
+                break;
+        }
+    }
+
+    void EditorLayer::NewScene()
+    {
+        m_ActiveScene = CreateRef<Scene>();         // 创建新场景
+        m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);    // 重置视口大小
+        m_HierarchyPanel.SetScene(m_ActiveScene);   // 设置 Hierarchy 的场景
+    }
+
+    void EditorLayer::OpenScene()
+    {
+        std::string filepath = FileDialogs::OpenFile("Lucky Scene(*.lucky)\0*.lucky\0");    // 打开文件对话框（文件类型名\0 文件类型.lucky）
+        
+        // 路径不为空
+        if (!filepath.empty())
+        {
+            m_ActiveScene = CreateRef<Scene>();         // 创建新场景
+            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);    // 重置视口大小
+            m_HierarchyPanel.SetScene(m_ActiveScene);   // 设置 Hierarchy 的场景
+
+            SceneSerializer serializer(m_ActiveScene);  // 场景序列化器
+            serializer.Deserialize(filepath);           // 反序列化：加载文件场景到新场景
+        }
+    }
+
+    void EditorLayer::SaveSceneAs()
+    {
+        std::string filepath = FileDialogs::SaveFile("Lucky Scene(*.lucky)\0*.lucky\0");    // 保存文件对话框（文件类型名\0 文件类型.lucky）
+        // TODO 判断是否有.lucky后缀，没有则加上
+        // 路径不为空
+        if (!filepath.empty())
+        {
+            SceneSerializer serializer(m_ActiveScene);  // 场景序列化器
+            serializer.Serialize(filepath);             // 序列化：保存场景
+        }
     }
 }

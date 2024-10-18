@@ -14,6 +14,7 @@ namespace Lucky
     void SceneHierarchyPanel::SetScene(const Ref<Scene>& scene)
     {
         m_Scene = scene;
+        m_SelectionObject = {};     // 取消选中：置空选中物体
     }
 
     void SceneHierarchyPanel::OnImGuiRender()
