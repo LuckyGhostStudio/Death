@@ -14,7 +14,7 @@
 namespace Lucky
 {
     EditorLayer::EditorLayer()
-        : Layer("Editor")
+        : Layer("EditorLayer")
     {
 
     }
@@ -22,8 +22,12 @@ namespace Lucky
     void EditorLayer::OnAttach()
     {
         FramebufferSpecification fbSpec; // 帧缓冲区规范
+        // 颜色缓冲区 0 颜色缓冲区 1 深度缓冲区
+        fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
+
         m_Framebuffer = CreateRef<Framebuffer>(fbSpec); // 创建帧缓冲区
 
         m_ActiveScene = CreateRef<Scene>();             // 创建场景
@@ -197,7 +201,7 @@ namespace Lucky
 
                 m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };  // 视口大小
 
-                uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(); // 颜色缓冲区 ID
+                uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(); // 颜色缓冲区 0 ID
 
                 ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));   // 场景视口图像
             
