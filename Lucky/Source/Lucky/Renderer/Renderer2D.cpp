@@ -117,6 +117,14 @@ namespace Lucky
         delete[] s_Data.QuadVertexBufferBase;
     }
 
+    void Renderer2D::BeginScene(const EditorCamera& camera)
+    {
+        s_Data.TextureShader->Bind();   // 绑定 Texture 着色器
+        s_Data.TextureShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());  //设置 vp 矩阵
+
+        StartBatch();   // 开始批渲染
+    }
+
     void Renderer2D::BeginScene(const Camera& camera, const Transform& transform)
     {
         glm::mat4 viewProjectMatrix = camera.GetProjectionMatrix() * glm::inverse(transform.GetTransform());    // vp = p * v

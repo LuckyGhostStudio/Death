@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Transform.h"
 #include "Texture.h"
+#include "EditorCamera.h"
 
 namespace Lucky
 {
@@ -15,6 +16,12 @@ namespace Lucky
         static void Init();
 
         static void Shutdown();
+
+        /// <summary>
+        /// 开始渲染场景
+        /// </summary>
+        /// <param name="camera">编辑器相机</param>
+        static void BeginScene(const EditorCamera& camera);
 
         /// <summary>
         /// 开始渲染场景：设置场景参数

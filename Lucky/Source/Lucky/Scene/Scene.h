@@ -3,6 +3,7 @@
 #include "entt.hpp"
 
 #include "Lucky/Core/DeltaTime.h"
+#include "Lucky/Renderer/EditorCamera.h"
 
 namespace Lucky
 {
@@ -53,10 +54,17 @@ namespace Lucky
         void DeleteObject(Object object);
 
         /// <summary>
-        /// 更新：每帧调用
+        /// 编辑器更新：每帧调用
         /// </summary>
         /// <param name="dt">帧间隔</param>
-        void OnUpdate(DeltaTime dt);
+        /// <param name="camera">编辑器相机</param>
+        void OnUpdateEditor(DeltaTime dt, EditorCamera& camera);
+
+        /// <summary>
+        /// 运行时更新：每帧调用
+        /// </summary>
+        /// <param name="dt">帧间隔</param>
+        void OnUpdateRuntime(DeltaTime dt);
 
         /// <summary>
         /// 重置视口大小：视口改变时调用

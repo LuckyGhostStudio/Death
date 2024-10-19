@@ -2,6 +2,8 @@
 
 #include <Lucky.h>
 
+#include "Lucky/Renderer/EditorCamera.h"
+
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ObjectPropertiesPanel.h"
 
@@ -13,6 +15,7 @@ namespace Lucky
         Ref<Framebuffer> m_Framebuffer;     // 帧缓冲区
 
         Ref<Scene> m_ActiveScene;           // 活动场景
+        EditorCamera m_EditorCamera;        // 编辑器相机
 
         Object m_SquareObject1;             // 正方形物体
         Object m_SquareObject2;             // 正方形物体

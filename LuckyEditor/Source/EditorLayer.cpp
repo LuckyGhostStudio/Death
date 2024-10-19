@@ -27,6 +27,7 @@ namespace Lucky
         m_Framebuffer = CreateRef<Framebuffer>(fbSpec); // 创建帧缓冲区
 
         m_ActiveScene = CreateRef<Scene>();             // 创建场景
+        m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f); // 创建编辑器相机
 
         m_SquareObject1 = m_ActiveScene->CreateObject("Square");         // 创建正方形物体
         m_SquareObject1.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
@@ -56,6 +57,7 @@ namespace Lucky
         {
             m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);  // 重置帧缓冲区大小
 
+            m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);                         // 设置视口大小
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);    // 重置视口大小
         }
 
@@ -64,6 +66,7 @@ namespace Lucky
         {
 
         }
+        m_EditorCamera.OnUpdate(dt);    // 更新编辑器相机
 
         Renderer2D::ResetStats();   // 重置统计数据
 
@@ -72,7 +75,7 @@ namespace Lucky
         RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
         RenderCommand::Clear();
 
-        m_ActiveScene->OnUpdate(dt);// 更新场景
+        m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);  // 更新编辑器场景
 
         m_Framebuffer->Unbind();    // 解除绑定帧缓冲区
     }
@@ -121,7 +124,7 @@ namespace Lucky
 
             ImGuiStyle& style = ImGui::GetStyle();      // 样式
             float minWinSizeX = style.WindowMinSize.x;  // 最小窗口大小
-            style.WindowMinSize.x = 370.0f;
+            // style.WindowMinSize.x = 370.0f;
 
             if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
             {
@@ -211,11 +214,18 @@ namespace Lucky
 
                     ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight); // 设置绘制区域
 
-                    // Camera
-                    Object cameraObject = m_ActiveScene->GetPrimaryCameraObject();              // 主相机对象
-                    const auto& camera = cameraObject.GetComponent<CameraComponent>().Camera;   // 相机
-                    const glm::mat4& cameraProjection = camera.GetProjectionMatrix();           // 投影矩阵
-                    glm::mat4 cameraView = glm::inverse(cameraObject.GetComponent<TransformComponent>().Transform.GetTransform());  // 视图矩阵
+                    // 编辑器相机
+                    const glm::mat4& cameraProjection = m_EditorCamera.GetProjectionMatrix();   // 投影矩阵
+                    glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();                      // 视图矩阵
+
+                    // 绘制坐标系
+                    //ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(glm::mat4(1.0f)), 10);
+
+                    //// Camera
+                    //Object cameraObject = m_ActiveScene->GetPrimaryCameraObject();              // 主相机对象
+                    //const auto& camera = cameraObject.GetComponent<CameraComponent>().Camera;   // 相机
+                    //const glm::mat4& cameraProjection = camera.GetProjectionMatrix();           // 投影矩阵
+                    //glm::mat4 cameraView = glm::inverse(cameraObject.GetComponent<TransformComponent>().Transform.GetTransform());  // 视图矩阵
 
                     // 被选中物体 transform
                     Transform& transformComponent = selectedObject.GetComponent<TransformComponent>().Transform;    // Transform
@@ -232,7 +242,7 @@ namespace Lucky
                     
                     float spanValues[3] = { spanValue, spanValue, spanValue };  // xyz 轴刻度捕捉值
 
-                    // 绘制操作 Gizmo：相机视图矩阵 相机投影矩阵 Gizmo 类型 本地 选中物体 transform 增量矩阵 刻度捕捉值
+                    // 绘制操作 Gizmo：相机视图矩阵 相机投影矩阵 Gizmo 类型 本地坐标系 选中物体 transform 增量矩阵 刻度捕捉值
                     ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
                         (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
                         nullptr, span ? spanValues : nullptr);
@@ -259,6 +269,8 @@ namespace Lucky
 
     void EditorLayer::OnEvent(Event& event)
     {
+        m_EditorCamera.OnEvent(event);  // 编辑器相机事件
+
         EventDispatcher dispatcher(event);
 
         dispatcher.Dispatch<KeyPressedEvent>(LC_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));    // 调用按键按下事件

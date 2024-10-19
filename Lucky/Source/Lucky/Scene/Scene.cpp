@@ -42,7 +42,23 @@ namespace Lucky
         m_Registry.destroy(object);
     }
 
-    void Scene::OnUpdate(DeltaTime dt)
+    void Scene::OnUpdateEditor(DeltaTime dt, EditorCamera& camera)
+    {
+        Renderer2D::BeginScene(camera);
+        {
+            auto spriteGroup = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+
+            for (auto entity : spriteGroup)
+            {
+                auto [transform, sprite] = spriteGroup.get<TransformComponent, SpriteRendererComponent>(entity);
+
+                Renderer2D::DrawQuad(transform.Transform, sprite.Color);
+            }
+        }
+        Renderer2D::EndScene();
+    }
+
+    void Scene::OnUpdateRuntime(DeltaTime dt)
     {
         Camera* mainCamera = nullptr;   // 主相机
         Transform cameraTransform;      // 相机 transform

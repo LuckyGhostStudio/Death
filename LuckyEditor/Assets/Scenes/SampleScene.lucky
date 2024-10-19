@@ -30,8 +30,8 @@ Objects:
       ObjectName: Green Blue
       ObjectEnable: true
     TransformComponent:
-      Position: [-0.5, 0, 0]
-      Rotation: [-26.5, -54.0999985, 0]
-      Scale: [2.79999995, 1, 1]
+      Position: [0.0989379361, -0.554970324, 0.11787124]
+      Rotation: [54.710247, -54.0999908, -1.74723118e-05]
+      Scale: [2.80000067, 1.00000036, 1.00000012]
     SpriteRendererComponent:
       Color: [0, 1, 1, 1]
