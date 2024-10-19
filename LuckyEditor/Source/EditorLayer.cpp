@@ -22,8 +22,13 @@ namespace Lucky
     void EditorLayer::OnAttach()
     {
         FramebufferSpecification fbSpec; // 帧缓冲区规范
-        // 颜色缓冲区 0 颜色缓冲区 1 深度缓冲区
-        fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+
+        fbSpec.Attachments =
+        {
+            FramebufferTextureFormat::RGBA8,        // 颜色缓冲区 0
+            FramebufferTextureFormat::RED_INTEGER,  // 颜色缓冲区 1：作为 id 实现鼠标点击拾取
+            FramebufferTextureFormat::Depth         // 深度缓冲区
+        };
 
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
@@ -80,6 +85,28 @@ namespace Lucky
         RenderCommand::Clear();
 
         m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);  // 更新编辑器场景
+
+        auto [mx, my] = ImGui::GetMousePos();   // 鼠标位置
+
+        // 计算鼠标相对于视口左上角的位置
+        mx -= m_ViewportBounds[0].x;
+        my -= m_ViewportBounds[0].y;
+
+        glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0]; // 视口大小：包括 tab bar
+
+        my = viewportSize.y - my;   // 翻转 y 坐标 左下角0,0（纹理坐标左下角为0,0）
+
+        // 鼠标相对于视口左上角的位置
+        int mouseX = (int)mx;
+        int mouseY = (int)my;
+        
+        // 鼠标在视口内
+        if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+        {
+            int pixelData = m_Framebuffer->GetPixel(1, mouseX, mouseY); // 读取 1 号颜色缓冲区像素
+
+            LC_CORE_WARN("pixelData:{0}", pixelData);
+        }
 
         m_Framebuffer->Unbind();    // 解除绑定帧缓冲区
     }
@@ -192,6 +219,8 @@ namespace Lucky
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // 设置 Gui 窗口样式：边界 = 0
             ImGui::Begin("Scene");
             {
+                auto viewportOffset = ImGui::GetCursorPos();    // 视口偏移量：视口左上角位置（相对于视口面板左上角的偏移量）
+
                 m_ViewportFocused = ImGui::IsWindowFocused();   // 当前窗口被聚焦
                 m_ViewportHovered = ImGui::IsWindowHovered();   // 鼠标悬停在当前窗口
 
@@ -204,7 +233,19 @@ namespace Lucky
                 uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(); // 颜色缓冲区 0 ID
 
                 ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));   // 场景视口图像
-            
+
+                auto windowSize = ImGui::GetWindowSize();   // 视口大小 包括 tab bar
+                ImVec2 minBound = ImGui::GetWindowPos();    // 最小边界：视口面板左上角位置（相对于屏幕左上角）
+
+                // 最小边界为视口左上角
+                minBound.x += viewportOffset.x;
+                minBound.x += viewportOffset.x;
+
+                ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y }; // 最大边界：右下角
+
+                m_ViewportBounds[0] = { minBound.x, minBound.y };   // 视口最小边界：左上角
+                m_ViewportBounds[1] = { maxBound.x, maxBound.y };   // 视口最大边界：右下角
+
                 // Gizmo
                 Object selectedObject = Selection::Object;  // 被选中物体
                 // 选中物体存在 && Gizmo 类型存在
@@ -224,12 +265,6 @@ namespace Lucky
 
                     // 绘制坐标系
                     //ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(glm::mat4(1.0f)), 10);
-
-                    //// Camera
-                    //Object cameraObject = m_ActiveScene->GetPrimaryCameraObject();              // 主相机对象
-                    //const auto& camera = cameraObject.GetComponent<CameraComponent>().Camera;   // 相机
-                    //const glm::mat4& cameraProjection = camera.GetProjectionMatrix();           // 投影矩阵
-                    //glm::mat4 cameraView = glm::inverse(cameraObject.GetComponent<TransformComponent>().Transform.GetTransform());  // 视图矩阵
 
                     // 被选中物体 transform
                     Transform& transformComponent = selectedObject.GetComponent<TransformComponent>().Transform;    // Transform

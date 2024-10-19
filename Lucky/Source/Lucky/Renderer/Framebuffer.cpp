@@ -45,22 +45,23 @@ namespace Lucky
         /// </summary>
         /// <param name="id">颜色缓冲区id</param>
         /// <param name="samples">采样数量</param>
-        /// <param name="format">格式</param>
+        /// <param name="internalFormat">内部格式</param>
+        /// <param name="format">外部格式</param>
         /// <param name="width">宽</param>
         /// <param name="height">高</param>
         /// <param name="index">颜色缓冲区id索引</param>
-        static void AttachColorTexture(uint32_t id, int samples, GLenum format, uint32_t width, uint32_t height, int index)
+        static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index)
         {
             bool multisampled = samples > 1;    //是否是多重采样
 
             if (multisampled)
             {
-                glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);   // 多重采样纹理图像
+                glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);   // 多重采样纹理图像
             }
             else
             {
-                // 纹理图像：- - 内部格式（存储格式）- - - 外部格式（传入格式）
-                glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+                // 纹理图像：- - 内部格式（存储格式）- - - 外部格式（访问格式）
+                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
                 // 设置纹理参数
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);       // 缩小过滤器 线性插值
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);       // 放大过滤器 线性插值
@@ -165,22 +166,6 @@ namespace Lucky
         glCreateFramebuffers(1, &m_RendererID);             // 创建帧缓冲区
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);    // 绑定帧缓冲区
 
-        //glCreateTextures(GL_TEXTURE_2D, 1, &m_ColorAttachment); // 创建颜色缓冲区
-        //glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);        // 绑定颜色缓冲区
-        //// 纹理图像
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specification.Width, m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-        //// 设置纹理参数
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);   // 缩小过滤器 线性插值
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);   // 放大过滤器 线性插值
-
-        //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorAttachment, 0);  // 帧缓冲区颜色纹理
-
-        //glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthAttachment); // 创建深度缓冲区
-        //glBindTexture(GL_TEXTURE_2D, m_DepthAttachment);        // 绑定深度缓冲区
-        //// 深度缓冲区纹理存储 24 位深度缓冲区 8 位模板缓冲区
-        //glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, m_Specification.Width, m_Specification.Height);
-        //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment, 0);   // 帧缓冲区深度纹理
-
         bool multisampled = m_Specification.Samples > 1;    // 是否是多重采样
 
         // 颜色缓冲区附件存在
@@ -194,10 +179,16 @@ namespace Lucky
             {
                 Utils::BindTexture(multisampled, m_ColorAttachments[i]);    // 绑定颜色缓冲区纹理
                 
+                // 附加颜色纹理
                 switch (m_ColorAttachmentSpecs[i].TextureFormat)
                 {
+                    // RGBA8
                     case FramebufferTextureFormat::RGBA8:
-                        Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, m_Specification.Width, m_Specification.Height, i);
+                        Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
+                        break;
+                    // 红色整型
+                    case FramebufferTextureFormat::RED_INTEGER:
+                        Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, i);
                         break;
                 }
             }
@@ -260,5 +251,17 @@ namespace Lucky
         m_Specification.Height = height;
 
         Invalidate();
+    }
+
+    int Framebuffer::GetPixel(uint32_t attachmentIndex, int x, int y)
+    {
+        LC_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "index越界！");
+
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);   // 读第 attachmentIndex 个颜色缓冲区
+
+        int pixelData;
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);   // 读 x,y 位置的像素 返回 int 类型像素数据
+
+        return pixelData;   // 输出到 attachmentIndex 颜色缓冲区的数据
     }
 }

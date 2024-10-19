@@ -25,6 +25,7 @@ namespace Lucky
         bool m_ViewportHovered = false;     // 鼠标悬停在视口
 
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };  // 视口大小
+        glm::vec2 m_ViewportBounds[2];              // 视口边界（左上角，右下角）
 
         SceneHierarchyPanel m_HierarchyPanel;       // 场景 Hierarchy 面板
         ObjectPropertiesPanel m_PropertiesPanel;    // 物体属性面板
