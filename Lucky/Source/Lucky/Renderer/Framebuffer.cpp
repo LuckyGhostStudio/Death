@@ -121,6 +121,24 @@ namespace Lucky
 
             return false;
         }
+
+        /// <summary>
+        /// 帧缓冲区纹理格式转 GL
+        /// </summary>
+        /// <param name="format">帧缓冲区纹理格式</param>
+        /// <returns>GL 纹理格式</returns>
+        static GLenum FramebufferTextureFormatToGL(FramebufferTextureFormat format)
+        {
+            switch (format)
+            {
+                case FramebufferTextureFormat::RGBA8:       return GL_RGBA8;
+                case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+            }
+
+            LC_CORE_ASSERT(false, "No format");
+
+            return 0;
+        }
     }
 
     Framebuffer::Framebuffer(const FramebufferSpecification& spec)
@@ -255,7 +273,7 @@ namespace Lucky
 
     int Framebuffer::GetPixel(uint32_t attachmentIndex, int x, int y)
     {
-        LC_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "index越界！");
+        LC_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "index 越界！");
 
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);   // 读第 attachmentIndex 个颜色缓冲区
 
@@ -263,5 +281,21 @@ namespace Lucky
         glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);   // 读 x,y 位置的像素 返回 int 类型像素数据
 
         return pixelData;   // 输出到 attachmentIndex 颜色缓冲区的数据
+    }
+
+    void Framebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+    {
+        LC_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "index 越界！");
+
+        auto& spec = m_ColorAttachmentSpecs[attachmentIndex];   // attachmentIndex 号颜色缓冲区规范
+
+        // 清除 attachmentIndex 号颜色缓冲区的值为 value
+        glClearTexImage(
+            m_ColorAttachments[attachmentIndex],
+            0,
+            Utils::FramebufferTextureFormatToGL(spec.TextureFormat),
+            GL_INT,
+            &(value)
+        );
     }
 }

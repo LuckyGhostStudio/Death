@@ -113,6 +113,13 @@ namespace Lucky
         int GetPixel(uint32_t attachmentIndex, int x, int y);
 
         /// <summary>
+        /// 清除帧缓冲区附件
+        /// </summary>
+        /// <param name="attachmentIndex">颜色缓冲区 id</param>
+        /// <param name="value">清除值</param>
+        void ClearAttachment(uint32_t attachmentIndex, int value);
+
+        /// <summary>
         /// 返回颜色缓冲区 ID
         /// </summary>
         /// <param name="index">ID 列表索引</param>

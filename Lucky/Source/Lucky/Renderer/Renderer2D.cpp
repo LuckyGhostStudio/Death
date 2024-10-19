@@ -15,10 +15,11 @@ namespace Lucky
     /// </summary>
     struct QuadVertex
     {
-        glm::vec3 Position;     // 位置
-        glm::vec4 Color;        // 颜色
-        glm::vec2 TexCoord;     // 纹理坐标
-        float TexIndex;         // 纹理索引
+        glm::vec3 Position; // 位置
+        glm::vec4 Color;    // 颜色
+        glm::vec2 TexCoord; // 纹理坐标
+        float TexIndex;     // 纹理索引
+        int ObjectID;       // 物体 ID
     };
 
     /// <summary>
@@ -62,6 +63,7 @@ namespace Lucky
             { ShaderDataType::Float4, "a_Color" },      // 颜色
             { ShaderDataType::Float2, "a_Texture" },    // 纹理坐标
             { ShaderDataType::Float, "a_TexIndex" },    // 纹理索引
+            { ShaderDataType::Int, "a_ObjectID" },      // 物体 ID
         });
 
         s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);   // 添加 IndexBuffer
@@ -208,7 +210,7 @@ namespace Lucky
         //DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color);
     }
 
-    void Renderer2D::DrawQuad(const Transform& transform, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const Transform& transform, const glm::vec4& color, int objectID)
     {
         // 索引个数超过最大索引数
         if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
@@ -230,6 +232,8 @@ namespace Lucky
             s_Data.QuadVertexBufferPtr->Color = color;
             s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
             s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
+            s_Data.QuadVertexBufferPtr->ObjectID = objectID;
+
             s_Data.QuadVertexBufferPtr++;
         }
         

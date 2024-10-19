@@ -54,7 +54,8 @@ namespace Lucky
         /// </summary>
         /// <param name="transform">Transform</param>
         /// <param name="color">颜色</param>
-        static void DrawQuad(const Transform& transform, const glm::vec4& color);
+        /// <param name="objectID">物体 ID</param>
+        static void DrawQuad(const Transform& transform, const glm::vec4& color, int objectID = -1);
 
         /// <summary>
         /// 绘制长方形
