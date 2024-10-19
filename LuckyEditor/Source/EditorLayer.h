@@ -21,7 +21,7 @@ namespace Lucky
         Object m_SquareObject2;             // 正方形物体
         Object m_CameraObject;              // 相机对象
 
-        Object m_HoveredObject;             // 被鼠标悬停的物体
+        Object m_PickedObject;              // 被鼠标拾取的物体
 
         bool m_ViewportFocused = false;     // 视口被聚焦
         bool m_ViewportHovered = false;     // 鼠标悬停在视口
@@ -88,5 +88,12 @@ namespace Lucky
         /// <param name="e">按键按下事件</param>
         /// <returns>处理结果</returns>
         bool OnKeyPressed(KeyPressedEvent& e);
+
+        /// <summary>
+        /// 鼠标按钮按下时调用
+        /// </summary>
+        /// <param name="e">鼠标按钮按下事件</param>
+        /// <returns>处理结果</returns>
+        bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
     };
 }

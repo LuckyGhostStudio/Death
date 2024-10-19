@@ -219,7 +219,7 @@ namespace Lucky
         }
 
         constexpr int quadVertexCount = 4;  // 顶点个数
-        constexpr glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };   //纹理坐标
+        constexpr glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };   // 纹理坐标
         const float texIndex = 0.0f;        // 白色纹理索引
 
         // Transform 矩阵

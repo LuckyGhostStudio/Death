@@ -26,6 +26,7 @@ namespace Lucky
         LayerStack m_LayerStack;        // 层栈
 
         float m_LastFrameTime = 0.0f;   // 上一帧时间
+        float m_FramesPerSecond = 0.0f; // 帧率
     public:
         Application(const std::string& name = "Lucky Editor");
 
@@ -60,13 +61,19 @@ namespace Lucky
         void Close();
 
         /// <summary>
-        /// 返回Application的实例
+        /// 返回帧率
+        /// </summary>
+        /// <returns>帧率</returns>
+        inline float GetFPS() const { return m_FramesPerSecond; }
+
+        /// <summary>
+        /// 返回 Application 的实例
         /// </summary>
         /// <returns>实例</returns>
         inline static Application& GetInstance() { return *s_Instance; }
 
         /// <summary>
-        /// 返回Application的窗口
+        /// 返回 Application 的窗口
         /// </summary>
         /// <returns></returns>
         inline Window& GetWindow() { return *m_Window; }

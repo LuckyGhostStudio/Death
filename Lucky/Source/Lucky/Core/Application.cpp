@@ -64,8 +64,11 @@ namespace Lucky
             DeltaTime deltaTime = time - m_LastFrameTime;   // 帧间隔 = 当前时间 - 上一帧时间
             m_LastFrameTime = time;                         // 更新上一帧时间
 
+            m_FramesPerSecond = 1.0f / deltaTime;           // 帧率 TODO 计算 1s 内平均帧率
+
+            // 窗口未最小化
             if (!m_Minimized)
-            {     // 窗口未最小化
+            {
                 // 更新层栈中所有层
                 for (Layer* layer : m_LayerStack)
                 {
