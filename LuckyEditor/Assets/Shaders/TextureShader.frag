@@ -1,4 +1,4 @@
-#version 450 core
+#version 450
 
 layout(location = 0) out vec4 o_Color;      // 颜色缓冲区 0 输出颜色
 layout(location = 1) out int o_ObjectID;    // 颜色缓冲区 1 输出颜色（物体 ID）

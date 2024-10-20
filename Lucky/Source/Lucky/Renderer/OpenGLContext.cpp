@@ -22,6 +22,9 @@ namespace Lucky
         LC_CORE_INFO("    Vendor: {0}", (char*)glGetString(GL_VENDOR));     // 出版商
         LC_CORE_INFO("    Renderer: {0}", (char*)glGetString(GL_RENDERER)); // GPU 类型
         LC_CORE_INFO("    Version: {0}", (char*)glGetString(GL_VERSION));   // 版本
+
+        // 检查 OpenGL 版本
+        LC_CORE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5), "Lucky requires at least OpenGL version 4.5!");
     }
 
     void OpenGLContext::SwapBuffers()
