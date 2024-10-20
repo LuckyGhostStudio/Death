@@ -32,6 +32,8 @@ namespace YAML
             node.push_back(rhs.y);
             node.push_back(rhs.z);
 
+            node.SetStyle(EmitterStyle::Flow);
+
             return node;
         }
 
@@ -70,6 +72,8 @@ namespace YAML
             node.push_back(rhs.y);
             node.push_back(rhs.z);
             node.push_back(rhs.w);
+
+            node.SetStyle(EmitterStyle::Flow);
 
             return node;
         }
@@ -225,11 +229,7 @@ namespace Lucky
 
     bool SceneSerializer::Deserialize(const std::string& filepath)
     {
-        std::ifstream stream(filepath); // 文件输入流
-        std::stringstream strStream;
-        strStream << stream.rdbuf();    // 文件读入字符串
-
-        YAML::Node data = YAML::Load(strStream.str());  // 加载到 YMAL 结点
+        YAML::Node data = YAML::LoadFile(filepath); // 加载到 YMAL 结点
 
         // Scene 节点不存在
         if (!data["Scene"])
