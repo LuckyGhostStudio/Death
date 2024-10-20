@@ -346,18 +346,22 @@ namespace Lucky
                 break;
         }
 
-        // Gizmo 快捷键
-        switch (e.GetKeyCode())
+        // Gizmo 不是正在使用
+        if (!ImGuizmo::IsUsing())
         {
-            case Key::G:
-                m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;   // 平移
-                break;
-            case Key::R:
-                m_GizmoType = ImGuizmo::OPERATION::ROTATE;      // 旋转
-                break;
-            case Key::S:
-                m_GizmoType = ImGuizmo::OPERATION::SCALE;       // 缩放
-                break;
+            // Gizmo 快捷键
+            switch (e.GetKeyCode())
+            {
+                case Key::G:
+                    m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;   // 平移
+                    break;
+                case Key::R:
+                    m_GizmoType = ImGuizmo::OPERATION::ROTATE;      // 旋转
+                    break;
+                case Key::S:
+                    m_GizmoType = ImGuizmo::OPERATION::SCALE;       // 缩放
+                    break;
+            }
         }
     }
 
