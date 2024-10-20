@@ -13,6 +13,7 @@ namespace Lucky
         // É¾³ýËùÓÐ²ã
         for (Layer* layer : m_Layers)
         {
+            layer->OnDetach();
             delete layer;
         }
     }

@@ -144,21 +144,6 @@ namespace Lucky
 
     void Renderer2D::StartBatch()
     {
-#if 0
-        // Temp 打印缓冲区数据
-        QuadVertex* data = new QuadVertex[8];
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 8 * sizeof(QuadVertex), data);
-
-        for (int i = 0; i < 8; i++)
-        {
-            std::cout << "Vertex " << i << ": (" << data[i].Color.r << ", " << data[i].Color.g << ", " << data[i].Color.b << ")" << std::endl;
-        }
-
-        // 释放内存
-        delete[] data;
-        // -----------------------------
-#endif
-
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;   // 初始化顶点数据指针
 
@@ -175,8 +160,6 @@ namespace Lucky
         uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);   // 数据大小（字节）
         s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);    // 设置顶点缓冲区数据
 
-        // LC_TRACE("QuadVertexBufferPtr dataSize {0} ", dataSize);
-
         // 绑定所有纹理
         for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
         {
@@ -186,16 +169,6 @@ namespace Lucky
         RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);  // 绘制
 
         s_Data.Stats.DrawCalls++;   // 绘制调用次数 ++
-
-        // 清空顶点缓冲区 Temp
-        void* data = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-        if (data)
-        {
-
-            memset(data, 0, dataSize);
-
-            glUnmapBuffer(GL_ARRAY_BUFFER);
-        }
     }
 
     void Renderer2D::NextBatch()
