@@ -20,17 +20,7 @@ Objects:
       ObjectName: Square
       ObjectEnable: true
     TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteRendererComponent:
-      Color: [1, 1, 0, 1]
-  - Object: 12837192831273
-    SelfComponent:
-      ObjectName: Square
-      ObjectEnable: true
-    TransformComponent:
-      Position: [0, 0, 0]
+      Position: [-0.5, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:

@@ -385,29 +385,29 @@ namespace Lucky
 
     void EditorLayer::OpenScene()
     {
-        std::string filepath = FileDialogs::OpenFile("Lucky Scene(*.lucky)\0*.lucky\0");    // 打开文件对话框（文件类型名\0 文件类型.lucky）
+        std::optional<std::string> filepath = FileDialogs::OpenFile("Lucky Scene(*.lucky)\0*.lucky\0");    // 打开文件对话框（文件类型名\0 文件类型.lucky）
         
         // 路径不为空
-        if (!filepath.empty())
+        if (filepath.has_value())
         {
             m_ActiveScene = CreateRef<Scene>();         // 创建新场景
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);    // 重置视口大小
             m_HierarchyPanel.SetScene(m_ActiveScene);   // 设置 Hierarchy 的场景
 
             SceneSerializer serializer(m_ActiveScene);  // 场景序列化器
-            serializer.Deserialize(filepath);           // 反序列化：加载文件场景到新场景
+            serializer.Deserialize(filepath.value());   // 反序列化：加载文件场景到新场景
         }
     }
 
     void EditorLayer::SaveSceneAs()
     {
-        std::string filepath = FileDialogs::SaveFile("Lucky Scene(*.lucky)\0*.lucky\0");    // 保存文件对话框（文件类型名\0 文件类型.lucky）
-        // TODO 判断是否有.lucky后缀，没有则加上
+        std::optional<std::string> filepath = FileDialogs::SaveFile("Lucky Scene(*.lucky)\0*.lucky\0");    // 保存文件对话框（文件类型名\0 文件类型.lucky）
+
         // 路径不为空
-        if (!filepath.empty())
+        if (filepath.has_value())
         {
             SceneSerializer serializer(m_ActiveScene);  // 场景序列化器
-            serializer.Serialize(filepath);             // 序列化：保存场景
+            serializer.Serialize(filepath.value());     // 序列化：保存场景
         }
     }
 }
