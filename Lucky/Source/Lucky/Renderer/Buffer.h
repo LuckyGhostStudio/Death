@@ -118,7 +118,8 @@ namespace Lucky
             m_Stride = 0;
 
             // 遍历所有顶点属性
-            for (auto& element : m_Elements) {
+            for (auto& element : m_Elements)
+            {
                 element.Offset = offset;
                 offset += element.Size;     // 下一个顶点属性偏移量 = sum(当前顶点属性前面所有顶点属性 Size)
                 m_Stride += element.Size;   // 顶点大小 = sum(所有顶点 Size)
