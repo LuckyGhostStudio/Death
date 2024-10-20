@@ -112,8 +112,8 @@ namespace Lucky
         /// <summary>
         /// 返回事件种类标志
         /// </summary>
-        /// <returns>EventCategoryMouse | EventCategoryInput 事件</returns>
-        virtual int GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
+        /// <returns>EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton 事件</returns>
+        virtual int GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton; }
     };
 
     /// <summary>
