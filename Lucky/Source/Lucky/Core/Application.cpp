@@ -9,7 +9,8 @@ namespace Lucky
 {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application(const std::string& name)
+    Application::Application(const std::string& name, ApplicationCommandLineArgs args)
+        : m_CommandLineArgs(args)
     {
         LC_CORE_ASSERT(!s_Instance, "Application already exists!");
 
@@ -20,8 +21,8 @@ namespace Lucky
 
         Renderer::Init();   // 初始化渲染器
 
-        m_ImGuiLayer = new ImGuiLayer();    // 创建ImGui层
-        PushOverlay(m_ImGuiLayer);          // 添加ImGuiLayer到覆盖层
+        m_ImGuiLayer = new ImGuiLayer();    // 创建 ImGui 层
+        PushOverlay(m_ImGuiLayer);          // 添加 ImGuiLayer 到覆盖层
     }
 
     Application::~Application()

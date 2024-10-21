@@ -113,7 +113,8 @@ namespace Lucky
         return out;
     }
 
-    SceneSerializer::SceneSerializer(const Ref<Scene> scene) :m_Scene(scene)
+    SceneSerializer::SceneSerializer(const Ref<Scene> scene)
+        : m_Scene(scene)
     {
 
     }

@@ -36,6 +36,17 @@ namespace Lucky
         m_Framebuffer = CreateRef<Framebuffer>(fbSpec); // 创建帧缓冲区
 
         m_ActiveScene = CreateRef<Scene>();             // 创建场景
+
+        auto commandLineArgs = Application::GetInstance().GetCommandLineArgs();
+
+        if (commandLineArgs.Count > 1)
+        {
+            const char* sceneFilePath = commandLineArgs[1];
+
+            SceneSerializer serializer(m_ActiveScene);
+            serializer.Deserialize(sceneFilePath);
+        }
+
         m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f); // 创建编辑器相机
 
         m_SquareObject1 = m_ActiveScene->CreateObject("Square");         // 创建正方形物体

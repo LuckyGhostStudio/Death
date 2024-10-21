@@ -8,7 +8,8 @@ namespace Lucky
     class LuckyEditor : public Application
     {
     public:
-        LuckyEditor()
+        LuckyEditor(ApplicationCommandLineArgs args)
+            : Application("Lucky Editor", args)
         {
             PushLayer(new EditorLayer());
         }
@@ -19,8 +20,8 @@ namespace Lucky
         }
     };
 
-    Application* CreateApplication()
+    Application* CreateApplication(ApplicationCommandLineArgs args)
     {
-        return new LuckyEditor();
+        return new LuckyEditor(args);
     }
 }
