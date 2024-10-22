@@ -298,12 +298,20 @@ namespace Lucky
                     {
                         glm::vec3 position, rotation, scale;
                         Math::DecomposeTransform(transform, position, rotation, scale);         // 分解 transform 矩阵
-
-                        glm::vec3 deltaRotation = rotation - transformComponent.GetRotation();  // 旋转增量
-
-                        transformComponent.GetPosition() = position;        // 更新位置
-                        transformComponent.GetRotation() += deltaRotation;  // 更新旋转：累加增量，避免万向节锁
-                        transformComponent.GetScale() = scale;              // 更新缩放
+                        
+                        switch (m_GizmoType)
+                        {
+                            case ImGuizmo::OPERATION::TRANSLATE:
+                                transformComponent.GetPosition() = position;        // 更新位置
+                                break;
+                            case ImGuizmo::OPERATION::ROTATE:
+                                glm::vec3 deltaRotation = rotation - transformComponent.GetRotation();  // 旋转增量
+                                transformComponent.GetRotation() += deltaRotation;  // 更新旋转：累加增量，避免万向节锁
+                                break;
+                            case ImGuizmo::OPERATION::SCALE:
+                                transformComponent.GetScale() = scale;              // 更新缩放
+                                break;
+                        }
                     }
                 }
             }
