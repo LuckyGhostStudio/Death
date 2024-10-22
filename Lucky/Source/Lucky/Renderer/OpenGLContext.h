@@ -10,13 +10,15 @@ namespace Lucky
     class OpenGLContext
     {
     private:
-        GLFWwindow* m_WindowHandle;     // GLFW 窗口句柄
-
+        GLFWwindow* m_WindowHandle; // GLFW 窗口句柄
     public:
         /// <summary>
-        /// OpenGL 上下文
+        /// 创建 OpenGL 上下文
         /// </summary>
         /// <param name="windowHandle">窗口句柄</param>
+        /// <returns></returns>
+        static Scope<OpenGLContext> Create(GLFWwindow* windowHandle);
+
         OpenGLContext(GLFWwindow* windowHandle);
 
         /// <summary>

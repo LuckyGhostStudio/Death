@@ -34,6 +34,11 @@ namespace Lucky
         return 0;
     }
 
+    Ref<VertexArray> VertexArray::Create()
+    {
+        return CreateRef<VertexArray>();
+    }
+
     VertexArray::VertexArray()
     {
         glCreateVertexArrays(1, &m_RendererID); // 创建顶点数组

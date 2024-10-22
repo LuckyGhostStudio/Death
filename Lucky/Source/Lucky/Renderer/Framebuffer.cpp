@@ -141,6 +141,11 @@ namespace Lucky
         }
     }
 
+    Ref<Framebuffer> Framebuffer::Create(const FramebufferSpecification& spec)
+    {
+        return CreateRef<Framebuffer>(spec);
+    }
+
     Framebuffer::Framebuffer(const FramebufferSpecification& spec)
         : m_Specification(spec)
     {

@@ -15,6 +15,8 @@ namespace Lucky
         std::vector<Ref<VertexBuffer>> m_VertexBuffers; // 绑定在顶点数组的 VertexBuffer 列表
         Ref<IndexBuffer> m_IndexBuffer;                 // 绑定在顶点数组的 IndexBuffer
     public:
+        static Ref<VertexArray> Create();
+
         VertexArray();
 
         ~VertexArray();

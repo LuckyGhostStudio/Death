@@ -34,6 +34,8 @@ namespace Lucky
 
     void SceneCamera::SetViewportSize(uint32_t width, uint32_t height)
     {
+        LC_CORE_ASSERT(width > 0 && height > 0, "width or height <= 0!");
+
         m_AspectRatio = (float)width / (float)height;   // 宽高比
 
         RecalculateProjection();    // 重新计算投影矩阵

@@ -87,8 +87,8 @@ namespace Lucky
         /// </summary>
         virtual void Shutdown();
     private:
-        GLFWwindow* m_Window;       // GLFW 窗口
-        OpenGLContext* m_Context;   // OpenGL 上下文
+        GLFWwindow* m_Window;           // GLFW 窗口
+        Scope<OpenGLContext> m_Context; // OpenGL 上下文
 
         /// <summary>
         /// 窗口数据

@@ -3,10 +3,10 @@
 
 #include "VertexArray.h"
 #include "Shader.h"
+#include "UniformBuffer.h"
 #include "RenderCommand.h"
 
 #include <glm/ext/matrix_transform.hpp>
-#include <glad/glad.h>
 
 namespace Lucky
 {
@@ -35,7 +35,7 @@ namespace Lucky
         Ref<VertexArray> QuadVertexArray;   // 四边形顶点数组
         Ref<VertexBuffer> QuadVertexBuffer; // 四边形顶点缓冲区
         Ref<Shader> TextureShader;          // 纹理着色器
-        Ref<Texture2D>    WhiteTexture;     // 白色纹理
+        Ref<Texture2D> WhiteTexture;        // 白色纹理
 
         uint32_t QuadIndexCount = 0;                    // 四边形索引个数
         QuadVertex* QuadVertexBufferBase = nullptr;     // 顶点数据
@@ -46,15 +46,26 @@ namespace Lucky
 
         glm::vec4 QuadVerticesPositions[4];     // 顶点位置
         Renderer2D::Statistics Stats;           // 统计数据
+
+        /// <summary>
+        /// 相机数据
+        /// </summary>
+        struct CameraData
+        {
+            glm::mat4 ViewProjectionMatrix;     // VP 矩阵
+        };
+
+        CameraData CameraBuffer;
+        Ref<UniformBuffer> CameraUniformBuffer; // 相机 Uniform 缓冲区
     };
 
     static Renderer2DData s_Data;   // 渲染器数据
 
     void Renderer2D::Init()
     {
-        s_Data.QuadVertexArray = CreateRef<VertexArray>();  // 创建顶点数组对象
+        s_Data.QuadVertexArray = VertexArray::Create(); // 创建顶点数组对象
 
-        s_Data.QuadVertexBuffer = CreateRef<VertexBuffer>(s_Data.MaxVertices * sizeof(QuadVertex)); // 创建顶点缓冲
+        s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));    // 创建顶点缓冲
 
         // 设置顶点缓冲区布局
         s_Data.QuadVertexBuffer->SetLayout(
@@ -86,11 +97,11 @@ namespace Lucky
             offset += 4;    // 偏移 4 个顶点
         }
 
-        Ref<IndexBuffer> quadIB = CreateRef<IndexBuffer>(quadIndices, s_Data.MaxIndices);   // 创建索引缓冲
-        s_Data.QuadVertexArray->SetIndexBuffer(quadIB);                                     // 设置 IndexBuffer
+        Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, s_Data.MaxIndices);  // 创建索引缓冲
+        s_Data.QuadVertexArray->SetIndexBuffer(quadIB);                                 // 设置 IndexBuffer
         delete[] quadIndices;
 
-        s_Data.WhiteTexture = CreateRef<Texture2D>(1, 1);                   // 创建宽高为 1 的纹理
+        s_Data.WhiteTexture = Texture2D::Create(1, 1);                      // 创建宽高为 1 的纹理
         uint32_t whitTextureData = 0xffffffff;                              // 255 白色
         s_Data.WhiteTexture->SetData(&whitTextureData, sizeof(uint32_t));   // 设置纹理数据 size = 1 * 1 * 4 == sizeof(uint32_t)
 
@@ -101,17 +112,16 @@ namespace Lucky
             samplers[i] = i;
         }
 
-        s_Data.TextureShader = CreateRef<Shader>("Assets/Shaders/TextureShader");   // 创建 Texture 着色器
+        s_Data.TextureShader = Shader::Create("Assets/Shaders/TextureShader");  // 创建 Texture 着色器
 
-        s_Data.TextureShader->Bind();                    // 绑定 Texture 着色器
-
-        s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);  // 设置 textures 变量 所有纹理槽
         s_Data.TextureSlots[0] = s_Data.WhiteTexture;    // 0 号纹理槽为白色纹理（默认）
 
         s_Data.QuadVerticesPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
         s_Data.QuadVerticesPositions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
         s_Data.QuadVerticesPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
         s_Data.QuadVerticesPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+
+        s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);  // 创建相机 Uniform 缓冲区
     }
 
     void Renderer2D::Shutdown()
@@ -121,18 +131,18 @@ namespace Lucky
 
     void Renderer2D::BeginScene(const EditorCamera& camera)
     {
-        s_Data.TextureShader->Bind();   // 绑定 Texture 着色器
-        s_Data.TextureShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());  //设置 vp 矩阵
+        s_Data.CameraBuffer.ViewProjectionMatrix = camera.GetViewProjectionMatrix();                    // 设置 VP 矩阵
+        s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));  // 设置 Uniform 缓冲区数据
 
         StartBatch();   // 开始批渲染
     }
 
     void Renderer2D::BeginScene(const Camera& camera, const Transform& transform)
     {
-        glm::mat4 viewProjectMatrix = camera.GetProjectionMatrix() * glm::inverse(transform.GetTransform());    // vp = p * v
+        glm::mat4 viewProjectMatrix = camera.GetProjectionMatrix() * glm::inverse(transform.GetTransform());    // VP = P * V
 
-        s_Data.TextureShader->Bind();   // 绑定 Texture 着色器
-        s_Data.TextureShader->SetMat4("u_ViewProjectionMatrix", viewProjectMatrix);   // 设置 vp 矩阵
+        s_Data.CameraBuffer.ViewProjectionMatrix = viewProjectMatrix;                                   // 设置 VP 矩阵
+        s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));  // 设置 Uniform 缓冲区数据
 
         StartBatch();   // 开始批渲染
     }
@@ -165,10 +175,12 @@ namespace Lucky
         {
             s_Data.TextureSlots[i]->Bind(i);    // 绑定 i 号纹理槽
         }
+        
+        s_Data.TextureShader->Bind();   // 绑定 Texture 着色器
 
         RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);  // 绘制
 
-        s_Data.Stats.DrawCalls++;   // 绘制调用次数 ++
+        s_Data.Stats.DrawCalls++;       // 绘制调用次数 ++
     }
 
     void Renderer2D::NextBatch()
@@ -176,11 +188,6 @@ namespace Lucky
         Flush();
 
         StartBatch();
-    }
-
-    void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color)
-    {
-        //DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color);
     }
 
     void Renderer2D::DrawQuad(const Transform& transform, const glm::vec4& color, int objectID)
@@ -213,11 +220,6 @@ namespace Lucky
         s_Data.QuadIndexCount += 6; // 索引个数增加
 
         s_Data.Stats.QuadCount++;   // 四边形个数 ++
-    }
-
-    void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const Ref<Texture2D>& texture)
-    {
-        DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color, texture);
     }
 
     void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const Ref<Texture2D>& texture)

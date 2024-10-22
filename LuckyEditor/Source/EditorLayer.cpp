@@ -33,12 +33,12 @@ namespace Lucky
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
 
-        m_Framebuffer = CreateRef<Framebuffer>(fbSpec); // 创建帧缓冲区
+        m_Framebuffer = Framebuffer::Create(fbSpec);    // 创建帧缓冲区
 
         m_ActiveScene = CreateRef<Scene>();             // 创建场景
 
         auto commandLineArgs = Application::GetInstance().GetCommandLineArgs();
-
+        // 从命令行加载场景
         if (commandLineArgs.Count > 1)
         {
             const char* sceneFilePath = commandLineArgs[1];
@@ -297,7 +297,7 @@ namespace Lucky
                     if (ImGuizmo::IsUsing())
                     {
                         glm::vec3 position, rotation, scale;
-                        Math::DecomposeTransform(transform, position, rotation, scale);         // 分解 transform 矩阵
+                        Math::DecomposeTransform(transform, position, rotation, scale); // 分解 transform 矩阵
                         
                         switch (m_GizmoType)
                         {

@@ -6,6 +6,16 @@
 
 namespace Lucky
 {
+    Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height)
+    {
+        return CreateRef<Texture2D>(width, height);
+    }
+
+    Ref<Texture2D> Texture2D::Create(const std::string& path)
+    {
+        return CreateRef<Texture2D>(path);
+    }
+
     Texture2D::Texture2D(uint32_t width, uint32_t height) :m_Width(width), m_Height(height)
     {
         m_InternalFormat = GL_RGBA8;    // 内部格式

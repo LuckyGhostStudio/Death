@@ -45,16 +45,22 @@ namespace Lucky
         GLenum m_DataFormat;        // 数据格式（采样格式）
     public:
         /// <summary>
-        /// 2D纹理
+        /// 创建 2D 纹理
         /// </summary>
         /// <param name="width">宽</param>
         /// <param name="height">高</param>
-        Texture2D(uint32_t width, uint32_t height);
+        /// <returns></returns>
+        static Ref<Texture2D> Create(uint32_t width, uint32_t height);
 
         /// <summary>
-        /// 2D纹理
+        /// 创建 2D 纹理
         /// </summary>
         /// <param name="path">纹理路径</param>
+        /// <returns></returns>
+        static Ref<Texture2D> Create(const std::string& path);
+
+        
+        Texture2D(uint32_t width, uint32_t height);
         Texture2D(const std::string& path);
 
         virtual ~Texture2D();

@@ -29,9 +29,12 @@ namespace Lucky
         void Compile(std::unordered_map<unsigned int, std::string>& shaderSources);
     public:
         /// <summary>
-        /// 着色器
+        /// 创建着色器
         /// </summary>
         /// <param name="filepath">着色器文件路径(不含后缀名)</param>
+        /// <returns></returns>
+        static Ref<Shader> Create(const std::string& filepath);
+
         Shader(const std::string& filepath);
         
         ~Shader();

@@ -56,8 +56,8 @@ namespace Lucky
         // 创建 GLFW 窗口
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-        m_Context = new OpenGLContext(m_Window); // 创建 OpenGL 上下文
-        m_Context->Init();                       // 初始化上下文
+        m_Context = OpenGLContext::Create(m_Window);    // 创建 OpenGL 上下文
+        m_Context->Init();                              // 初始化上下文
 
         glfwSetWindowUserPointer(m_Window, &m_Data);    // 将数据 m_Data 传递给 m_Window
         SetVSync(true);                                 // 垂直同步

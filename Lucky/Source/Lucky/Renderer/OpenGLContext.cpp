@@ -6,7 +6,13 @@
 
 namespace Lucky
 {
-    OpenGLContext::OpenGLContext(GLFWwindow* windowHandle) : m_WindowHandle(windowHandle)
+    Scope<OpenGLContext> OpenGLContext::Create(GLFWwindow* windowHandle)
+    {
+        return CreateScope<OpenGLContext>(windowHandle);
+    }
+
+    OpenGLContext::OpenGLContext(GLFWwindow* windowHandle)
+        : m_WindowHandle(windowHandle)
     {
         LC_CORE_ASSERT(m_WindowHandle, "Window handle is null!");
     }

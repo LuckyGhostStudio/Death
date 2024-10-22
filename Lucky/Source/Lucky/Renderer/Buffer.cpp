@@ -6,6 +6,16 @@
 
 namespace Lucky
 {
+    Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
+    {
+        return CreateRef<VertexBuffer>(size);
+    }
+
+    Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
+    {
+        return CreateRef<VertexBuffer>(vertices, size);
+    }
+
     VertexBuffer::VertexBuffer(uint32_t size)
     {
         glCreateBuffers(1, &m_RendererID);                              // 创建缓冲区
@@ -39,6 +49,11 @@ namespace Lucky
     {
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);        // 绑定顶点缓冲区
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);    // 设置数据
+    }
+
+    Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
+    {
+        return CreateRef<IndexBuffer>(indices, count);
     }
 
     IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count) : m_Count(count)

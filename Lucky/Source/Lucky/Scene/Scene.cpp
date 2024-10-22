@@ -152,7 +152,10 @@ namespace Lucky
     template<>
     void Scene::OnComponentAdded<CameraComponent>(Object object, CameraComponent& component)
     {
-        component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);    // 设置视口
+        if (m_ViewportWidth > 0 && m_ViewportHeight > 0)
+        {
+            component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);    // 设置视口
+        }
     }
 
     template<>

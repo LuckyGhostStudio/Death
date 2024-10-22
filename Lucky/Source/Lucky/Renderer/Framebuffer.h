@@ -74,9 +74,12 @@ namespace Lucky
         uint32_t m_DepthAttachment = 0;             // 深度缓冲区 ID
     public:
         /// <summary>
-        /// 帧缓冲区
+        /// 创建帧缓冲区
         /// </summary>
         /// <param name="spec">帧缓冲区规范</param>
+        /// <returns></returns>
+        static Ref<Framebuffer> Create(const FramebufferSpecification& spec);
+
         Framebuffer(const FramebufferSpecification& spec);
 
         ~Framebuffer();

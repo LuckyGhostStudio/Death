@@ -6,6 +6,11 @@
 
 namespace Lucky
 {
+    Ref<Shader> Shader::Create(const std::string& filepath)
+    {
+        return CreateRef<Shader>(filepath);
+    }
+
     Shader::Shader(const std::string& filepath)
         : m_RendererID(0)
     {

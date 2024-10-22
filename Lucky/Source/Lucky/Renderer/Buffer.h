@@ -165,17 +165,20 @@ namespace Lucky
         BufferLayout m_Layout;  // 顶点缓冲区布局
     public:
         /// <summary>
-        /// 顶点缓冲区
+        /// 创建顶点缓冲区
         /// </summary>
-        /// <param name="size">顶点大小</param>
+        /// <param name="size">大小（字节）</param>
         /// <returns>顶点缓冲</returns>
-        VertexBuffer(uint32_t size);
+        static Ref<VertexBuffer> Create(uint32_t size);
 
         /// <summary>
-        /// 顶点缓冲区
+        /// 创建顶点缓冲区
         /// </summary>
         /// <param name="vertices">顶点数据</param>
-        /// <param name="size">顶点大小</param>
+        /// <param name="size">大小（字节）</param>
+        static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+        
+        VertexBuffer(uint32_t size);
         VertexBuffer(float* vertices, uint32_t size);
 
         ~VertexBuffer();
@@ -224,6 +227,8 @@ namespace Lucky
         /// </summary>
         /// <param name="vertices">索引数据</param>
         /// <param name="count">索引个数</param>
+        static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+
         IndexBuffer(uint32_t* indices, uint32_t count);
 
         ~IndexBuffer();
