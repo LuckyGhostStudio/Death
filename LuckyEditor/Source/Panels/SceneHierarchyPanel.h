@@ -18,8 +18,8 @@ namespace Lucky
     class SceneHierarchyPanel
     {
     private:
-        Ref<Scene> m_Scene;         // 面板显示的场景
-        Object& m_SelectionObject = Selection::Object;; // 当前选中项
+        Ref<Scene> m_Scene;                             // 面板显示的场景
+        Object& m_SelectionObject = Selection::Object;  // 当前选中项
     private:
         /// <summary>
         /// 绘制物体结点

@@ -4,6 +4,7 @@
 
 #include "Lucky/Renderer/EditorCamera.h"
 
+#include "Panels/EditorDockSpace.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ObjectPropertiesPanel.h"
 
@@ -29,7 +30,7 @@ namespace Lucky
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };  // 视口大小
         glm::vec2 m_ViewportBounds[2];              // 视口边界（左上角，右下角）
 
-        DockSpace m_DockSpace;                      // 停靠空间
+        EditorDockSpace m_EditorDockSpace;          // 停靠空间
 
         SceneHierarchyPanel m_HierarchyPanel;       // 场景 Hierarchy 面板
         ObjectPropertiesPanel m_PropertiesPanel;    // 物体属性面板

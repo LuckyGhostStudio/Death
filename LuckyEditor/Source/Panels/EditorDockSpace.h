@@ -1,11 +1,13 @@
 #pragma once
 
+#include "EditorWindow.h"
+
 namespace Lucky
 {
     /// <summary>
-    /// 停靠空间
+    /// 编辑器停靠空间
     /// </summary>
-    class DockSpace
+    class EditorDockSpace : public EditorWindow
     {
     private:
         // TODO 名字 样式 是否打开。
@@ -15,11 +17,10 @@ namespace Lucky
         uint32_t m_Flags;           // DockSpace 标志（ImGuiDockNodeFlags） TODO 整理
         uint32_t m_WindowFlags;     // DockSpace 窗口标志（ImGuiWindowFlags） TODO 整理
     public:
+        EditorDockSpace(bool opened = true, bool fullScreen = true);
 
-        DockSpace(bool opened = true, bool fullScreen = true);
+        virtual ~EditorDockSpace() override;
 
-        ~DockSpace() = default;
-
-        void OnImGuiRender();
+        virtual void OnImGuiRender() override;
     };
 }

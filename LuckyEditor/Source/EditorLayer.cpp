@@ -128,7 +128,7 @@ namespace Lucky
 
     void EditorLayer::OnImGuiRender()
     {
-        m_DockSpace.OnImGuiRender();    // 渲染 DockSpace
+        m_EditorDockSpace.OnImGuiRender();    // 渲染 DockSpace
 
         // 菜单条 TODO MenuBarPanel
         if (ImGui::BeginMainMenuBar())
@@ -169,9 +169,8 @@ namespace Lucky
         m_PropertiesPanel.OnImGuiRender();  // 渲染 Properties 面板
 
         // 批渲染数据统计 TODO RendererStatsPanel
-        ImGui::Begin("Renderer2D Stats");
+        ImGui::Begin("Scece Renderer Stats");
         {
-
             auto stats = Renderer2D::GetStats();
 
             ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());  // 帧率

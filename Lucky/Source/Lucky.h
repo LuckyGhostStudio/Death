@@ -10,7 +10,6 @@
 #include "Lucky/Input/MouseButtonCodes.h"
 
 #include "Lucky/ImGui/ImGuiLayer.h"
-#include "Lucky/ImGui/DockSpace.h"
 
 #include "Lucky/Scene/Scene.h"
 #include "Lucky/Scene/Object.h"

@@ -1,20 +1,26 @@
-#include "lcpch.h"
-#include "DockSpace.h"
+#include "EditorDockSpace.h"
 
-#include <imgui.h>
-#include <imgui_internal.h>
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 namespace Lucky
 {
-    DockSpace::DockSpace(bool opened, bool fullScreen)
-        : m_Opened(opened), m_IsFullScreen(fullScreen),
+    EditorDockSpace::EditorDockSpace(bool opened, bool fullScreen)
+        : EditorWindow("EditorDockSpace", "DockSpace"),
+        m_Opened(opened),
+        m_IsFullScreen(fullScreen),
         m_Flags(ImGuiDockNodeFlags_None),
         m_WindowFlags(ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking)
     {
 
     }
 
-    void DockSpace::OnImGuiRender()
+    EditorDockSpace::~EditorDockSpace()
+    {
+
+    }
+
+    void EditorDockSpace::OnImGuiRender()
     {
         if (m_IsFullScreen)
         {
@@ -52,7 +58,7 @@ namespace Lucky
 
             if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
             {
-                ImGuiID dockspaceID = ImGui::GetID("Editor Dockspace");
+                ImGuiID dockspaceID = ImGui::GetID(m_Name.c_str());
                 ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), m_Flags | ImGuiDockNodeFlags_NoCloseButton);
             }
         }
