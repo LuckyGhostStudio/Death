@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 #include "Lucky/Scene/SceneSerializer.h"
 #include "Lucky/Utils/PlatformUtils.h"
@@ -69,8 +70,6 @@ namespace Lucky
 
     void EditorLayer::OnUpdate(DeltaTime dt)
     {
-        fps = 1.0f / dt;
-
         if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
             m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
             (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
@@ -129,196 +128,147 @@ namespace Lucky
 
     void EditorLayer::OnImGuiRender()
     {
-        static bool dockSpaceOpen = true;
-        static bool optFullscreenPersistant = true;
-        static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-        bool optFullscreen = optFullscreenPersistant;
+        m_DockSpace.OnImGuiRender();    // 渲染 DockSpace
 
-        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-
-        if (optFullscreen)
+        // 菜单条 TODO MenuBarPanel
+        if (ImGui::BeginMainMenuBar())
         {
-            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            // 菜单：File
+            if (ImGui::BeginMenu("File"))
+            {
+                // 创建新场景
+                if (ImGui::MenuItem("New", "Ctrl N"))
+                {
+                    NewScene();
+                }
 
-            ImGui::SetNextWindowPos(viewport->Pos);
-            ImGui::SetNextWindowSize(viewport->Size);
-            ImGui::SetNextWindowViewport(viewport->ID);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+                // 打开文件：加载场景
+                if (ImGui::MenuItem("Open...", "Ctrl O"))
+                {
+                    OpenScene();
+                }
 
-            windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-            windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+                // 另存为：保存场景
+                if (ImGui::MenuItem("Save As...", "Shift Ctrl S"))
+                {
+                    SaveSceneAs();
+                }
+
+                // 菜单项：退出
+                if (ImGui::MenuItem("Quit"))
+                {
+                    Application::GetInstance().Close();    // 退出程序
+                }
+
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
         }
 
-        if (dockspaceFlags)
+        m_HierarchyPanel.OnImGuiRender();   // 渲染 Hierarchy 面板
+        m_PropertiesPanel.OnImGuiRender();  // 渲染 Properties 面板
+
+        // 批渲染数据统计 TODO RendererStatsPanel
+        ImGui::Begin("Renderer2D Stats");
         {
-            windowFlags |= ImGuiWindowFlags_NoBackground;
-        }
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            auto stats = Renderer2D::GetStats();
 
-        // 停靠空间 TODO ImGuiLayer
-        ImGui::Begin("DockSpace", &dockSpaceOpen, windowFlags);
-        {
-            ImGui::PopStyleVar();
+            ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());  // 帧率
 
-            if (optFullscreen)
-            {
-                ImGui::PopStyleVar(2);
-            }
-
-            ImGuiIO& io = ImGui::GetIO();
-
-            ImGuiStyle& style = ImGui::GetStyle();      // 样式
-            float minWinSizeX = style.WindowMinSize.x;  // 最小窗口大小
-            // style.WindowMinSize.x = 370.0f;
-
-            if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-            {
-                ImGuiID dockspaceID = ImGui::GetID("Editor Dockspace");
-                ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
-            }
-
-            // 菜单条 TODO MenuBarPanel
-            if (ImGui::BeginMenuBar())
-            {
-                // 菜单：File
-                if (ImGui::BeginMenu("File"))
-                {
-                    // 创建新场景
-                    if (ImGui::MenuItem("New", "Ctrl N"))
-                    {
-                        NewScene();
-                    }
-
-                    // 打开文件：加载场景
-                    if (ImGui::MenuItem("Open...", "Ctrl O"))
-                    {
-                        OpenScene();
-                    }
-
-                    // 另存为：保存场景
-                    if (ImGui::MenuItem("Save As...", "Shift Ctrl S"))
-                    {
-                        SaveSceneAs();
-                    }
-
-                    // 菜单项：退出
-                    if (ImGui::MenuItem("Quit"))
-                    {
-                        Application::GetInstance().Close();    // 退出程序
-                    }
-
-                    ImGui::EndMenu();
-                }
-                ImGui::EndMenuBar();
-            }
-
-            m_HierarchyPanel.OnImGuiRender();   // 渲染 Hierarchy 面板
-            m_PropertiesPanel.OnImGuiRender();  // 渲染 Properties 面板
-
-            // 批渲染数据统计 TODO RendererStatsPanel
-            ImGui::Begin("Renderer2D Stats");
-            {
-                auto stats = Renderer2D::GetStats();
-
-                ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());  // 帧率
-
-                ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-                ImGui::Text("Quad: %d", stats.QuadCount);
-                ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-                ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-            }
-            ImGui::End();
-
-            // 场景视口 TODO SceneViewportPanel
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // 设置 Gui 窗口样式：边界 = 0
-            ImGui::Begin("Scene");
-            {
-                auto viewportMinRegion = ImGui::GetWindowContentRegionMin();    // 视口可用区域最小值（视口左上角相对于视口左上角位置）
-                auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();    // 视口可用区域最大值（视口右下角相对于视口左上角位置）
-                auto viewportOffset = ImGui::GetWindowPos();                    // 视口偏移量：视口面板左上角位置（相对于屏幕左上角）
-
-                m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
-                m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
-
-                m_ViewportFocused = ImGui::IsWindowFocused();   // 当前窗口被聚焦
-                m_ViewportHovered = ImGui::IsWindowHovered();   // 鼠标悬停在当前窗口
-
-                Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused ||*/ !m_ViewportHovered); // 阻止ImGui事件
-
-                ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();      // 当前面板大小
-
-                m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };  // 视口大小
-
-                uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(); // 颜色缓冲区 0 ID
-
-                ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));   // 场景视口图像
-
-                // Gizmo
-                Object selectedObject = Selection::Object;  // 被选中物体
-                // 选中物体存在 && Gizmo 类型存在
-                if (selectedObject && m_GizmoType != -1)
-                {
-                    ImGuizmo::SetOrthographic(false);   // 透视投影
-                    ImGuizmo::SetDrawlist();            // 设置绘制列表
-
-                    // 设置绘制区域
-                    ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
-
-                    // 编辑器相机
-                    const glm::mat4& cameraProjection = m_EditorCamera.GetProjectionMatrix();   // 投影矩阵
-                    glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();                      // 视图矩阵
-
-                    // 绘制坐标系
-                    //ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(glm::mat4(1.0f)), 10);
-
-                    // 被选中物体 transform
-                    Transform& transformComponent = selectedObject.GetComponent<TransformComponent>().Transform;    // Transform
-                    glm::mat4 transform = transformComponent.GetTransform();
-
-                    bool span = Input::IsKeyPressed(Key::LeftControl);  // Ctrl 刻度捕捉：操作时固定 delta 刻度
-                    float spanValue = 0.5f;     // 平移缩放间隔：0.5m
-
-                    // 旋转间隔值：5 度
-                    if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
-                    {
-                        spanValue = 5.0f;
-                    }
-                    
-                    float spanValues[3] = { spanValue, spanValue, spanValue };  // xyz 轴刻度捕捉值
-
-                    // 绘制操作 Gizmo：相机视图矩阵 相机投影矩阵 Gizmo 类型 本地坐标系 选中物体 transform 增量矩阵 刻度捕捉值
-                    ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-                        (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
-                        nullptr, span ? spanValues : nullptr);
-
-                    // Gizmo 正在使用
-                    if (ImGuizmo::IsUsing())
-                    {
-                        glm::vec3 position, rotation, scale;
-                        Math::DecomposeTransform(transform, position, rotation, scale); // 分解 transform 矩阵
-                        
-                        switch (m_GizmoType)
-                        {
-                            case ImGuizmo::OPERATION::TRANSLATE:
-                                transformComponent.GetPosition() = position;        // 更新位置
-                                break;
-                            case ImGuizmo::OPERATION::ROTATE:
-                                glm::vec3 deltaRotation = rotation - transformComponent.GetRotation();  // 旋转增量
-                                transformComponent.GetRotation() += deltaRotation;  // 更新旋转：累加增量，避免万向节锁
-                                break;
-                            case ImGuizmo::OPERATION::SCALE:
-                                transformComponent.GetScale() = scale;              // 更新缩放
-                                break;
-                        }
-                    }
-                }
-            }
-            ImGui::End();
-            ImGui::PopStyleVar();
+            ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+            ImGui::Text("Quad: %d", stats.QuadCount);
+            ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+            ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
         }
         ImGui::End();
+
+        // 场景视口 TODO SceneViewportPanel
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // 设置 Gui 窗口样式：边界 = 0
+        ImGui::Begin("Scene");
+        {
+            auto viewportMinRegion = ImGui::GetWindowContentRegionMin();    // 视口可用区域最小值（视口左上角相对于视口左上角位置）
+            auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();    // 视口可用区域最大值（视口右下角相对于视口左上角位置）
+            auto viewportOffset = ImGui::GetWindowPos();                    // 视口偏移量：视口面板左上角位置（相对于屏幕左上角）
+
+            m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+            m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
+            m_ViewportFocused = ImGui::IsWindowFocused();   // 当前窗口被聚焦
+            m_ViewportHovered = ImGui::IsWindowHovered();   // 鼠标悬停在当前窗口
+
+            Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused ||*/ !m_ViewportHovered); // 阻止ImGui事件
+
+            ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();      // 当前面板大小
+
+            m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };  // 视口大小
+
+            uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(); // 颜色缓冲区 0 ID
+
+            ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));   // 场景视口图像
+
+            // Gizmo
+            Object selectedObject = Selection::Object;  // 被选中物体
+            // 选中物体存在 && Gizmo 类型存在
+            if (selectedObject && m_GizmoType != -1)
+            {
+                ImGuizmo::SetOrthographic(false);   // 透视投影
+                ImGuizmo::SetDrawlist();            // 设置绘制列表
+
+                // 设置绘制区域
+                ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
+
+                // 编辑器相机
+                const glm::mat4& cameraProjection = m_EditorCamera.GetProjectionMatrix();   // 投影矩阵
+                glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();                      // 视图矩阵
+
+                // 绘制坐标系
+                //ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(glm::mat4(1.0f)), 10);
+
+                // 被选中物体 transform
+                Transform& transformComponent = selectedObject.GetComponent<TransformComponent>().Transform;    // Transform
+                glm::mat4 transform = transformComponent.GetTransform();
+
+                bool span = Input::IsKeyPressed(Key::LeftControl);  // Ctrl 刻度捕捉：操作时固定 delta 刻度
+                float spanValue = 0.5f;     // 平移缩放间隔：0.5m
+
+                // 旋转间隔值：5 度
+                if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+                {
+                    spanValue = 5.0f;
+                }
+                    
+                float spanValues[3] = { spanValue, spanValue, spanValue };  // xyz 轴刻度捕捉值
+
+                // 绘制操作 Gizmo：相机视图矩阵 相机投影矩阵 Gizmo 类型 本地坐标系 选中物体 transform 增量矩阵 刻度捕捉值
+                ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+                    (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+                    nullptr, span ? spanValues : nullptr);
+
+                // Gizmo 正在使用
+                if (ImGuizmo::IsUsing())
+                {
+                    glm::vec3 position, rotation, scale;
+                    Math::DecomposeTransform(transform, position, rotation, scale); // 分解 transform 矩阵
+                        
+                    switch (m_GizmoType)
+                    {
+                        case ImGuizmo::OPERATION::TRANSLATE:
+                            transformComponent.GetPosition() = position;        // 更新位置
+                            break;
+                        case ImGuizmo::OPERATION::ROTATE:
+                            glm::vec3 deltaRotation = rotation - transformComponent.GetRotation();  // 旋转增量
+                            transformComponent.GetRotation() += deltaRotation;  // 更新旋转：累加增量，避免万向节锁
+                            break;
+                        case ImGuizmo::OPERATION::SCALE:
+                            transformComponent.GetScale() = scale;              // 更新缩放
+                            break;
+                    }
+                }
+            }
+        }
+        ImGui::End();
+        ImGui::PopStyleVar();
     }
 
     void EditorLayer::OnEvent(Event& event)
@@ -382,6 +332,8 @@ namespace Lucky
                     break;
             }
         }
+
+        return false;
     }
 
     bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)

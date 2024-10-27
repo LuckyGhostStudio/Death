@@ -29,12 +29,12 @@ namespace Lucky
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };  // 视口大小
         glm::vec2 m_ViewportBounds[2];              // 视口边界（左上角，右下角）
 
+        DockSpace m_DockSpace;                      // 停靠空间
+
         SceneHierarchyPanel m_HierarchyPanel;       // 场景 Hierarchy 面板
         ObjectPropertiesPanel m_PropertiesPanel;    // 物体属性面板
 
         int m_GizmoType = -1;   // Gizmo 操作类型 -1无 0平移 1旋转 2缩放
-
-        float fps = 0.0f;
     public:
         EditorLayer();
 

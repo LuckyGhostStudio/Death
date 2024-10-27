@@ -110,7 +110,8 @@ namespace Lucky
 
         m_Minimized = false;
         Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());  //进行窗口缩放后的设置
-        
+        // TODO 更新 ImGui 的 DisplaySize
+
         return false;
     }
 }

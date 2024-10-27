@@ -47,7 +47,12 @@ namespace Lucky
         void BlockEvents(bool block) { m_BlockEvents = block; }
 
         /// <summary>
-        /// 设置深色主题
+        /// 设置常规样式（总体样式）
+        /// </summary>
+        void SetDefaultStyles();
+
+        /// <summary>
+        /// 设置深色主题：设置颜色样式
         /// </summary>
         void SetDarkThemeColors();
     };
