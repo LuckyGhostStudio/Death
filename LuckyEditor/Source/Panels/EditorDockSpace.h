@@ -5,7 +5,7 @@
 namespace Lucky
 {
     /// <summary>
-    /// 编辑器停靠空间
+    /// 编辑器停靠空间（必须在所有面板的前面渲染）
     /// </summary>
     class EditorDockSpace : public EditorWindow
     {

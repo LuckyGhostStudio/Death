@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Lucky/Core/Core.h"
+
 typedef unsigned int GLenum;
 
 namespace Lucky

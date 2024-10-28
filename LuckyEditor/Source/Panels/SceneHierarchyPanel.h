@@ -6,8 +6,6 @@
 #include "Lucky/Scene/Scene.h"
 #include "Lucky/Scene/Object.h"
 
-#include "ObjectPropertiesPanel.h"
-
 #include "Lucky/Scene/Selection.h"
 
 namespace Lucky

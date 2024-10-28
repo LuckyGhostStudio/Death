@@ -11,9 +11,8 @@ namespace Lucky
     {
     protected:
         std::string m_Name;     // 名字：窗口 ID
-        std::string m_Title;    // 标题
     public:
-        EditorWindow(const std::string& name = "EditorWindow", const std::string& title = "EditorWindow");
+        EditorWindow(const std::string& name = "EditorWindow");
         virtual ~EditorWindow();
 
         /// <summary>

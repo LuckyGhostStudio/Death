@@ -1,4 +1,4 @@
-#include "ObjectPropertiesPanel.h"
+#include "InspectorPanel.h"
 
 #include "Lucky/Scene/Components/SelfComponent.h"
 #include "Lucky/Scene/Components/TransformComponent.h"
@@ -13,10 +13,20 @@
 
 namespace Lucky
 {
-    void ObjectPropertiesPanel::OnImGuiRender()
+    InspectorPanel::InspectorPanel()
+        : EditorWindow("Inspector")
     {
-        // 属性面板
-        ImGui::Begin("Properties");
+    
+    }
+
+    InspectorPanel::~InspectorPanel()
+    {
+
+    }
+
+    void InspectorPanel::OnImGuiRender()
+    {
+        ImGui::Begin(m_Name.c_str());
         {
             // 被选中的物体存在 TODO 添加资产信息绘制
             if (Selection::Object)
@@ -27,7 +37,7 @@ namespace Lucky
         ImGui::End();
     }
 
-    void ObjectPropertiesPanel::AddComponents(Object object)
+    void InspectorPanel::AddComponents(Object object)
     {
         // 添加组件
         if (ImGui::Button("Add Component"))
@@ -221,7 +231,7 @@ namespace Lucky
         }
     }
 
-    void ObjectPropertiesPanel::DrawComponents(Object object)
+    void InspectorPanel::DrawComponents(Object object)
     {
         // Self 组件
         if (object.HasComponent<SelfComponent>())
@@ -326,7 +336,7 @@ namespace Lucky
         });
 
         // SpriteRenderer 组件
-        DrawComponent<SpriteRendererComponent>("SpriteRenderer", object, [](SpriteRendererComponent& spriteRendererComponent)
+        DrawComponent<SpriteRendererComponent>("Sprite Renderer", object, [](SpriteRendererComponent& spriteRendererComponent)
         {
             ImGui::ColorEdit4("Color", glm::value_ptr(spriteRendererComponent.Color));   // 颜色编辑器
         });

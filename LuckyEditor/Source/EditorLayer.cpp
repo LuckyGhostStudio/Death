@@ -120,7 +120,7 @@ namespace Lucky
             // 被鼠拾取的物体（不是 -1）
             m_PickedObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_ActiveScene.get());
 
-            LC_CORE_WARN("pixelData:{0}", pixelData);
+            // LC_CORE_WARN("pixelData:{0}", pixelData);
         }
 
         m_Framebuffer->Unbind();    // 解除绑定帧缓冲区
@@ -165,22 +165,9 @@ namespace Lucky
             ImGui::EndMainMenuBar();
         }
 
-        m_HierarchyPanel.OnImGuiRender();   // 渲染 Hierarchy 面板
-        m_PropertiesPanel.OnImGuiRender();  // 渲染 Properties 面板
-
-        // 批渲染数据统计 TODO RendererStatsPanel
-        ImGui::Begin("Scece Renderer Stats");
-        {
-            auto stats = Renderer2D::GetStats();
-
-            ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());  // 帧率
-
-            ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-            ImGui::Text("Quad: %d", stats.QuadCount);
-            ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-            ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-        }
-        ImGui::End();
+        m_HierarchyPanel.OnImGuiRender();       // 渲染 Hierarchy 面板
+        m_InspectorPanel.OnImGuiRender();       // 渲染 Inspector 面板
+        m_RendererStatsPanel.OnImGuiRender();   // 渲染 RendererStats 面板
 
         // 场景视口 TODO SceneViewportPanel
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // 设置 Gui 窗口样式：边界 = 0

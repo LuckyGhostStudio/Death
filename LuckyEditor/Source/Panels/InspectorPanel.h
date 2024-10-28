@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EditorWindow.h"
+
 #include "Lucky/Core/Core.h"
 #include "Lucky/Core/Log.h"
 
@@ -8,9 +10,9 @@
 namespace Lucky
 {
     /// <summary>
-    /// 物体属性面板 TODO 修改为 AssetsInspector
+    /// 检视面板：显示选中物体或资产的信息
     /// </summary>
-    class ObjectPropertiesPanel
+    class InspectorPanel : public EditorWindow
     {
     private:
         /// <summary>
@@ -25,7 +27,8 @@ namespace Lucky
         /// <param name="object">物体</param>
         void DrawComponents(Object object);
     public:
-        ObjectPropertiesPanel() = default;
+        InspectorPanel();
+        virtual ~InspectorPanel();
 
         /// <summary>
         /// 渲染ImGui

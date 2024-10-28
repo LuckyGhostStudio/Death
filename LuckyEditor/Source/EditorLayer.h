@@ -6,7 +6,8 @@
 
 #include "Panels/EditorDockSpace.h"
 #include "Panels/SceneHierarchyPanel.h"
-#include "Panels/ObjectPropertiesPanel.h"
+#include "Panels/InspectorPanel.h"
+#include "Panels/RendererStatsPanel.h"
 
 namespace Lucky
 {
@@ -33,7 +34,8 @@ namespace Lucky
         EditorDockSpace m_EditorDockSpace;          // 停靠空间
 
         SceneHierarchyPanel m_HierarchyPanel;       // 场景 Hierarchy 面板
-        ObjectPropertiesPanel m_PropertiesPanel;    // 物体属性面板
+        InspectorPanel m_InspectorPanel;            // 资产 Inspector 面板
+        RendererStatsPanel m_RendererStatsPanel;    // 渲染器数据统计面板
 
         int m_GizmoType = -1;   // Gizmo 操作类型 -1无 0平移 1旋转 2缩放
     public:

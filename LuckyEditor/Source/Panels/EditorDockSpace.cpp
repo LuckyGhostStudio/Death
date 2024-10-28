@@ -6,7 +6,7 @@
 namespace Lucky
 {
     EditorDockSpace::EditorDockSpace(bool opened, bool fullScreen)
-        : EditorWindow("EditorDockSpace", "DockSpace"),
+        : EditorWindow("EditorDockSpace"),
         m_Opened(opened),
         m_IsFullScreen(fullScreen),
         m_Flags(ImGuiDockNodeFlags_None),

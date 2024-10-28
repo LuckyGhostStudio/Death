@@ -36,8 +36,8 @@ namespace Lucky
 
 // 内核 Log
 #define LC_CORE_TRACE(...)    ::Lucky::Log::GetCoreLogger()->trace(__VA_ARGS__)     // 提示
-#define LC_CORE_INFO(...)    ::Lucky::Log::GetCoreLogger()->info(__VA_ARGS__)       // 信息
-#define LC_CORE_WARN(...)    ::Lucky::Log::GetCoreLogger()->warn(__VA_ARGS__)       // 警告
+#define LC_CORE_INFO(...)     ::Lucky::Log::GetCoreLogger()->info(__VA_ARGS__)      // 信息
+#define LC_CORE_WARN(...)     ::Lucky::Log::GetCoreLogger()->warn(__VA_ARGS__)      // 警告
 #define LC_CORE_ERROR(...)    ::Lucky::Log::GetCoreLogger()->error(__VA_ARGS__)     // 错误
 #define LC_CORE_FATAL(...)    ::Lucky::Log::GetCoreLogger()->critical(__VA_ARGS__)  // 严重错误
 
