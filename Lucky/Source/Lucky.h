@@ -13,6 +13,7 @@
 
 #include "Lucky/Scene/Scene.h"
 #include "Lucky/Scene/Object.h"
+#include "Lucky/Scene/Selection.h"
 
 // Components
 #include "Lucky/Scene/Components/SelfComponent.h"

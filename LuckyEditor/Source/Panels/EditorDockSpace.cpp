@@ -20,6 +20,11 @@ namespace Lucky
 
     }
 
+    void EditorDockSpace::OnUpdate(DeltaTime dt)
+    {
+
+    }
+
     void EditorDockSpace::OnImGuiRender()
     {
         if (m_IsFullScreen)
@@ -63,5 +68,10 @@ namespace Lucky
             }
         }
         ImGui::End();
+    }
+
+    void EditorDockSpace::OnEvent(Event& e)
+    {
+
     }
 }

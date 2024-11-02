@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EditorWindow.h"
+
 #include "Lucky/Core/Core.h"
 #include "Lucky/Core/Log.h"
 
@@ -11,9 +13,9 @@
 namespace Lucky
 {
     /// <summary>
-    /// 场景物体层级面板
+    /// 场景物体层级面板：显示场景中的物体层次结构
     /// </summary>
-    class SceneHierarchyPanel
+    class SceneHierarchyPanel : public EditorWindow
     {
     private:
         Ref<Scene> m_Scene;                             // 面板显示的场景
@@ -31,23 +33,21 @@ namespace Lucky
         /// <param name="object">物体</param>
        //void DrawComponents(Object object);
     public:
-        SceneHierarchyPanel() = default;
-
-        /// <summary>
-        /// 场景对象层级面板
-        /// </summary>
-        /// <param name="context">场景</param>
+        SceneHierarchyPanel();
         SceneHierarchyPanel(const Ref<Scene>& scene);
+        
+        virtual ~SceneHierarchyPanel();
 
         /// <summary>
         /// 设置场景
         /// </summary>
-        /// <param name="context">场景</param>
+        /// <param name="scene">场景</param>
         void SetScene(const Ref<Scene>& scene);
 
-        /// <summary>
-        /// 渲染ImGui
-        /// </summary>
-        void OnImGuiRender();
+        virtual void OnUpdate(DeltaTime dt) override;
+
+        virtual void OnImGuiRender() override;
+
+        virtual void OnEvent(Event& e) override;
     };
 }

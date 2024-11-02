@@ -18,6 +18,11 @@ namespace Lucky
 
     }
 
+    void RendererStatsPanel::OnUpdate(DeltaTime dt)
+    {
+        Renderer2D::ResetStats();   // 重置统计数据
+    }
+
     void RendererStatsPanel::OnImGuiRender()
     {
         ImGui::Begin(m_Name.c_str());
@@ -32,5 +37,10 @@ namespace Lucky
             ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
         }
         ImGui::End();
+    }
+
+    void RendererStatsPanel::OnEvent(Event& e)
+    {
+
     }
 }

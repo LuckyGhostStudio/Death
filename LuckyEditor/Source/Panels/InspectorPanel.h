@@ -2,10 +2,8 @@
 
 #include "EditorWindow.h"
 
-#include "Lucky/Core/Core.h"
-#include "Lucky/Core/Log.h"
-
 #include "Lucky/Scene/Object.h"
+#include "Lucky/Scene/Selection.h"
 
 namespace Lucky
 {
@@ -14,6 +12,8 @@ namespace Lucky
     /// </summary>
     class InspectorPanel : public EditorWindow
     {
+    private:
+        Object& m_SelectionObject = Selection::Object;  // 当前选中项
     private:
         /// <summary>
         /// 添加组件 UI
@@ -30,9 +30,10 @@ namespace Lucky
         InspectorPanel();
         virtual ~InspectorPanel();
 
-        /// <summary>
-        /// 渲染ImGui
-        /// </summary>
-        void OnImGuiRender();
+        virtual void OnUpdate(DeltaTime dt) override;
+
+        virtual void OnImGuiRender() override;
+
+        virtual void OnEvent(Event& e) override;
     };
 }

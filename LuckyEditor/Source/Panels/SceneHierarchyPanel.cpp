@@ -6,9 +6,21 @@
 
 namespace Lucky
 {
+    SceneHierarchyPanel::SceneHierarchyPanel()
+        : EditorWindow("Hierarchy")
+    {
+
+    }
+
     SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene)
+        : EditorWindow("Hierarchy")
     {
         SetScene(scene);
+    }
+
+    SceneHierarchyPanel::~SceneHierarchyPanel()
+    {
+
     }
 
     void SceneHierarchyPanel::SetScene(const Ref<Scene>& scene)
@@ -17,9 +29,14 @@ namespace Lucky
         m_SelectionObject = {};     // 取消选中：置空选中物体
     }
 
+    void SceneHierarchyPanel::OnUpdate(DeltaTime dt)
+    {
+
+    }
+
     void SceneHierarchyPanel::OnImGuiRender()
     {
-        ImGui::Begin("Hierarchy");
+        ImGui::Begin(m_Name.c_str());
         {
             // 遍历场景所有实体，并调用 each 内的函数
             m_Scene->m_Registry.each([&](auto ObjectID)
@@ -98,5 +115,10 @@ namespace Lucky
                 m_SelectionObject = {};         // 清空已选中物体
             }
         }
+    }
+
+    void SceneHierarchyPanel::OnEvent(Event& e)
+    {
+
     }
 }

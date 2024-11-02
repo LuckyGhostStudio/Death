@@ -21,6 +21,10 @@ namespace Lucky
 
         virtual ~EditorDockSpace() override;
 
+        virtual void OnUpdate(DeltaTime dt) override;
+
         virtual void OnImGuiRender() override;
+
+        virtual void OnEvent(Event& e) override;
     };
 }

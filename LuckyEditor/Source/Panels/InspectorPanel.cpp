@@ -5,8 +5,6 @@
 #include "Lucky/Scene/Components/CameraComponent.h"
 #include "Lucky/Scene/Components/SpriteRendererComponent.h"
 
-#include "Lucky/Scene/Selection.h"
-
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -24,17 +22,27 @@ namespace Lucky
 
     }
 
+    void InspectorPanel::OnUpdate(DeltaTime dt)
+    {
+
+    }
+
     void InspectorPanel::OnImGuiRender()
     {
         ImGui::Begin(m_Name.c_str());
         {
             // 被选中的物体存在 TODO 添加资产信息绘制
-            if (Selection::Object)
+            if (m_SelectionObject)
             {
-                DrawComponents(Selection::Object);  // 绘制组件 UI
+                DrawComponents(m_SelectionObject);  // 绘制组件 UI
             }
         }
         ImGui::End();
+    }
+
+    void InspectorPanel::OnEvent(Event& e)
+    {
+
     }
 
     void InspectorPanel::AddComponents(Object object)

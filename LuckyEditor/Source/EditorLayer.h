@@ -5,6 +5,7 @@
 #include "Lucky/Renderer/EditorCamera.h"
 
 #include "Panels/EditorDockSpace.h"
+#include "Panels/SceneViewportPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/InspectorPanel.h"
 #include "Panels/RendererStatsPanel.h"
@@ -19,25 +20,15 @@ namespace Lucky
         Ref<Scene> m_ActiveScene;           // 活动场景
         EditorCamera m_EditorCamera;        // 编辑器相机
 
-        Object m_SquareObject1;             // 正方形物体
-        Object m_SquareObject2;             // 正方形物体
+        Object m_SquareObject;              // 正方形物体
         Object m_CameraObject;              // 相机对象
-
-        Object m_PickedObject;              // 被鼠标拾取的物体
-
-        bool m_ViewportFocused = false;     // 视口被聚焦
-        bool m_ViewportHovered = false;     // 鼠标悬停在视口
-
-        glm::vec2 m_ViewportSize = { 0.0f, 0.0f };  // 视口大小
-        glm::vec2 m_ViewportBounds[2];              // 视口边界（左上角，右下角）
 
         EditorDockSpace m_EditorDockSpace;          // 停靠空间
 
-        SceneHierarchyPanel m_HierarchyPanel;       // 场景 Hierarchy 面板
+        SceneViewportPanel m_SceneViewportPanel;    // 场景 Viewport 面板
+        SceneHierarchyPanel m_SceneHierarchyPanel;  // 场景 Hierarchy 面板
         InspectorPanel m_InspectorPanel;            // 资产 Inspector 面板
-        RendererStatsPanel m_RendererStatsPanel;    // 渲染器数据统计面板
-
-        int m_GizmoType = -1;   // Gizmo 操作类型 -1无 0平移 1旋转 2缩放
+        RendererStatsPanel m_RendererStatsPanel;    // 场景 RendererStats 面板
     public:
         EditorLayer();
 
