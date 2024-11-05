@@ -5,6 +5,8 @@
 #include "Lucky/Scene/Components/CameraComponent.h"
 #include "Lucky/Scene/Components/SpriteRendererComponent.h"
 
+#include "Lucky/ImGui/GUI.h"
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -74,104 +76,6 @@ namespace Lucky
 
             ImGui::EndPopup();
         }
-    }
-
-    /// <summary>
-    /// 绘制Vector3控件
-    /// </summary>
-    /// <param name="label">标签</param>
-    /// <param name="values">值</param>
-    /// <param name="resetValue">重置值</param>
-    /// <param name="columnWidth">每列宽度</param>
-    static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
-    {
-        ImGuiIO& io = ImGui::GetIO();
-        auto boldFont = io.Fonts->Fonts[0]; // 粗体：0号字体
-
-        ImGui::PushID(label.c_str());   // 设置控件标签
-
-        // 标签列
-        ImGui::Columns(2);
-        ImGui::SetColumnWidth(0, columnWidth);  // 设置 0 号列宽
-        ImGui::Text(label.c_str());
-        ImGui::NextColumn();
-
-        ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());         // 设置 3 个列宽
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 }); // Var 样式
-
-        float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;    // 行高 = 字体大小 + 边框.y * 2
-        ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };  // 重置值按钮大小
-
-        // X 分量 UI
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));        // 按钮颜色
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.3f, 0.35f, 1.0f)); // 鼠标悬停在按钮时的颜色
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.1f, 0.15f, 1.0f));  // 按钮按下颜色
-
-        ImGui::PushFont(boldFont);  // 设置粗体
-
-        // X 按钮按下
-        if (ImGui::Button("X", buttonSize))
-        {
-            values.x = resetValue;  // 重置 x 分量
-        }
-
-        ImGui::PopFont();
-
-        ImGui::PopStyleColor(3);
-
-        ImGui::SameLine();                          // 在同一行
-        ImGui::DragFloat("##X", &values.x, 0.1f);   // X 分量列 ##不显示标签 拖动精度 0.1
-        ImGui::PopItemWidth();                      // 推出第一个列宽
-        ImGui::SameLine();
-
-        // Y 分量 UI
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));         // 按钮颜色
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.9f, 0.4f, 1.0f));  // 鼠标悬停在按钮时的颜色
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));   // 按钮按下颜色
-
-        ImGui::PushFont(boldFont);  // 设置粗体
-
-        // Y 按钮按下
-        if (ImGui::Button("Y", buttonSize))
-        {
-            values.y = resetValue;  // 重置 y 分量
-        }
-
-        ImGui::PopFont();
-
-        ImGui::PopStyleColor(3);
-
-        ImGui::SameLine();                          // 在同一行
-        ImGui::DragFloat("##Y", &values.y, 0.1f);   // Y 分量列 ##不显示标签 拖动精度 0.1
-        ImGui::PopItemWidth();                      // 推出第一个列宽
-        ImGui::SameLine();
-
-        // Z 分量 UI
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.25f, 0.8f, 1.0f));        // 按钮颜色
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.4f, 0.8f, 1.0f));  // 鼠标悬停在按钮时的颜色
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.35f, 0.25f, 0.9f, 1.0f)); // 按钮按下颜色
-
-        ImGui::PushFont(boldFont);  // 设置粗体
-
-        // Z 按钮按下
-        if (ImGui::Button("Z", buttonSize))
-        {
-            values.z = resetValue;  // 重置 z 分量
-        }
-
-        ImGui::PopFont();
-
-        ImGui::PopStyleColor(3);
-
-        ImGui::SameLine();                          // 在同一行
-        ImGui::DragFloat("##Z", &values.z, 0.1f);   // Z 分量列 ##不显示标签 拖动精度 0.1
-        ImGui::PopItemWidth();                      // 推出第一个列宽
-
-        ImGui::PopStyleVar();
-
-        ImGui::Columns(1);
-
-        ImGui::PopID();     // 弹出控件标签
     }
 
     /// <summary>
@@ -270,9 +174,9 @@ namespace Lucky
         {
             auto& transform = transformComponent.Transform;
 
-            DrawVec3Control("Position", transform.GetPosition());   // 位置：默认值 1.0f
-            DrawVec3Control("Rotation", transform.GetRotation());   // 旋转：默认值 1.0f
-            DrawVec3Control("Scale", transform.GetScale(), 1.0f);   // 缩放：默认值 1.0f
+            GUI::DragVector3("Position", transform.GetPosition());  // 位置：默认值 1.0f
+            GUI::DragVector3("Rotation", transform.GetRotation());  // 旋转：默认值 1.0f
+            GUI::DragVector3("Scale", transform.GetScale(), 1.0f);  // 缩放：默认值 1.0f
         });
 
         // Camera 组件
