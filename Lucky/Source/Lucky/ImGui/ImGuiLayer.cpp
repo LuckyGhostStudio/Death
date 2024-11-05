@@ -16,7 +16,8 @@
 
 namespace Lucky
 {
-    ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer")
+    ImGuiLayer::ImGuiLayer()
+        : Layer("ImGuiLayer")
     {
 
     }
@@ -112,12 +113,11 @@ namespace Lucky
         style.WindowRounding = 4.8f;            // 窗口边框圆度
         style.GrabRounding = 4.8f;              // 拖动条 handle 圆度
         style.PopupRounding = 4.8f;             // 弹出窗口圆度
-        style.ChildRounding = 4.8f;
-        style.TabRounding = 4.8f;
-        style.ScrollbarRounding = 4.8f;
+        style.ChildRounding = 4.8f;             // 子窗口圆度
+        style.TabRounding = 4.8f;               // Tab 圆度
+        style.ScrollbarRounding = 4.8f;         // 滚动条圆度
 
         style.FrameBorderSize = 1.0f;           // 边框尺寸
-        style.WindowMenuButtonPosition = -1;    // 窗口 tabbar 按钮取消显示
         style.ButtonTextAlign = { 0.5f, 0.5f }; // 按钮文字居中
     }
 
