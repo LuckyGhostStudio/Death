@@ -89,15 +89,19 @@ namespace Lucky
         void SetProjectionType(ProjectionType type) { m_ProjectionType = type; RecalculateProjection(); }
 
         float GetFOV() const { return m_Fov; }
+        float& GetFOV_Ref() { return m_Fov; }
         void SetFOV(float fov) { m_Fov = fov; RecalculateProjection(); }
 
         float GetSize() const { return m_Size; }
+        float& GetSize_Ref() { return m_Size; }
         void SetSize(float size) { m_Size = size; RecalculateProjection(); }
 
         float GetNearClip() const { return m_Near; }
+        float& GetNearClip_Ref() { return m_Near; }
         void SetNearClip(float nearClip) { m_Near = nearClip; RecalculateProjection(); }
 
         float GetFarClip() const { return m_Far; }
+        float& GetFarClip_Ref() { return m_Far; }
         void SetFarClip(float farClip) { m_Far = farClip; RecalculateProjection(); }
     };
 }

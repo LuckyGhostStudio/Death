@@ -51,7 +51,6 @@ namespace Lucky
         ImGui::PopItemWidth();                      // 推出第一个列宽
         ImGui::SameLine();
 
-
         // Y 分量 UI
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });                 // Var Item 空格
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));         // 按钮颜色
@@ -104,5 +103,69 @@ namespace Lucky
         ImGui::Columns(1);  // 设置为 1 列
 
         ImGui::PopID();     // 弹出控件 ID
+    }
+
+    void GUI::DragFloat(const std::string& label, float* value, float valueSpeed, ValueType valueType, float minValue, float maxValue, float labelColumnWidth, float widgetOffset)
+    {
+        ImGui::PushID(label.c_str());   // 设置控件 ID
+
+        float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
+
+        ImGui::Columns(2, 0, false);                // 设置为 两列 id 边界取消显示
+        ImGui::SetColumnWidth(0, labelColumnWidth); // 设置 0 号列宽
+
+        ImGui::Text(label.c_str());     // 控件名（0 号列）
+
+        ImGui::NextColumn();
+
+        ImGui::PushItemWidth(panelWidth - labelColumnWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
+
+        // 拖动条（1 号列）
+        switch (valueType)
+        {
+            case ValueType::Float:
+                ImGui::DragFloat("##Float", value, valueSpeed, minValue, maxValue);
+                break;
+            case ValueType::Float2:
+                ImGui::DragFloat2("##Float2", value, valueSpeed, minValue, maxValue);
+                break;
+        }
+        ImGui::PopItemWidth();
+
+        ImGui::Columns(1);  // 设置为一列
+
+        ImGui::PopID();
+    }
+
+    void GUI::DragSlider(const std::string& label, float* value, float minValue, float maxValue, ValueType valueType, float labelColumnWidth, float widgetOffset)
+    {
+        ImGui::PushID(label.c_str());   // 设置控件 ID
+
+        float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
+
+        ImGui::Columns(2, 0, false);                // 设置为 两列 id 边界取消显示
+        ImGui::SetColumnWidth(0, labelColumnWidth); // 设置 0 号列宽
+
+        ImGui::Text(label.c_str());     // 控件名（0 号列）
+
+        ImGui::NextColumn();
+
+        ImGui::PushItemWidth(panelWidth - labelColumnWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
+
+        // 滑动条（1 号列）
+        switch (valueType)
+        {
+            case ValueType::Float:
+                ImGui::SliderFloat("##Float", value, minValue, maxValue);
+                break;
+            case ValueType::Angle:
+                ImGui::SliderAngle("##Angle", value, minValue, maxValue);   // 弧度
+                break;
+        }
+        ImGui::PopItemWidth();
+
+        ImGui::Columns(1);  // 设置为一列
+
+        ImGui::PopID();
     }
 }

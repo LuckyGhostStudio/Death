@@ -213,38 +213,17 @@ namespace Lucky
             // 透视投影
             if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
             {
-                float verticalFov = camera.GetFOV();    // 垂直张角
-
-                if (ImGui::SliderAngle("Vertical Fov", &verticalFov))
-                {
-                    camera.SetFOV(verticalFov);
-                }
+                GUI::DragSlider("Vertical FOV", &camera.GetFOV_Ref(), 1.0f, 179.0f, GUI::ValueType::Angle); // FOV 垂直张角 滑动条
             }
 
             // 正交投影
             if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
             {
-                float size = camera.GetSize();      // 尺寸
-
-                if (ImGui::DragFloat("Size", &size))
-                {
-                    camera.SetSize(size);
-                }
+                GUI::DragFloat("Size", &camera.GetSize_Ref());  // 尺寸 拖动条
             }
 
-            float nearClip = camera.GetNearClip();  // 近裁剪平面
-
-            if (ImGui::DragFloat("Near", &nearClip))
-            {
-                camera.SetNearClip(nearClip);
-            }
-
-            float farClip = camera.GetFarClip();    // 远裁剪平面
-
-            if (ImGui::DragFloat("Far", &farClip))
-            {
-                camera.SetFarClip(farClip);
-            }
+            GUI::DragFloat("Near", &camera.GetNearClip_Ref(), 0.01f, GUI::ValueType::Float, 0.01f, camera.GetFarClip() - 0.01f);    // 近裁剪平面
+            GUI::DragFloat("Far", &camera.GetFarClip_Ref(), 0.01f, GUI::ValueType::Float, camera.GetNearClip() + 0.01f, 1000.0f);   // 远裁剪平面
         });
 
         // SpriteRenderer 组件
