@@ -34,7 +34,7 @@ namespace Lucky
         static void DragVector3(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
    
         /// <summary>
-        /// Drag Float 控件
+        /// Drag FloatN
         /// </summary>
         /// <param name="label">标签名</param>
         /// <param name="value">值</param>
@@ -44,10 +44,10 @@ namespace Lucky
         /// <param name="maxValue">最大值</param>
         /// <param name="labelColumnWidth">标签列宽</param>
         /// <param name="widgetOffset">小部件右边界向左偏移量</param>
-        static void DragFloat(const std::string& label, float* value, float valueSpeed = 0.01f, ValueType valueType = ValueType::Float, float minValue = 0.0f, float maxValue = 0.0f, float labelColumnWidth = 120.0f, float widgetOffset = 30.0f);
+        static void DragFloatN(const std::string& label, float* value, float valueSpeed = 0.01f, ValueType valueType = ValueType::Float, float minValue = 0.0f, float maxValue = 0.0f, float labelColumnWidth = 120.0f, float widgetOffset = 30.0f);
     
         /// <summary>
-        /// Drag Slider 控件
+        /// Drag Slider
         /// </summary>
         /// <param name="label">标签名</param>
         /// <param name="value">值</param>
@@ -57,5 +57,14 @@ namespace Lucky
         /// <param name="labelColumnWidth">标签列宽</param>
         /// <param name="widgetOffset">小部件右边界向左偏移量</param>
         static void DragSlider(const std::string& label, float* value, float minValue, float maxValue, ValueType valueType = ValueType::Float, float labelColumnWidth = 120.0f, float widgetOffset = 30.0f);
+    
+        /// <summary>
+        /// 勾选框
+        /// </summary>
+        /// <param name="label">标签名</param>
+        /// <param name="value">值</param>
+        /// <param name="labelColumnWidth">标签列宽</param>
+        /// <param name="widgetOffset">小部件右边界向左偏移量</param>
+        static void CheckBox(const std::string& label, bool* value, float labelColumnWidth = 120.0f, float widgetOffset = 30.0f);
     };
 }

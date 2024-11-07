@@ -184,7 +184,7 @@ namespace Lucky
         {
             auto& camera = cameraComponent.Camera;
 
-            ImGui::Checkbox("Main Camera", &camera.IsPrimary_Ref());    // 主相机设置框
+            GUI::CheckBox("Main Camera", &camera.IsPrimary_Ref());    // 主相机设置框
 
             const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };                            // 投影类型：透视 正交 
             const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];   // 当前投影类型
@@ -219,11 +219,11 @@ namespace Lucky
             // 正交投影
             if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
             {
-                GUI::DragFloat("Size", &camera.GetSize_Ref());  // 尺寸 拖动条
+                GUI::DragFloatN("Size", &camera.GetSize_Ref());  // 尺寸 拖动条
             }
 
-            GUI::DragFloat("Near", &camera.GetNearClip_Ref(), 0.01f, GUI::ValueType::Float, 0.01f, camera.GetFarClip() - 0.01f);    // 近裁剪平面
-            GUI::DragFloat("Far", &camera.GetFarClip_Ref(), 0.01f, GUI::ValueType::Float, camera.GetNearClip() + 0.01f, 1000.0f);   // 远裁剪平面
+            GUI::DragFloatN("Near", &camera.GetNearClip_Ref(), 0.01f, GUI::ValueType::Float, 0.01f, camera.GetFarClip() - 0.01f);    // 近裁剪平面
+            GUI::DragFloatN("Far", &camera.GetFarClip_Ref(), 0.01f, GUI::ValueType::Float, camera.GetNearClip() + 0.01f, 1000.0f);   // 远裁剪平面
         });
 
         // SpriteRenderer 组件
