@@ -4,6 +4,13 @@
 
 namespace Lucky
 {
+    /*
+    * TODO List:
+    * 滚动条：单独的面板，在 Panel 上层，出现和消失不会影响 Panel 内的控件和布局
+    * TreeNode：场景树和文件树需要用的
+    * TreeNodeOther：其他控件需要用的
+    */
+
     /// <summary>
     /// 编辑器 GUI
     /// </summary>

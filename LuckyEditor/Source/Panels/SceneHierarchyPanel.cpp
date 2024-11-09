@@ -1,6 +1,9 @@
 #include "SceneHierarchyPanel.h"
 
+#include "Lucky/Core/Log.h"
+#include "Lucky/Input/Input.h"
 #include "Lucky/Scene/Components/SelfComponent.h"
+#include "Lucky/Scene/Selection.h"
 
 #include <imgui/imgui.h>
 
@@ -26,7 +29,6 @@ namespace Lucky
     void SceneHierarchyPanel::SetScene(const Ref<Scene>& scene)
     {
         m_Scene = scene;
-        m_SelectionObject = {};     // 取消选中：置空选中物体
     }
 
     void SceneHierarchyPanel::OnUpdate(DeltaTime dt)
@@ -49,7 +51,7 @@ namespace Lucky
             // 鼠标悬停在该窗口 && 点击鼠标 （点击空白位置）
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
             {
-                m_SelectionObject = {}; // 取消选中：置空选中物体
+                Selection::Object = {}; // 取消选中：置空选中物体
             }
 
             // 创建物体 右键点击窗口白区域弹出菜单：- 右键 不在物体项上
@@ -71,18 +73,22 @@ namespace Lucky
     {
         auto& name = object.GetComponent<SelfComponent>().ObjectName;   // 物体名
 
-        // 树结点标志（绘制的节点是否被选中 ？被选中的标志 ：0 | 单击箭头时打开）
-        ImGuiTreeNodeFlags flags = (m_SelectionObject == object ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
-        flags |= ImGuiTreeNodeFlags_SpanAvailWidth;	//水平延伸到边框
+        // 树结点标志
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+        
+        if (Selection::Object == object)
+        {
+            flags |= ImGuiTreeNodeFlags_Selected;
+        }
 
         bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)object, flags, name.c_str());    // 树节点：结点 id 结点标志 结点名（实体名）
 
         // 树结点被点击
         if (ImGui::IsItemClicked())
         {
-            m_SelectionObject = object; // 设置选中物体
+            Selection::Object = object; // 设置选中物体
 
-            LC_TRACE("当前选中物体：{0} {1}", m_SelectionObject.GetComponent<SelfComponent>().ObjectName, (uint32_t)m_SelectionObject);
+            LC_TRACE("当前选中物体：{0} {1}", Selection::Object.GetComponent<SelfComponent>().ObjectName, (uint32_t)Selection::Object);
         }
 
         // 删除物体
@@ -102,17 +108,19 @@ namespace Lucky
         // 树结点已打开
         if (opened)
         {
+            // TODO 子节点
+
             ImGui::TreePop();
         }
 
         if (objectDeleted)
         {
-            m_Scene->DeleteObject(object);      // 删除物体
+            m_Scene->DeleteObject(object);  // 删除物体
 
             // 删除的物体为已选中物体
-            if (m_SelectionObject == object)
+            if (Selection::Object == object)
             {
-                m_SelectionObject = {};         // 清空已选中物体
+                Selection::Object = {};     // 清空已选中物体
             }
         }
     }

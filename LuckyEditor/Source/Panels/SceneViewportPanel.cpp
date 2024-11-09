@@ -26,7 +26,7 @@ namespace Lucky
         m_Framebuffer(framebuffer),
         m_Scene(scene),
         m_EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f),
-        m_SelectionObject({})
+        m_PickedObject({})
     {
 
     }
@@ -39,7 +39,7 @@ namespace Lucky
     void SceneViewportPanel::SetScene(const Ref<Scene>& scene)
     {
         m_Scene = scene;
-        m_SelectionObject = {};
+        m_PickedObject = {};
     }
 
     void SceneViewportPanel::OnUpdate(DeltaTime dt)
@@ -70,7 +70,7 @@ namespace Lucky
 
         m_Scene->OnUpdateEditor(dt, m_EditorCamera);  // 更新编辑器场景
 
-        m_Size = m_Bounds[1] - m_Bounds[0];     // 视口大小：包括 tab bar
+        //m_Size = m_Bounds[1] - m_Bounds[0];     // 视口大小：包括 tab bar
         
         auto [mx, my] = ImGui::GetMousePos();   // 鼠标位置
 
@@ -89,7 +89,7 @@ namespace Lucky
         {
             int pixelData = m_Framebuffer->GetPixel(1, mouseX, mouseY); // 读取 1 号颜色缓冲区像素
             // 被鼠拾取的物体（不是 -1）
-            m_SelectionObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_Scene.get());
+            m_PickedObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_Scene.get());
 
             // LC_CORE_WARN("pixelData:{0}", pixelData);
         }
@@ -114,9 +114,8 @@ namespace Lucky
 
             Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused ||*/ !m_Hovered); // 阻止ImGui事件
 
-            //ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();      // 当前面板大小
-
-            //m_Size = { viewportPanelSize.x, viewportPanelSize.y };  // 视口大小
+            ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();  // 当前面板大小
+            m_Size = { viewportPanelSize.x, viewportPanelSize.y };      // 视口大小
 
             uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(); // 颜色缓冲区 0 ID
 
@@ -230,10 +229,10 @@ namespace Lucky
         // 鼠标左键按下
         if (e.GetMouseButton() == Mouse::ButtonLeft)
         {
-            // 鼠标在视口内 Gizmo 控制未结束
+            // 鼠标在视口内 鼠标没有位于 Gizmo 上
             if (m_Hovered && !ImGuizmo::IsOver())
             {
-                Selection::Object = m_SelectionObject;  // 设置被选中物体
+                Selection::Object = m_PickedObject;  // 更新 Selection
             }
         }
 

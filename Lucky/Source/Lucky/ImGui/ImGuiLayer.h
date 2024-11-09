@@ -14,7 +14,6 @@ namespace Lucky
     class ImGuiLayer : public Layer
     {
     private:
-        float m_Time = 0.0f;        // 当前帧时间
         bool m_BlockEvents = true;  // 是否阻止接收事件
     public:
         ImGuiLayer();

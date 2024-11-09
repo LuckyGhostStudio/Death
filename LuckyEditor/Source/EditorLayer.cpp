@@ -58,7 +58,7 @@ namespace Lucky
         m_CameraObject.GetComponent<TransformComponent>().Transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
         m_SceneViewportPanel = SceneViewportPanel(m_Framebuffer, m_ActiveScene);
-        m_SceneHierarchyPanel.SetScene(m_ActiveScene);
+        m_SceneHierarchyPanel = SceneHierarchyPanel(m_ActiveScene);
     }
 
     void EditorLayer::OnDetach()
@@ -74,6 +74,7 @@ namespace Lucky
         m_InspectorPanel.OnUpdate(dt);
         m_RendererStatsPanel.OnUpdate(dt);
         m_SceneViewportPanel.OnUpdate(dt);
+        m_ProjectAssetsPanel.OnUpdate(dt);
     }
 
     void EditorLayer::OnImGuiRender()
@@ -115,10 +116,11 @@ namespace Lucky
             ImGui::EndMainMenuBar();
         }
 
-        m_SceneHierarchyPanel.OnImGuiRender();       // ‰÷»æ Hierarchy √Ê∞Â
+        m_SceneHierarchyPanel.OnImGuiRender();  // ‰÷»æ Hierarchy √Ê∞Â
         m_InspectorPanel.OnImGuiRender();       // ‰÷»æ Inspector √Ê∞Â
         m_RendererStatsPanel.OnImGuiRender();   // ‰÷»æ RendererStats √Ê∞Â
         m_SceneViewportPanel.OnImGuiRender();   // ‰÷»æ Viewport √Ê∞Â
+        m_ProjectAssetsPanel.OnImGuiRender();   // ‰÷»æ ProjectAssets √Ê∞Â
     }
 
     void EditorLayer::OnEvent(Event& event)
@@ -133,6 +135,7 @@ namespace Lucky
         m_InspectorPanel.OnEvent(event);
         m_RendererStatsPanel.OnEvent(event);
         m_SceneViewportPanel.OnEvent(event);
+        m_ProjectAssetsPanel.OnEvent(event);
     }
 
     bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)

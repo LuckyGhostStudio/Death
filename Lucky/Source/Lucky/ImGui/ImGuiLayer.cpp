@@ -37,11 +37,11 @@ namespace Lucky
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // Enable Docking
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;     // Enable Multi-Viewport / Platform Windows
 
-        float fontSize = 18.0f;
-        io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/OpenSans-Bold.ttf", fontSize);   // 添加粗体（0号）
+        float fontSize = 18.0f * 1.4f;
+        io.Fonts->AddFontFromFileTTF("Resources/Fonts/Opensans/OpenSans-Bold.ttf", fontSize);   // 添加粗体（0号）
         
         // 默认字体 添加 TTF 字体
-        io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/OpenSans-Regular.ttf", fontSize);   // 1号
+        io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/Opensans/OpenSans-Regular.ttf", fontSize);   // 1号
 
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
@@ -110,14 +110,17 @@ namespace Lucky
         style.WindowMinSize.x = 50.0f;          // 窗口最小尺寸
 
         style.FrameRounding = 4.8f;             // 控件边框圆度 [0, 12] 4.8 <=> 0.4f
+        style.FrameBorderSize = 1.0f;           // 边框尺寸
+
         style.WindowRounding = 4.8f;            // 窗口边框圆度
         style.GrabRounding = 4.8f;              // 拖动条 handle 圆度
         style.PopupRounding = 4.8f;             // 弹出窗口圆度
         style.ChildRounding = 4.8f;             // 子窗口圆度
         style.TabRounding = 4.8f;               // Tab 圆度
-        style.ScrollbarRounding = 4.8f;         // 滚动条圆度
 
-        style.FrameBorderSize = 1.0f;           // 边框尺寸
+        style.ScrollbarRounding = 12.0f;         // 滚动条圆度
+        style.ScrollbarSize = 20.0f;
+
         style.ButtonTextAlign = { 0.5f, 0.5f }; // 按钮文字居中
     }
 

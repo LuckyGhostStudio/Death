@@ -9,6 +9,7 @@
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/InspectorPanel.h"
 #include "Panels/RendererStatsPanel.h"
+#include "Panels/ProjectAssetsPanel.h"
 
 namespace Lucky
 {
@@ -29,6 +30,7 @@ namespace Lucky
         SceneHierarchyPanel m_SceneHierarchyPanel;  // 场景 Hierarchy 面板
         InspectorPanel m_InspectorPanel;            // 资产 Inspector 面板
         RendererStatsPanel m_RendererStatsPanel;    // 场景 RendererStats 面板
+        ProjectAssetsPanel m_ProjectAssetsPanel;    // 项目 Assets 面板
     public:
         EditorLayer();
 

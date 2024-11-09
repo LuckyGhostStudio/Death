@@ -22,9 +22,9 @@ namespace Lucky
     private:
         Ref<Framebuffer> m_Framebuffer;     // 帧缓冲区
         Ref<Scene> m_Scene;                 // 活动场景 会更新
-        EditorCamera m_EditorCamera;        // 编辑器相机 +初始化传参 会更新部分参数
+        EditorCamera m_EditorCamera;        // 编辑器相机 会更新部分参数
 
-        Object m_SelectionObject;           // 被鼠标拾取的物体 +更新
+        Object m_PickedObject;              // 被鼠标拾取的物体
 
         glm::vec2 m_Bounds[2];              // 视口边界（左上角，右下角）
         glm::vec2 m_Size = { 0.0f, 0.0f };  // 视口大小：随 m_Bounds 更新
