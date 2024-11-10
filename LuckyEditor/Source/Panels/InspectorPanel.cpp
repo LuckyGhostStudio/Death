@@ -31,13 +31,20 @@ namespace Lucky
 
     void InspectorPanel::OnImGuiRender()
     {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 6)); // 窗口 Padding（控件边界到窗口边界的距离）
         ImGui::Begin(m_Name.c_str());
         {
+            ImGui::PopStyleVar();
+
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 8));   // 垂直间距为 8
+
             // 被选中的物体存在 TODO 添加资产信息绘制
             if (m_SelectionObject)
             {
                 DrawComponents(m_SelectionObject);  // 绘制组件 UI
             }
+
+            ImGui::PopStyleVar();
         }
         ImGui::End();
     }
@@ -49,8 +56,16 @@ namespace Lucky
 
     void InspectorPanel::AddComponents(Object object)
     {
+        float panelWidth = ImGui::GetWindowContentRegionWidth() + ImGui::GetStyle().WindowPadding.x * 2;    // 面板宽度
+
+        // 计算居中的位置
+        float posX = (panelWidth - 300) * 0.5f;
+
+        // 设置按钮的位置
+        ImGui::SetCursorPosX(posX);
+
         // 添加组件
-        if (ImGui::Button("Add Component"))
+        if (ImGui::Button("Add Component", ImVec2(300, 0)))
         {
             ImGui::OpenPopup("AddComponent");   // 打开弹出框
         }
@@ -90,7 +105,7 @@ namespace Lucky
     static void DrawComponent(const std::string& name, Object object, UIFunction uiFunction)
     {
         // 树节点标志：打开|框架|延伸到右边|允许重叠|框架边框
-        const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+        const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
 
         // T 组件存在
         if (object.HasComponent<T>())
@@ -99,21 +114,33 @@ namespace Lucky
 
             ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();     // 可用区域大小
 
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));  // 设置边框样式
-            float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;    //行高 = 字体大小 + 边框 y * 2
-            ImGui::Separator();     // 分隔符
+            float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;    // 行高 = 字体大小 + 边框 y * 2
+            
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // Separator 和 TreeNodeEx 之间的垂直距离为 1
+            ImGui::Separator(); // 分隔符
+            ImGui::Separator(); // 分隔符
+
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);            // 边框圆度
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);          // 边框线宽 0
+
+            ImFont* boldFont = ImGui::GetIO().Fonts->Fonts[0];  // 粗体
+            ImGui::PushFont(boldFont);
 
             // 组件结点：组件类的哈希值作为结点 id
-            bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
-            ImGui::PopStyleVar();
+            bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, name.c_str());
 
-            ImGui::SameLine(contentRegionAvail.x - lineHeight * 0.5f);      // 同一行：可用区域左移
+            ImGui::PopFont();
+
+            ImGui::PopStyleVar(4);
+
+           /* ImGui::SameLine(contentRegionAvail.x - lineHeight * 0.5f);      // 同一行：可用区域左移
 
             // 组件设置按钮
             if (ImGui::Button("+", ImVec2(lineHeight, lineHeight)))
             {
                 ImGui::OpenPopup("ComponentSettings");  // 打开弹出框
-            }
+            }*/
 
             // 移除组件
             bool componentRemoved = false;
@@ -131,6 +158,10 @@ namespace Lucky
 
             if (opened)
             {
+                ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+                ImGui::Separator(); // 分隔符
+                ImGui::PopStyleColor();
+
                 uiFunction(component);  // 调用组件功能函数：绘制该组件不同的部分
 
                 ImGui::TreePop();       // 展开结点
@@ -154,29 +185,29 @@ namespace Lucky
             memset(buffer, 0, sizeof(buffer));              // 将 buffer 置零
             strcpy_s(buffer, sizeof(buffer), name.c_str()); // buffer = name
 
+            ImGui::Dummy(ImVec2(0, 0)); // 透明控件
+            ImGui::SameLine();
+
+            ImFont* boldFont = ImGui::GetIO().Fonts->Fonts[0];  // 粗体
+            ImGui::PushFont(boldFont);
+
             // 创建输入框，输入框内容改变时
             if (ImGui::InputText("##Name", buffer, sizeof(buffer)))
             {
                 name = std::string(buffer); // 物体 name 设为 buffer
             }
+
+            ImGui::PopFont();
         }
-
-        ImGui::SameLine();
-        ImGui::PushItemWidth(-1);   // 沿着右边框宽-1
-
-        AddComponents(object);      // 添加组件 UI
-
-        // 树节点标志：打开|允许重叠
-        const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
 
         // Transform 组件
         DrawComponent<TransformComponent>("Transform", object, [](TransformComponent& transformComponent)
         {
             auto& transform = transformComponent.Transform;
 
-            GUI::DragVector3("Position", transform.GetPosition());  // 位置：默认值 1.0f
-            GUI::DragVector3("Rotation", transform.GetRotation());  // 旋转：默认值 1.0f
-            GUI::DragVector3("Scale", transform.GetScale(), 1.0f);  // 缩放：默认值 1.0f
+            GUI::DragFloat3("Position", transform.GetPosition());   // 位置
+            GUI::DragFloat3("Rotation", transform.GetRotation());   // 旋转
+            GUI::DragFloat3("Scale", transform.GetScale());         // 缩放
         });
 
         // Camera 组件
@@ -231,5 +262,12 @@ namespace Lucky
         {
             ImGui::ColorEdit4("Color", glm::value_ptr(spriteRendererComponent.Color));   // 颜色编辑器
         });
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // 垂直间距为 1
+        ImGui::Separator(); // 分隔线
+        ImGui::PopStyleVar();
+        ImGui::Separator(); // 分隔线
+
+        AddComponents(object);      // 添加组件 UI
     }
 }

@@ -107,10 +107,14 @@ namespace Lucky
     {
         ImGuiStyle& style = ImGui::GetStyle();
         // TODO 设置 ImGuiStyle 的所有参数
+        style.WindowBorderSize = 0;
+        style.ChildBorderSize = 0;
+
         style.WindowMinSize.x = 50.0f;          // 窗口最小尺寸
 
         style.FrameRounding = 4.8f;             // 控件边框圆度 [0, 12] 4.8 <=> 0.4f
         style.FrameBorderSize = 1.0f;           // 边框尺寸
+        style.FramePadding.y = 1.0f;
 
         style.WindowRounding = 4.8f;            // 窗口边框圆度
         style.GrabRounding = 4.8f;              // 拖动条 handle 圆度
@@ -118,7 +122,7 @@ namespace Lucky
         style.ChildRounding = 4.8f;             // 子窗口圆度
         style.TabRounding = 4.8f;               // Tab 圆度
 
-        style.ScrollbarRounding = 12.0f;         // 滚动条圆度
+        style.ScrollbarRounding = 12.0f;        // 滚动条圆度
         style.ScrollbarSize = 20.0f;
 
         style.ButtonTextAlign = { 0.5f, 0.5f }; // 按钮文字居中
@@ -152,12 +156,12 @@ namespace Lucky
         colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
         colors[ImGuiCol_FrameBgActive & ImGuiCol_Border] = ImVec4{ 0.498f, 0.8392f, 0.9921f, 1.0f };
 
-        // 标签
+        // 标签 TODO 激活时改变样式
         colors[ImGuiCol_Tab] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-        colors[ImGuiCol_TabHovered] = ImVec4{ 0.38f, 0.3805f, 0.381f, 1.0f };
-        colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.2805f, 0.281f, 1.0f };
+        colors[ImGuiCol_TabHovered] = colors[ImGuiCol_WindowBg];
+        colors[ImGuiCol_TabActive] = colors[ImGuiCol_WindowBg];
         colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-        colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+        colors[ImGuiCol_TabUnfocusedActive] = colors[ImGuiCol_WindowBg];  // 没被聚焦 活跃状态
 
         // 标题
         colors[ImGuiCol_TitleBg] = ImVec4{ 0.1569f, 0.1569f, 0.1569f, 1.0f };
@@ -165,10 +169,11 @@ namespace Lucky
         colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 
         // 控件边界颜色
-        colors[ImGuiCol_Border] = ImVec4{ 0.1647f, 0.1647f, 0.1647f, 1.0f };
+        colors[ImGuiCol_Border] = ImVec4{ 0.098f, 0.098f, 0.098f, 1.0f };
+        colors[ImGuiCol_BorderShadow] = ImVec4{ 0.1647f, 0.1647f, 0.1647f, 1.0f };
 
         // 文本颜色
-        colors[ImGuiCol_Text] = ImVec4{ 0.95f, 0.95f, 0.95f, 1.0f };
+        colors[ImGuiCol_Text] = ImVec4{ 0.83f, 0.83f, 0.83f, 1.0f };
         colors[ImGuiCol_TextDisabled] = ImVec4{ 0.5f, 0.5f, 0.5f, 1.0f };   // 禁用时颜色
 
         // 弹出菜单颜色
@@ -181,7 +186,11 @@ namespace Lucky
         colors[ImGuiCol_ScrollbarBg] = ImVec4{ 0.2078f, 0.2078f, 0.2078f, 1.0f };
         colors[ImGuiCol_ScrollbarGrab] = ImVec4{ 0.3725f, 0.3725f, 0.3725f, 1.0f };
         colors[ImGuiCol_SliderGrab] = ImVec4{ 0.6f, 0.6f, 0.6f, 1.0f };
+
+        // 分隔线
         colors[ImGuiCol_Separator] = ImVec4{ 0.098f, 0.098f, 0.098f, 1.0f };
+        colors[ImGuiCol_SeparatorHovered] = ImVec4{ 0.098f, 0.098f, 0.098f, 1.0f };
+        colors[ImGuiCol_SeparatorActive] = ImVec4{ 0.098f, 0.098f, 0.098f, 1.0f };
 
         /*
         colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);        // 白色

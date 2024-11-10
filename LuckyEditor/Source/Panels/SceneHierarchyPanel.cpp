@@ -38,8 +38,13 @@ namespace Lucky
 
     void SceneHierarchyPanel::OnImGuiRender()
     {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 6)); // 窗口 Padding（控件边界到窗口边界的距离）
         ImGui::Begin(m_Name.c_str());
         {
+            ImGui::PopStyleVar();
+
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));   // 设置树节点之间的垂直距离为 0
+
             // 遍历场景所有实体，并调用 each 内的函数
             m_Scene->m_Registry.each([&](auto ObjectID)
             {
@@ -48,8 +53,10 @@ namespace Lucky
                 DrawObjectNode(object); // 绘制物体结点
             });
 
-            // 鼠标悬停在该窗口 && 点击鼠标 （点击空白位置）
-            if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+            ImGui::PopStyleVar();
+
+            // 点击鼠标 && 鼠标悬停在该窗口（点击空白位置）
+            if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered())
             {
                 Selection::Object = {}; // 取消选中：置空选中物体
             }
@@ -76,12 +83,26 @@ namespace Lucky
         // 树结点标志
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
         
+        static ImVec4 headerColor = { 0.38f, 0.3805f, 0.381f, 1.0f }; // 树节点颜色
+
         if (Selection::Object == object)
         {
             flags |= ImGuiTreeNodeFlags_Selected;
+
+            headerColor = { 0.2588f, 0.5882f, 0.9804f, 0.3490f };   // 设置选中颜色
+        }
+        else
+        {
+            headerColor = { 0.38f, 0.3805f, 0.381f, 1.0f };
         }
 
+        ImGui::PushStyleColor(ImGuiCol_Header, headerColor);
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, headerColor);
+        ImGui::PushStyleColor(ImGuiCol_HeaderActive, headerColor);
+
         bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)object, flags, name.c_str());    // 树节点：结点 id 结点标志 结点名（实体名）
+        
+        ImGui::PopStyleColor(3);
 
         // 树结点被点击
         if (ImGui::IsItemClicked())

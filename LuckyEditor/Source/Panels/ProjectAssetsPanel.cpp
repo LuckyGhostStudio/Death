@@ -29,15 +29,22 @@ namespace Lucky
 
     void ProjectAssetsPanel::OnImGuiRender()
     {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 6)); // 窗口 Padding（控件边界到窗口边界的距离）
         ImGui::Begin(m_Name.c_str());
         {
-            // 鼠标悬停在该窗口 && 点击鼠标 （点击空白位置）
-            if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+            ImGui::PopStyleVar();
+
+            // 点击鼠标 && 鼠标悬停在该窗口（点击空白位置）
+            if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered())
             {
-                //m_CurrentFile.clear();  // 取消选中：置空当前选中文件路径
+                m_CurrentFile.clear();  // 取消选中：置空当前选中文件路径
             }
 
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));   // 设置树节点之间的垂直距离为 0
+            
             DrawAssetNode(g_AssetPath); // 绘制资产树
+            
+            ImGui::PopStyleVar();
         }
         ImGui::End();
     }
@@ -80,7 +87,7 @@ namespace Lucky
         {
             flags |= ImGuiTreeNodeFlags_Selected;
 
-            headerColor = ImVec4(0.13f, 0.30f, 0.43f, 1.0f);    // 设置选中颜色
+            headerColor = { 0.2588f, 0.5882f, 0.9804f, 0.3490f };   // 设置选中颜色
         }
         else
         {
@@ -102,7 +109,6 @@ namespace Lucky
             flags |= ImGuiTreeNodeFlags_Leaf;   // 是叶结点 没有箭头
         }
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 1));  // 边框尺寸
         ImGui::PushStyleColor(ImGuiCol_Header, headerColor);
         ImGui::PushStyleColor(ImGuiCol_HeaderHovered, headerColor);
         ImGui::PushStyleColor(ImGuiCol_HeaderActive, headerColor);
@@ -112,7 +118,6 @@ namespace Lucky
         bool opened = ImGui::TreeNodeEx((void*)filename.c_str(), flags, "");    // 目录树节点：结点id 结点标志 结点名（目录名）
         
         ImGui::PopStyleColor(3);
-        ImGui::PopStyleVar();
 
         // 当前结点被点击时
         if (ImGui::IsItemClicked())
@@ -142,12 +147,12 @@ namespace Lucky
         }
 
         ImGui::SameLine();
-        ImGui::SetCursorPos(ImVec2(nodePos.x + 28, nodePos.y + 2));                                         // 设置 Icon 位置
+        ImGui::SetCursorPos(ImVec2(nodePos.x + 32, nodePos.y + 2));                                         // 设置 Icon 位置
         ImGui::Image((void*)fileNodeIconID, ImVec2(m_IconSize, m_IconSize), ImVec2(0, 1), ImVec2(1, 0));    // 文件图标图片
 
         ImGui::SameLine();
 
-        ImGui::SetCursorPos(ImVec2(nodePos.x + 56, nodePos.y)); // 设置 Text 位置
+        ImGui::SetCursorPos(ImVec2(nodePos.x + 60, nodePos.y)); // 设置 Text 位置
 
         ImGui::PushFont(font);          // 设置结点文本字体
         ImGui::Text(filename.c_str());  // 文件名
