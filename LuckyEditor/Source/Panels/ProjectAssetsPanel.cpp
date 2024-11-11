@@ -3,6 +3,7 @@
 #include "Lucky/Core/Log.h"
 
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 namespace Lucky
 {
@@ -115,6 +116,8 @@ namespace Lucky
 
         ImVec2 nodePos = ImGui::GetCursorPos(); // 目录结点位置坐标
 
+        float lineHeight = GImGui->Font->FontSize;
+
         bool opened = ImGui::TreeNodeEx((void*)filename.c_str(), flags, "");    // 目录树节点：结点id 结点标志 结点名（目录名）
         
         ImGui::PopStyleColor(3);
@@ -147,12 +150,12 @@ namespace Lucky
         }
 
         ImGui::SameLine();
-        ImGui::SetCursorPos(ImVec2(nodePos.x + 32, nodePos.y + 2));                                         // 设置 Icon 位置
-        ImGui::Image((void*)fileNodeIconID, ImVec2(m_IconSize, m_IconSize), ImVec2(0, 1), ImVec2(1, 0));    // 文件图标图片
+        ImGui::SetCursorPos(ImVec2(nodePos.x + lineHeight * 1.5f, nodePos.y + 1));                                         // 设置 Icon 位置
+        ImGui::Image((void*)fileNodeIconID, ImVec2(lineHeight - 3, lineHeight - 3), ImVec2(0, 1), ImVec2(1, 0));    // 文件图标图片
 
         ImGui::SameLine();
 
-        ImGui::SetCursorPos(ImVec2(nodePos.x + 60, nodePos.y)); // 设置 Text 位置
+        ImGui::SetCursorPos(ImVec2(nodePos.x + (lineHeight - 2) * 3, nodePos.y)); // 设置 Text 位置
 
         ImGui::PushFont(font);          // 设置结点文本字体
         ImGui::Text(filename.c_str());  // 文件名

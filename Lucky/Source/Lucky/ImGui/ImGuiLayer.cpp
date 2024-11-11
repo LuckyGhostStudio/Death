@@ -19,7 +19,8 @@ namespace Lucky
     ImGuiLayer::ImGuiLayer()
         : Layer("ImGuiLayer")
     {
-
+        float dpi = GetDpiForSystem();  // DPI 120 为标准值
+        LC_TRACE("DPI: {0}", dpi);
     }
 
     ImGuiLayer::~ImGuiLayer()
@@ -37,7 +38,7 @@ namespace Lucky
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // Enable Docking
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;     // Enable Multi-Viewport / Platform Windows
 
-        float fontSize = 18.0f * 1.4f;
+        float fontSize = 20.0f * GetDpiForSystem() / 120;
         io.Fonts->AddFontFromFileTTF("Resources/Fonts/Opensans/OpenSans-Bold.ttf", fontSize);   // 添加粗体（0号）
         
         // 默认字体 添加 TTF 字体

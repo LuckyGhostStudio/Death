@@ -18,8 +18,6 @@ namespace Lucky
         Ref<Texture2D> m_DirectoryClosedIcon;   // 目录关闭图标
         Ref<Texture2D> m_DirectoryOpenedIcon;   // 目录打开图标
         Ref<Texture2D> m_FileIcon;              // 文件图标
-
-        float m_IconSize = 16.0f * 1.4f;
     private:
         /// <summary>
         /// 绘制资产节点
