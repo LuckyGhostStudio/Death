@@ -1,5 +1,6 @@
 #pragma once
 
+#include <imgui/imgui.h>
 #include <glm/glm.hpp>
 
 namespace Lucky
@@ -75,5 +76,74 @@ namespace Lucky
         /// <param name="labelMinWidth">标签最小列宽</param>
         /// <param name="widgetOffset">小部件右边界向左偏移量</param>
         static void CheckBox(const std::string& label, bool* value, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+
+        /// <summary>
+        /// 颜色编辑器
+        /// </summary>
+        /// <param name="label">标签名</param>
+        /// <param name="color">颜色值</param>
+        /// <param name="labelMinWidth"></param>
+        /// <param name="widgetOffset"></param>
+        static void ColorEditor4(const std::string& label, glm::vec4& color, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+
+        /// <summary>
+        /// 可选择下拉列表
+        /// </summary>
+        /// <typeparam name="Func">某项选中时回调函数</typeparam>
+        /// <param name="label">标签名</param>
+        /// <param name="currentValueStr">当前值</param>
+        /// <param name="valueStrs">所有可选值列表</param>
+        /// <param name="valueStrCount">值个数</param>
+        /// <param name="OnSelected">某项选中时回调函数：参数（int index 项编号，const char* value 项值）</param>
+        /// <param name="labelMinWidth">标签最小列宽</param>
+        /// <param name="widgetOffset">小部件右边界向左偏移量</param>
+        template<typename Func>
+        inline static void DropdownList(const std::string& label, const char* currentValueStr, const char* valueStrs[], uint32_t valueStrCount, Func OnSelected, float labelMinWidth = 120.0f, float widgetOffset = 40.0f)
+        {
+            ImGui::PushID(label.c_str());   // 设置控件 ID
+
+            float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
+            // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
+            float labelWidth = panelWidth * 0.4f;
+            if (labelWidth < labelMinWidth)
+            {
+                labelWidth = labelMinWidth;
+            }
+
+            ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
+            ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
+
+            ImGui::Text(label.c_str()); // 控件名（0 号列）
+
+            ImGui::NextColumn();
+            ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
+
+            // 下拉框（1 号列）
+            if (ImGui::BeginCombo("##None", currentValueStr))
+            {
+                // 查找选中项
+                for (int i = 0; i < valueStrCount; i++)
+                {
+                    bool isSelected = currentValueStr == valueStrs[i]; // 被选中：当前值==第i个值
+                    // 可选择项，该项改变时：第i项为选中项
+                    if (ImGui::Selectable(valueStrs[i], isSelected))
+                    {
+                        currentValueStr = valueStrs[i]; // 设置当前值
+                        OnSelected(i, currentValueStr); // i 项选中事件函数
+                    }
+
+                    if (isSelected)
+                    {
+                        ImGui::SetItemDefaultFocus();   // 设置默认选中项
+                    }
+                }
+                ImGui::EndCombo();
+            }
+            ImGui::PopItemWidth();
+
+            ImGui::Columns(1);  // 设置为一列
+
+            ImGui::PopID();
+        }
     };
 }

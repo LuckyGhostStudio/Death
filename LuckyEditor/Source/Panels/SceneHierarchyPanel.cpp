@@ -28,7 +28,9 @@ namespace Lucky
 
     void SceneHierarchyPanel::SetScene(const Ref<Scene>& scene)
     {
+        // 重新设置场景信息
         m_Scene = scene;
+        Selection::Object = {};
     }
 
     void SceneHierarchyPanel::OnUpdate(DeltaTime dt)

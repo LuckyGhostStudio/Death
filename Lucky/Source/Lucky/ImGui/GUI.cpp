@@ -1,8 +1,8 @@
 #include "lcpch.h"
 #include "GUI.h"
 
-#include <imgui.h>
 #include <imgui_internal.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Lucky
 {
@@ -169,6 +169,34 @@ namespace Lucky
 
         ImGui::Checkbox("##None", value);   // 勾选框（1 号列）
         
+        ImGui::PopItemWidth();
+        ImGui::Columns(1);      // 设置为一列
+
+        ImGui::PopID();
+    }
+
+    void GUI::ColorEditor4(const std::string& label, glm::vec4& color, float labelMinWidth, float widgetOffset)
+    {
+        ImGui::PushID(label.c_str());   // 设置控件ID
+#if 1   // TODO 移动到通用
+        float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
+        // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
+        float labelWidth = panelWidth * 0.4f;
+        if (labelWidth < labelMinWidth)
+        {
+            labelWidth = labelMinWidth;
+        }
+
+        ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
+        ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
+
+        ImGui::Text(label.c_str()); // 控件名（0 号列）
+
+        ImGui::NextColumn();
+        ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
+#endif
+        ImGui::ColorEdit4("##None", glm::value_ptr(color)); // 颜色编辑器（1号列）
+
         ImGui::PopItemWidth();
         ImGui::Columns(1);      // 设置为一列
 

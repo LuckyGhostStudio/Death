@@ -65,6 +65,7 @@ project "Lucky"         -- 项目
     includedirs         -- 附加包含目录
     {
         "%{prj.name}/Source",
+        "%{prj.name}/Vendor",
         "%{prj.name}/Vendor/spdlog/include",
         -- "%{IncludeDir.Box2D}",
         "%{IncludeDir.GLFW}",

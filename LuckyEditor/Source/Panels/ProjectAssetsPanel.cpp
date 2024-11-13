@@ -150,7 +150,7 @@ namespace Lucky
         }
 
         ImGui::SameLine();
-        ImGui::SetCursorPos(ImVec2(nodePos.x + lineHeight * 1.5f, nodePos.y + 1));                                         // 设置 Icon 位置
+        ImGui::SetCursorPos(ImVec2(nodePos.x + lineHeight * 1.5f, nodePos.y + 1));                                  // 设置 Icon 位置
         ImGui::Image((void*)fileNodeIconID, ImVec2(lineHeight - 3, lineHeight - 3), ImVec2(0, 1), ImVec2(1, 0));    // 文件图标图片
 
         ImGui::SameLine();

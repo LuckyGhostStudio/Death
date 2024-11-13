@@ -1,15 +1,15 @@
 #include "InspectorPanel.h"
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Lucky/Scene/Components/SelfComponent.h"
 #include "Lucky/Scene/Components/TransformComponent.h"
 #include "Lucky/Scene/Components/CameraComponent.h"
 #include "Lucky/Scene/Components/SpriteRendererComponent.h"
 
 #include "Lucky/ImGui/GUI.h"
-
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
-#include <glm/gtc/type_ptr.hpp>
 
 namespace Lucky
 {
@@ -221,25 +221,10 @@ namespace Lucky
             const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];   // 当前投影类型
 
             // 下拉框 选择投影类型
-            if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
+            GUI::DropdownList("Projection", currentProjectionTypeString, projectionTypeStrings, 2, [&](int index, const char* value)
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];  // 被选中：当前投影类型==第i个投影类型
-
-                    // 可选择项，该项改变时：投影类型 已选中
-                    if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
-                    {
-                        currentProjectionTypeString = projectionTypeStrings[i];     // 设置当前投影类型
-                        camera.SetProjectionType((SceneCamera::ProjectionType)i);   // 设置相机投影类型
-                    }
-                    if (isSelected)
-                    {
-                        ImGui::SetItemDefaultFocus();   // 设置默认选中项
-                    }
-                }
-                ImGui::EndCombo();
-            }
+                camera.SetProjectionType((SceneCamera::ProjectionType)index);   // 设置相机投影类型
+            });
 
             // 透视投影
             if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
@@ -260,7 +245,7 @@ namespace Lucky
         // SpriteRenderer 组件
         DrawComponent<SpriteRendererComponent>("Sprite Renderer", object, [](SpriteRendererComponent& spriteRendererComponent)
         {
-            ImGui::ColorEdit4("Color", glm::value_ptr(spriteRendererComponent.Color));   // 颜色编辑器
+            GUI::ColorEditor4("Color", spriteRendererComponent.Color);   // 颜色编辑器
         });
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // 垂直间距为 1

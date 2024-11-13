@@ -2,6 +2,26 @@ Scene: Untitled
 Objects:
   - Object: 12837192831273
     SelfComponent:
+      ObjectName: Green Blue
+      ObjectEnable: true
+    TransformComponent:
+      Position: [0.0989379361, -0.554970324, 0.11787124]
+      Rotation: [54.710247, -54.0999908, -1.74723118e-05]
+      Scale: [2.80000067, 1.00000036, 1.00000012]
+    SpriteRendererComponent:
+      Color: [1, 0.270588249, 0.611764729, 1]
+  - Object: 12837192831273
+    SelfComponent:
+      ObjectName: Yellow
+      ObjectEnable: true
+    TransformComponent:
+      Position: [0, -0.5, 0]
+      Rotation: [118.800003, -88.8000031, 0]
+      Scale: [0.800000012, 1.60000002, -2.5999999]
+    SpriteRendererComponent:
+      Color: [1, 1, 0, 1]
+  - Object: 12837192831273
+    SelfComponent:
       ObjectName: Main Camera
       ObjectEnable: true
     TransformComponent:
@@ -15,23 +35,3 @@ Objects:
       FOV: 1.15191734
       Near: 0.00999999978
       Far: 929
-  - Object: 12837192831273
-    SelfComponent:
-      ObjectName: Yellow
-      ObjectEnable: true
-    TransformComponent:
-      Position: [0, -0.5, 0]
-      Rotation: [118.800003, -88.8000031, 0]
-      Scale: [0.800000012, 1.60000002, -2.5999999]
-    SpriteRendererComponent:
-      Color: [1, 1, 0, 1]
-  - Object: 12837192831273
-    SelfComponent:
-      ObjectName: Green Blue
-      ObjectEnable: true
-    TransformComponent:
-      Position: [0.0989379361, -0.554970324, 0.11787124]
-      Rotation: [54.710247, -54.0999908, -1.74723118e-05]
-      Scale: [2.80000067, 1.00000036, 1.00000012]
-    SpriteRendererComponent:
-      Color: [0, 1, 1, 1]
