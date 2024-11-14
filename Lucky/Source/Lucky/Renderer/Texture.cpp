@@ -25,7 +25,7 @@ namespace Lucky
         
         // 设置纹理参数
         glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);    // 缩小过滤器 线性插值
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);   // 放大过滤器 最近滤波
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);    // 放大过滤器 线性插值
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);        // x 超过 0-1 重复
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);        // y 超过 0-1 重复
     }
@@ -64,7 +64,7 @@ namespace Lucky
 
         // 设置纹理参数 TODO 设置自定义资产格式后 可在编辑器中设置资产参数
         glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);    // 缩小过滤器 线性插值
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);   // 放大过滤器 最近滤波
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);    // 放大过滤器 线性插值
 
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);        // x 超过0-1 重复
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);        // y 超过0-1 重复
