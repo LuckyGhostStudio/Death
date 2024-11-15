@@ -88,19 +88,19 @@ namespace Lucky
             if (ImGui::BeginMenu("File"))
             {
                 // 创建新场景
-                if (ImGui::MenuItem("New", "Ctrl N"))
+                if (ImGui::MenuItem("New Scene", "Ctrl+N"))
                 {
                     NewScene();
                 }
 
                 // 打开文件：加载场景
-                if (ImGui::MenuItem("Open...", "Ctrl O"))
+                if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
                 {
                     OpenScene();
                 }
 
                 // 另存为：保存场景
-                if (ImGui::MenuItem("Save As...", "Shift Ctrl S"))
+                if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
                 {
                     SaveSceneAs();
                 }
@@ -155,19 +155,19 @@ namespace Lucky
             case Key::N:
                 if (control)
                 {
-                    NewScene();     // 创建新场景：Ctrl N
+                    NewScene();     // 创建新场景：Ctrl+N
                 }
                 break;
             case Key::O:
                 if (control)
                 {
-                    OpenScene();    // 打开场景：Ctrl O
+                    OpenScene();    // 打开场景：Ctrl+O
                 }
                 break;
             case Key::S:
                 if (control && shift)
                 {
-                    SaveSceneAs();  // 场景另存为：Shift Ctrl S
+                    SaveSceneAs();  // 场景另存为：Ctrl+Shift+S
                 }
                 break;
         }

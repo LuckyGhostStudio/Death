@@ -31,12 +31,12 @@ namespace Lucky
 
     void InspectorPanel::OnImGuiRender()
     {
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 6)); // 窗口 Padding（控件边界到窗口边界的距离）
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 10)); // 窗口 Padding（控件边界到窗口边界的距离）
         ImGui::Begin(m_Name.c_str());
         {
             ImGui::PopStyleVar();
 
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 8));   // 垂直间距为 8
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 4));   // 垂直间距为 8
 
             // 被选中的物体存在 TODO 添加资产信息绘制
             if (m_SelectionObject)
@@ -191,11 +191,13 @@ namespace Lucky
             ImFont* boldFont = ImGui::GetIO().Fonts->Fonts[0];  // 粗体
             ImGui::PushFont(boldFont);
 
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 10));  // 和下一个控件的间距
             // 创建输入框，输入框内容改变时
             if (ImGui::InputText("##Name", buffer, sizeof(buffer)))
             {
                 name = std::string(buffer); // 物体 name 设为 buffer
             }
+            ImGui::PopStyleVar();
 
             ImGui::PopFont();
         }

@@ -115,7 +115,7 @@ namespace Lucky
 
         style.FrameRounding = 4.8f;             // 控件边框圆度 [0, 12] 4.8 <=> 0.4f
         style.FrameBorderSize = 1.0f;           // 边框尺寸
-        style.FramePadding.y = 1.0f;
+        style.FramePadding.y = 3.0f;
 
         style.WindowRounding = 4.8f;            // 窗口边框圆度
         style.GrabRounding = 4.8f;              // 拖动条 handle 圆度
@@ -174,7 +174,7 @@ namespace Lucky
         colors[ImGuiCol_BorderShadow] = ImVec4{ 0.1647f, 0.1647f, 0.1647f, 1.0f };
 
         // 文本颜色
-        colors[ImGuiCol_Text] = ImVec4{ 0.83f, 0.83f, 0.83f, 1.0f };
+        colors[ImGuiCol_Text] = ImVec4{ 0.9f, 0.9f, 0.9f, 1.0f };
         colors[ImGuiCol_TextDisabled] = ImVec4{ 0.5f, 0.5f, 0.5f, 1.0f };   // 禁用时颜色
 
         // 弹出菜单颜色
@@ -183,7 +183,9 @@ namespace Lucky
         // 勾选框对号颜色
         colors[ImGuiCol_CheckMark] = ImVec4{ 0.8863f, 0.8863f, 0.8863f, 1.0f };
 
+        // 菜单条背景
         colors[ImGuiCol_MenuBarBg] = ImVec4{ 0.094f, 0.094f, 0.094f, 1.0f };
+
         colors[ImGuiCol_ScrollbarBg] = ImVec4{ 0.2078f, 0.2078f, 0.2078f, 1.0f };
         colors[ImGuiCol_ScrollbarGrab] = ImVec4{ 0.3725f, 0.3725f, 0.3725f, 1.0f };
         colors[ImGuiCol_SliderGrab] = ImVec4{ 0.6f, 0.6f, 0.6f, 1.0f };
