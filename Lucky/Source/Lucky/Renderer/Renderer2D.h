@@ -51,12 +51,11 @@ namespace Lucky
         /// <summary>
         /// 绘制长方形
         /// </summary>
-        /// <param name="position">位置</param>
-        /// <param name="rotation">旋转</param>
-        /// <param name="scale">大小</param>
+        /// <param name="transform">Transform</param>
         /// <param name="color">颜色</param>
         /// <param name="texture">纹理</param>
-        static void DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const Ref<Texture2D>& texture);
+        /// <param name="objectID">物体 ID</param>
+        static void DrawQuad(const Transform& transform, const glm::vec4& color, Ref<Texture2D>& texture, int objectID = -1);
     
         /// <summary>
         /// 统计数据

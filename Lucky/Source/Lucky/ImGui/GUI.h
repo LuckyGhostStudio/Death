@@ -9,6 +9,7 @@ namespace Lucky
     * TODO List:
     * TreeNode：场景树和文件树需要用的
     * TreeNodeOther：类似组件的树节点
+    * 对象选择器框：用于显示当前的内置对象或资产
     */
 
     /// <summary>
@@ -98,52 +99,96 @@ namespace Lucky
         /// <param name="labelMinWidth">标签最小列宽</param>
         /// <param name="widgetOffset">小部件右边界向左偏移量</param>
         template<typename Func>
-        inline static void DropdownList(const std::string& label, const char* currentValueStr, const char* valueStrs[], uint32_t valueStrCount, Func OnSelected, float labelMinWidth = 120.0f, float widgetOffset = 40.0f)
-        {
-            ImGui::PushID(label.c_str());   // 设置控件 ID
+        inline static void DropdownList(const std::string& label, const char* currentValueStr, const char* valueStrs[], uint32_t valueStrCount, Func OnSelected, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
 
-            float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
-            // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
-            float labelWidth = panelWidth * 0.4f;
-            if (labelWidth < labelMinWidth)
-            {
-                labelWidth = labelMinWidth;
-            }
-
-            ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
-            ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
-
-            ImGui::Text(label.c_str()); // 控件名（0 号列）
-
-            ImGui::NextColumn();
-            ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
-
-            // 下拉框（1 号列）
-            if (ImGui::BeginCombo("##None", currentValueStr))
-            {
-                // 查找选中项
-                for (int i = 0; i < valueStrCount; i++)
-                {
-                    bool isSelected = currentValueStr == valueStrs[i]; // 被选中：当前值==第i个值
-                    // 可选择项，该项改变时：第i项为选中项
-                    if (ImGui::Selectable(valueStrs[i], isSelected))
-                    {
-                        currentValueStr = valueStrs[i]; // 设置当前值
-                        OnSelected(i, currentValueStr); // i 项选中事件函数
-                    }
-
-                    if (isSelected)
-                    {
-                        ImGui::SetItemDefaultFocus();   // 设置默认选中项
-                    }
-                }
-                ImGui::EndCombo();
-            }
-            ImGui::PopItemWidth();
-
-            ImGui::Columns(1);  // 设置为一列
-
-            ImGui::PopID();
-        }
+        template<typename Func>
+        inline static void ObjectSelector(const std::string& label, uint32_t textureID, const glm::vec2& size, Func OnSelected, float framePadding = 2.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
     };
+
+    template<typename Func>
+    inline void GUI::DropdownList(const std::string& label, const char* currentValueStr, const char* valueStrs[], uint32_t valueStrCount, Func OnSelected, float labelMinWidth, float widgetOffset)
+    {
+        ImGui::PushID(label.c_str());   // 设置控件 ID
+
+        float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
+        // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
+        float labelWidth = panelWidth * 0.4f;
+        if (labelWidth < labelMinWidth)
+        {
+            labelWidth = labelMinWidth;
+        }
+
+        ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
+        ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
+
+        ImGui::Text(label.c_str()); // 控件名（0 号列）
+
+        ImGui::NextColumn();
+        ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
+
+        // 下拉框（1 号列）
+        if (ImGui::BeginCombo("##None", currentValueStr))
+        {
+            // 查找选中项
+            for (int i = 0; i < valueStrCount; i++)
+            {
+                bool isSelected = currentValueStr == valueStrs[i]; // 被选中：当前值==第i个值
+                // 可选择项，该项改变时：第i项为选中项
+                if (ImGui::Selectable(valueStrs[i], isSelected))
+                {
+                    currentValueStr = valueStrs[i]; // 设置当前值
+                    OnSelected(i, currentValueStr); // i 项选中事件函数
+                }
+
+                if (isSelected)
+                {
+                    ImGui::SetItemDefaultFocus();   // 设置默认选中项
+                }
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::PopItemWidth();
+        ImGui::Columns(1);      // 设置为一列
+
+        ImGui::PopID();
+    }
+
+    template<typename Func>
+    inline void GUI::ObjectSelector(const std::string& label, uint32_t textureID, const glm::vec2& size, Func OnSelected, float framePadding, float labelMinWidth, float widgetOffset)
+    {
+        ImGui::PushID(label.c_str());   // 设置控件 ID
+
+        float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
+        // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
+        float labelWidth = panelWidth * 0.4f;
+        if (labelWidth < labelMinWidth)
+        {
+            labelWidth = labelMinWidth;
+        }
+
+        ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
+        ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
+
+        ImGui::Text(label.c_str()); // 控件名（0 号列）
+
+        ImGui::NextColumn();
+        ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
+
+        // TODO 点击进行资源定位 OnLocated
+        // Icon
+        // Text
+
+        // TODO 点击进行资源或对象选择
+        // 按钮（1 号列）
+        if (ImGui::ImageButton((ImTextureID)textureID, ImVec2(size.x, size.y), ImVec2(0, 1), ImVec2(1, 0), framePadding))
+        {
+            OnSelected();   // 调用资源/对象选择回调函数
+        }
+
+        ImGui::PopItemWidth();
+        ImGui::Columns(1);      // 设置为一列
+
+        ImGui::PopID();
+    }
 }
