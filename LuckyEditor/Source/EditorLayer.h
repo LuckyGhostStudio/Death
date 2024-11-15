@@ -74,6 +74,12 @@ namespace Lucky
         void OpenScene();
 
         /// <summary>
+        /// 打开场景
+        /// </summary>
+        /// <param name="filepath">文件路径</param>
+        void OpenScene(const std::filesystem::path& filepath);
+
+        /// <summary>
         /// 场景另存为
         /// </summary>
         void SaveSceneAs();

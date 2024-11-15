@@ -52,7 +52,7 @@ namespace Lucky
             {
                 auto [transform, sprite] = spriteGroup.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                Renderer2D::DrawQuad(transform.Transform, sprite.Color, (int)entity);
+                Renderer2D::DrawQuad(transform.Transform, sprite.Color, sprite.Sprite, (int)entity);
             }
         }
         Renderer2D::EndScene();

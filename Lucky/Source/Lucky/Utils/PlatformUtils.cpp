@@ -10,7 +10,7 @@
 
 namespace Lucky
 {
-    std::optional<std::string> FileDialogs::OpenFile(const char* filter)
+    std::string FileDialogs::OpenFile(const char* filter)
     {
         OPENFILENAMEA ofn;
         CHAR szFile[260] = { 0 };
@@ -24,16 +24,16 @@ namespace Lucky
         ofn.lpstrFilter = filter;       // 文件过滤器
         ofn.nFilterIndex = 1;           // 默认过滤索引
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;    // 路径存在|文件存在|没有更改目录
-        
+
         if (GetOpenFileNameA(&ofn) == TRUE) //打开文件名存在
         {
             return ofn.lpstrFile;       // 文件路径
         }
 
-        return std::nullopt;
+        return std::string();
     }
 
-    std::optional<std::string> FileDialogs::SaveFile(const char* filter)
+    std::string FileDialogs::SaveFile(const char* filter)
     {
         OPENFILENAMEA ofn;
         CHAR szFile[260] = { 0 };
@@ -54,6 +54,6 @@ namespace Lucky
             return ofn.lpstrFile;
         }
 
-        return std::nullopt;
+        return std::string();
     }
 }

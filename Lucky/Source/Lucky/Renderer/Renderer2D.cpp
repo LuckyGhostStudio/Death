@@ -114,7 +114,7 @@ namespace Lucky
 
         s_Data.TextureShader = Shader::Create("Assets/Shaders/TextureShader");  // 创建 Texture 着色器
 
-        s_Data.TextureSlots[0] = s_Data.WhiteTexture;    // 0 号纹理槽为白色纹理（默认）
+        s_Data.TextureSlots[0] = s_Data.WhiteTexture;   // 0 号纹理槽为白色纹理（默认）
 
         s_Data.QuadVerticesPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
         s_Data.QuadVerticesPositions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
@@ -222,7 +222,7 @@ namespace Lucky
         s_Data.Stats.QuadCount++;   // 四边形个数 ++
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const Ref<Texture2D>& texture)
+    void Renderer2D::DrawQuad(const Transform& transform, const glm::vec4& color, Ref<Texture2D>& texture, int objectID)
     {
         // 索引个数超过最大索引数
         if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
@@ -230,14 +230,18 @@ namespace Lucky
             NextBatch();    // 开始新一次批渲染
         }
 
-        const int quadVertexCount = 4;  // 顶点个数
-        const glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };   //纹理坐标
-        float texIndex = 0.0f;          // 白色纹理索引
+        constexpr int quadVertexCount = 4;  // 顶点个数
+        constexpr glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };   // 纹理坐标
+        float texIndex = 0.0f;        // 白色纹理索引
 
         // Transform 矩阵
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-            * glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
-            * glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
+        const glm::mat4& transformMat = transform.GetTransform();
+
+        // Texture 不存在 TODO Temp
+        if (!texture)
+        {
+            texture = s_Data.WhiteTexture;  // 默认白色纹理
+        }
 
         // 遍历所有已存在的纹理
         for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
@@ -245,7 +249,7 @@ namespace Lucky
             // texture 在纹理槽中
             if (*s_Data.TextureSlots[i].get() == *texture.get())
             {
-                texIndex = (float)i;                                // 设置当前纹理索引
+                texIndex = (float)i;    // 设置当前纹理索引
                 break;
             }
         }
@@ -266,10 +270,12 @@ namespace Lucky
         // 4 个顶点数据
         for (int i = 0; i < quadVertexCount; i++)
         {
-            s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[i];
+            s_Data.QuadVertexBufferPtr->Position = transformMat * s_Data.QuadVerticesPositions[i];
             s_Data.QuadVertexBufferPtr->Color = color;
             s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
             s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
+            s_Data.QuadVertexBufferPtr->ObjectID = objectID;
+
             s_Data.QuadVertexBufferPtr++;
         }
 

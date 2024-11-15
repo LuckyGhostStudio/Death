@@ -11,6 +11,8 @@
 
 #include "Lucky/ImGui/GUI.h"
 
+#include "Lucky/Utils/PlatformUtils.h"
+
 namespace Lucky
 {
     InspectorPanel::InspectorPanel()
@@ -247,6 +249,18 @@ namespace Lucky
         // SpriteRenderer 组件
         DrawComponent<SpriteRendererComponent>("Sprite Renderer", object, [](SpriteRendererComponent& spriteRendererComponent)
         {
+            uint32_t spriteID = spriteRendererComponent.Sprite->GetRendererID();    // Sprite ID
+            // 选择图片
+            GUI::ObjectSelector("Sprite", spriteID, { 50, 50 }, [&]()
+            {
+                std::string filepath = FileDialogs::OpenFile("Sprite(*.png)\0*.png\0"); // TODO .sprite in project
+                
+                if (!filepath.empty())
+                {
+                    spriteRendererComponent.Sprite = Texture2D::Create(filepath);   // 创建 Texture
+                }
+            });
+
             GUI::ColorEditor4("Color", spriteRendererComponent.Color);   // 颜色编辑器
         });
 

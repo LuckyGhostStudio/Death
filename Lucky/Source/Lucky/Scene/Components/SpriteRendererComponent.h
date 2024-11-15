@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Lucky/Renderer/Texture.h"
 
 #include <glm/glm.hpp>
 
@@ -11,8 +12,10 @@ namespace Lucky
     /// </summary>
     struct SpriteRendererComponent : public Component
     {
-        glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };  // 颜色
-        // TODO: 添加 Sprite
+        Ref<Texture2D> Sprite;// = CreateRef<Texture2D>(1, 1); // 图片（默认白色纹理） TODO class Sprite
+        glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };          // 颜色
+        // TODO Flip
+        // TODO Material
 
         SpriteRendererComponent()
             : Component(ComponentName::SpriteRenderer) {}
