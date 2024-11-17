@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EditorWindow.h"
+#include "EditorPanel.h"
 
 #include "Lucky/Renderer/Framebuffer.h"
 #include "Lucky/Renderer/EditorCamera.h"
@@ -17,7 +17,7 @@ namespace Lucky
     /// <summary>
     /// 场景视口面板：渲染场景物体（编辑器相机的画面）
     /// </summary>
-    class SceneViewportPanel : public EditorWindow
+    class SceneViewportPanel : public EditorPanel
     {
     private:
         Ref<Framebuffer> m_Framebuffer;     // 帧缓冲区
@@ -29,29 +29,21 @@ namespace Lucky
         glm::vec2 m_Bounds[2];              // 视口边界（左上角，右下角）
         glm::vec2 m_Size = { 0.0f, 0.0f };  // 视口大小：随 m_Bounds 更新
 
-        bool m_Focused = false;     // 视口被聚焦 +
-        bool m_Hovered = false;     // 视口被鼠标悬停 +
+        bool m_IsFocused = false;   // 视口被聚焦 +
+        bool m_IsHovered = false;   // 视口被鼠标悬停 +
 
         int m_GizmoType = -1;       // Gizmo 操作类型 -1无 0平移 1旋转 2缩放 + TODO class Gizmo
     public:
-        SceneViewportPanel();
+        SceneViewportPanel() = default;
         SceneViewportPanel(const Ref<Framebuffer>& framebuffer, const Ref<Scene>& scene);
-        virtual ~SceneViewportPanel() override;
 
-        /// <summary>
-        /// 设置场景
-        /// </summary>
-        /// <param name="scene">场景</param>
-        void SetScene(const Ref<Scene>& scene);
+        virtual void SetSceneContext(const Ref<Scene>& scene) override;
+        Ref<Scene> GetSceneContext() const { return m_Scene; }
 
-        virtual void OnUpdate(DeltaTime dt) override;
+        void OnUpdate(DeltaTime dt);
 
-        virtual void OnImGuiRender() override;
+        virtual void OnImGuiRender(bool& isOpen) override;
 
-        /// <summary>
-        /// 事件处理函数
-        /// </summary>
-        /// <param name="e">事件</param>
         virtual void OnEvent(Event& e) override;
     private:
         /// <summary>

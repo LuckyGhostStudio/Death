@@ -1,24 +1,21 @@
 #pragma once
 
-#include "EditorWindow.h"
+#include "EditorPanel.h"
 
 namespace Lucky
 {
     /// <summary>
     /// 渲染器数据面板：显示场景渲染数据
     /// </summary>
-    class RendererStatsPanel : public EditorWindow
+    class RendererStatsPanel : public EditorPanel
     {
     private:
 
     public:
-        RendererStatsPanel();
-        virtual ~RendererStatsPanel() override;
+        RendererStatsPanel() = default;
 
-        virtual void OnUpdate(DeltaTime dt) override;
+        virtual void OnUpdate(DeltaTime dt);
 
-        virtual void OnImGuiRender() override;
-
-        virtual void OnEvent(Event& e) override;
+        virtual void OnImGuiRender(bool& isOpen) override;
     };
 }

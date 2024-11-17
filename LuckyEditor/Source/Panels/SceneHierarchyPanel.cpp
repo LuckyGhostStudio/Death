@@ -9,51 +9,37 @@
 
 namespace Lucky
 {
-    SceneHierarchyPanel::SceneHierarchyPanel()
-        : EditorWindow("Hierarchy")
-    {
-
-    }
-
     SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene)
-        : EditorWindow("Hierarchy")
-    {
-        SetScene(scene);
-    }
-
-    SceneHierarchyPanel::~SceneHierarchyPanel()
+        : m_Scene(scene)
     {
 
     }
 
-    void SceneHierarchyPanel::SetScene(const Ref<Scene>& scene)
+    void SceneHierarchyPanel::SetSceneContext(const Ref<Scene>& scene)
     {
         // 重新设置场景信息
         m_Scene = scene;
         Selection::Object = {};
     }
 
-    void SceneHierarchyPanel::OnUpdate(DeltaTime dt)
-    {
-
-    }
-
-    void SceneHierarchyPanel::OnImGuiRender()
+    void SceneHierarchyPanel::OnImGuiRender(bool& isOpen)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 6)); // 窗口 Padding（控件边界到窗口边界的距离）
-        ImGui::Begin(m_Name.c_str());
+        ImGui::Begin("Hierarchy"/*, &isOpen*/);
         {
             ImGui::PopStyleVar();
+
+            m_IsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));   // 设置树节点之间的垂直距离为 0
 
             // 遍历场景所有实体，并调用 each 内的函数
             m_Scene->m_Registry.each([&](auto ObjectID)
-            {
-                Object object{ ObjectID, m_Scene.get() };
+                {
+                    Object object{ ObjectID, m_Scene.get() };
 
-                DrawObjectNode(object); // 绘制物体结点
-            });
+                    DrawObjectNode(object); // 绘制物体结点
+                });
 
             ImGui::PopStyleVar();
 
@@ -150,6 +136,11 @@ namespace Lucky
 
     void SceneHierarchyPanel::OnEvent(Event& e)
     {
+        if (!m_IsFocused)
+        {
+            return;
+        }
 
+        // TODO Object Event
     }
 }

@@ -15,15 +15,8 @@
 
 namespace Lucky
 {
-    SceneViewportPanel::SceneViewportPanel()
-        : EditorWindow("Scene")
-    {
-
-    }
-
     SceneViewportPanel::SceneViewportPanel(const Ref<Framebuffer>& framebuffer, const Ref<Scene>& scene)
-        : EditorWindow("Scene"),
-        m_Framebuffer(framebuffer),
+        : m_Framebuffer(framebuffer),
         m_Scene(scene),
         m_EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f),
         m_PickedObject({})
@@ -31,12 +24,7 @@ namespace Lucky
 
     }
 
-    SceneViewportPanel::~SceneViewportPanel()
-    {
-
-    }
-
-    void SceneViewportPanel::SetScene(const Ref<Scene>& scene)
+    void SceneViewportPanel::SetSceneContext(const Ref<Scene>& scene)
     {
         m_Scene = scene;
         m_PickedObject = {};
@@ -54,7 +42,7 @@ namespace Lucky
         }
 
         // 视口被聚焦
-        if (m_Focused)
+        if (m_IsFocused)
         {
 
         }
@@ -97,10 +85,10 @@ namespace Lucky
         m_Framebuffer->Unbind();    // 解除绑定帧缓冲区
     }
 
-    void SceneViewportPanel::OnImGuiRender()
+    void SceneViewportPanel::OnImGuiRender(bool& isOpen)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // 设置 Gui 窗口样式：边界 = 0
-        ImGui::Begin(m_Name.c_str());
+        ImGui::Begin("Scene Viewport");
         {
             auto viewportMinRegion = ImGui::GetWindowContentRegionMin();    // 视口可用区域最小值（视口左上角相对于视口左上角位置）
             auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();    // 视口可用区域最大值（视口右下角相对于视口左上角位置）
@@ -109,10 +97,10 @@ namespace Lucky
             m_Bounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
             m_Bounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
 
-            m_Focused = ImGui::IsWindowFocused();   // 当前窗口被聚焦
-            m_Hovered = ImGui::IsWindowHovered();   // 鼠标悬停在当前窗口
+            m_IsFocused = ImGui::IsWindowFocused();   // 当前窗口被聚焦
+            m_IsHovered = ImGui::IsWindowHovered();   // 鼠标悬停在当前窗口
 
-            Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused ||*/ !m_Hovered); // 阻止ImGui事件
+            Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused ||*/ !m_IsHovered); // 阻止ImGui事件
 
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();  // 当前面板大小
             m_Size = { viewportPanelSize.x, viewportPanelSize.y };      // 视口大小
@@ -230,7 +218,7 @@ namespace Lucky
         if (e.GetMouseButton() == Mouse::ButtonLeft)
         {
             // 鼠标在视口内 鼠标没有位于 Gizmo 上
-            if (m_Hovered && !ImGuizmo::IsOver())
+            if (m_IsHovered && !ImGuizmo::IsOver())
             {
                 Selection::Object = m_PickedObject;  // 更新 Selection
             }

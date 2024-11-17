@@ -10,28 +10,17 @@ namespace Lucky
     static const std::filesystem::path g_AssetPath = "Assets";  // 资产根目录名
 
     ProjectAssetsPanel::ProjectAssetsPanel()
-        : EditorWindow("Project"),
-        m_CurrentFile("")
+        : m_CurrentFile("")
     {
         m_DirectoryClosedIcon = Texture2D::Create("Resources/Icons/DirectoryClosed_Icon.png");
         m_DirectoryOpenedIcon = Texture2D::Create("Resources/Icons/DirectoryOpened_Icon.png");
         m_FileIcon = Texture2D::Create("Resources/Icons/File_Icon.png");
     }
 
-    ProjectAssetsPanel::~ProjectAssetsPanel()
-    {
-
-    }
-
-    void ProjectAssetsPanel::OnUpdate(DeltaTime dt)
-    {
-
-    }
-
-    void ProjectAssetsPanel::OnImGuiRender()
+    void ProjectAssetsPanel::OnImGuiRender(bool& isOpen)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 6)); // 窗口 Padding（控件边界到窗口边界的距离）
-        ImGui::Begin(m_Name.c_str());
+        ImGui::Begin("Project"/*, &isOpen*/);
         {
             ImGui::PopStyleVar();
 
@@ -185,10 +174,5 @@ namespace Lucky
         }
 
         ImGui::PopID();
-    }
-
-    void ProjectAssetsPanel::OnEvent(Event& e)
-    {
-
     }
 }

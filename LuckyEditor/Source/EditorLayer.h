@@ -24,13 +24,14 @@ namespace Lucky
         Object m_SquareObject;              // 正方形物体
         Object m_CameraObject;              // 相机对象
 
-        EditorDockSpace m_EditorDockSpace;          // 停靠空间
+        EditorDockSpace m_EditorDockSpace;  // 停靠空间
 
-        SceneViewportPanel m_SceneViewportPanel;    // 场景 Viewport 面板
-        SceneHierarchyPanel m_SceneHierarchyPanel;  // 场景 Hierarchy 面板
-        InspectorPanel m_InspectorPanel;            // 资产 Inspector 面板
-        RendererStatsPanel m_RendererStatsPanel;    // 场景 RendererStats 面板
-        ProjectAssetsPanel m_ProjectAssetsPanel;    // 项目 Assets 面板
+        // TODO Add PanelManager
+        Ref<SceneHierarchyPanel> m_SceneHierarchyPanel;  // 场景 Hierarchy 面板
+        Ref<InspectorPanel> m_InspectorPanel;            // 资产 Inspector 面板
+        Ref<SceneViewportPanel> m_SceneViewportPanel;    // 场景 Viewport 面板
+        Ref<RendererStatsPanel> m_RendererStatsPanel;    // 场景 RendererStats 面板
+        Ref<ProjectAssetsPanel> m_ProjectAssetsPanel;    // 项目 Assets 面板
     public:
         EditorLayer();
 

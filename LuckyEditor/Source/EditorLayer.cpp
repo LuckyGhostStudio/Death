@@ -57,8 +57,11 @@ namespace Lucky
         m_CameraObject.AddComponent<CameraComponent>();                 // 添加 Camera 组件
         m_CameraObject.GetComponent<TransformComponent>().Transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
-        m_SceneViewportPanel = SceneViewportPanel(m_Framebuffer, m_ActiveScene);
-        m_SceneHierarchyPanel = SceneHierarchyPanel(m_ActiveScene);
+        m_SceneHierarchyPanel = CreateRef<SceneHierarchyPanel>(m_ActiveScene);
+        m_InspectorPanel = CreateRef<InspectorPanel>();
+        m_SceneViewportPanel = CreateRef<SceneViewportPanel>(m_Framebuffer, m_ActiveScene);
+        m_RendererStatsPanel = CreateRef<RendererStatsPanel>();
+        m_ProjectAssetsPanel = CreateRef<ProjectAssetsPanel>();
     }
 
     void EditorLayer::OnDetach()
@@ -68,18 +71,13 @@ namespace Lucky
 
     void EditorLayer::OnUpdate(DeltaTime dt)
     {
-        m_EditorDockSpace.OnUpdate(dt);
-
-        m_SceneHierarchyPanel.OnUpdate(dt);
-        m_InspectorPanel.OnUpdate(dt);
-        m_RendererStatsPanel.OnUpdate(dt);
-        m_SceneViewportPanel.OnUpdate(dt);
-        m_ProjectAssetsPanel.OnUpdate(dt);
+        m_RendererStatsPanel->OnUpdate(dt);
+        m_SceneViewportPanel->OnUpdate(dt);
     }
 
     void EditorLayer::OnImGuiRender()
     {
-        m_EditorDockSpace.OnImGuiRender();    // 渲染 DockSpace
+        m_EditorDockSpace.Setup();  // 设置 DockSpace
 
         // 菜单条 TODO MenuBarPanel
         if (ImGui::BeginMainMenuBar())
@@ -116,11 +114,12 @@ namespace Lucky
             ImGui::EndMainMenuBar();
         }
 
-        m_SceneHierarchyPanel.OnImGuiRender();  // 渲染 Hierarchy 面板
-        m_InspectorPanel.OnImGuiRender();       // 渲染 Inspector 面板
-        m_RendererStatsPanel.OnImGuiRender();   // 渲染 RendererStats 面板
-        m_SceneViewportPanel.OnImGuiRender();   // 渲染 Viewport 面板
-        m_ProjectAssetsPanel.OnImGuiRender();   // 渲染 ProjectAssets 面板
+        static bool isOpen = true;
+        m_SceneHierarchyPanel->OnImGuiRender(isOpen);   // 渲染 Hierarchy 面板
+        m_InspectorPanel->OnImGuiRender(isOpen);        // 渲染 Inspector 面板
+        m_SceneViewportPanel->OnImGuiRender(isOpen);    // 渲染 Viewport 面板
+        m_RendererStatsPanel->OnImGuiRender(isOpen);    // 渲染 RendererStats 面板
+        m_ProjectAssetsPanel->OnImGuiRender(isOpen);    // 渲染 ProjectAssets 面板
     }
 
     void EditorLayer::OnEvent(Event& event)
@@ -130,12 +129,8 @@ namespace Lucky
         dispatcher.Dispatch<KeyPressedEvent>(LC_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));                    // 调用按键按下事件
         dispatcher.Dispatch<MouseButtonPressedEvent>(LC_BIND_EVENT_FUNC(EditorLayer::OnMouseButtonPressed));    // 调用鼠标按钮按下事件
 
-        m_EditorDockSpace.OnEvent(event);
-        m_SceneHierarchyPanel.OnEvent(event);
-        m_InspectorPanel.OnEvent(event);
-        m_RendererStatsPanel.OnEvent(event);
-        m_SceneViewportPanel.OnEvent(event);
-        m_ProjectAssetsPanel.OnEvent(event);
+        m_SceneHierarchyPanel->OnEvent(event);
+        m_SceneViewportPanel->OnEvent(event);
     }
 
     bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -184,8 +179,8 @@ namespace Lucky
     {
         m_ActiveScene = CreateRef<Scene>();         // 创建新场景
         
-        m_SceneViewportPanel.SetScene(m_ActiveScene);   // 设置 Viewport 的场景
-        m_SceneHierarchyPanel.SetScene(m_ActiveScene);  // 设置 Hierarchy 的场景
+        m_SceneViewportPanel->SetSceneContext(m_ActiveScene);   // 设置 Viewport 的场景
+        m_SceneHierarchyPanel->SetSceneContext(m_ActiveScene);  // 设置 Hierarchy 的场景
     }
 
     void EditorLayer::OpenScene()
@@ -203,8 +198,8 @@ namespace Lucky
     {
         m_ActiveScene = CreateRef<Scene>();             // 创建新场景
 
-        m_SceneViewportPanel.SetScene(m_ActiveScene);   // 设置 Viewport 的场景
-        m_SceneHierarchyPanel.SetScene(m_ActiveScene);  // 设置 Hierarchy 的场景
+        m_SceneViewportPanel->SetSceneContext(m_ActiveScene);   // 设置 Viewport 的场景
+        m_SceneHierarchyPanel->SetSceneContext(m_ActiveScene);  // 设置 Hierarchy 的场景
 
         SceneSerializer serializer(m_ActiveScene);      // 场景序列化器
         serializer.Deserialize(filepath.string());      // 反序列化：加载文件场景到新场景

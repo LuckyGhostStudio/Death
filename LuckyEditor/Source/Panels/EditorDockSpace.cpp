@@ -5,27 +5,15 @@
 
 namespace Lucky
 {
-    EditorDockSpace::EditorDockSpace(bool opened, bool fullScreen)
-        : EditorWindow("EditorDockSpace"),
-        m_Opened(opened),
-        m_IsFullScreen(fullScreen),
+    EditorDockSpace::EditorDockSpace(bool fullScreen)
+        : m_IsFullScreen(fullScreen),
         m_Flags(ImGuiDockNodeFlags_None),
         m_WindowFlags(ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking)
     {
 
     }
 
-    EditorDockSpace::~EditorDockSpace()
-    {
-
-    }
-
-    void EditorDockSpace::OnUpdate(DeltaTime dt)
-    {
-
-    }
-
-    void EditorDockSpace::OnImGuiRender()
+    void EditorDockSpace::Setup()
     {
         if (m_IsFullScreen)
         {
@@ -50,7 +38,7 @@ namespace Lucky
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
         // DockSpace ´°¿Ú
-        ImGui::Begin("DockSpace", &m_Opened, m_WindowFlags);
+        ImGui::Begin("DockSpace", nullptr, m_WindowFlags);
         {
             ImGui::PopStyleVar();
 
@@ -63,15 +51,9 @@ namespace Lucky
 
             if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
             {
-                ImGuiID dockspaceID = ImGui::GetID(m_Name.c_str());
-                ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), m_Flags | ImGuiDockNodeFlags_NoWindowMenuButton | ImGuiDockNodeFlags_NoCloseButton);
+                ImGui::DockSpace(ImGui::GetID("EditorDockSpace"), ImVec2(0.0f, 0.0f), m_Flags | ImGuiDockNodeFlags_NoWindowMenuButton | ImGuiDockNodeFlags_NoCloseButton);
             }
         }
         ImGui::End();
-    }
-
-    void EditorDockSpace::OnEvent(Event& e)
-    {
-
     }
 }

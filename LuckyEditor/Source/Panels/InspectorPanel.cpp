@@ -15,30 +15,14 @@
 
 namespace Lucky
 {
-    InspectorPanel::InspectorPanel()
-        : EditorWindow("Inspector")
+    void InspectorPanel::OnImGuiRender(bool& isOpen)
     {
-    
-    }
-
-    InspectorPanel::~InspectorPanel()
-    {
-
-    }
-
-    void InspectorPanel::OnUpdate(DeltaTime dt)
-    {
-
-    }
-
-    void InspectorPanel::OnImGuiRender()
-    {
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 10)); // 窗口 Padding（控件边界到窗口边界的距离）
-        ImGui::Begin(m_Name.c_str());
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 10));    // 窗口 Padding（控件边界到窗口边界的距离）
+        ImGui::Begin("Inspector"/*, &isOpen*/);
         {
             ImGui::PopStyleVar();
 
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 4));   // 垂直间距为 8
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 8));   // 垂直间距为 4
 
             // 被选中的物体存在 TODO 添加资产信息绘制
             if (m_SelectionObject)
@@ -49,11 +33,6 @@ namespace Lucky
             ImGui::PopStyleVar();
         }
         ImGui::End();
-    }
-
-    void InspectorPanel::OnEvent(Event& e)
-    {
-
     }
 
     void InspectorPanel::AddComponents(Object object)
@@ -115,8 +94,6 @@ namespace Lucky
             auto& component = object.GetComponent<T>();    // 获得组件
 
             ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();     // 可用区域大小
-
-            float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;    // 行高 = 字体大小 + 边框 y * 2
             
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // Separator 和 TreeNodeEx 之间的垂直距离为 1
             ImGui::Separator(); // 分隔符
@@ -125,24 +102,31 @@ namespace Lucky
             ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);            // 边框圆度
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
             ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);          // 边框线宽 0
+            
+            float lineHeight = GImGui->Font->FontSize; // +GImGui->Style.FramePadding.y * 2.0f;    // 行高 = 字体大小 + 边框 y * 2
+            float padding = GImGui->Style.FramePadding.y;
 
             ImFont* boldFont = ImGui::GetIO().Fonts->Fonts[0];  // 粗体
             ImGui::PushFont(boldFont);
+
+            //ImVec2 nodePos = ImGui::GetCursorPos(); // 目录结点位置坐标
 
             // 组件结点：组件类的哈希值作为结点 id
             bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, name.c_str());
 
             ImGui::PopFont();
 
-            ImGui::PopStyleVar(4);
+            static Ref<Texture2D> settingsButtonIcon = Texture2D::Create("Resources/Icons/SettingsButton_Icon.png");
 
-           /* ImGui::SameLine(contentRegionAvail.x - lineHeight * 0.5f);      // 同一行：可用区域左移
-
+            ImGui::SameLine(contentRegionAvail.x - lineHeight - padding);      // 同一行：可用区域左移
+            ImGui::SetCursorPosY(ImGui::GetCursorPos().y + padding);
             // 组件设置按钮
-            if (ImGui::Button("+", ImVec2(lineHeight, lineHeight)))
+            if (ImGui::ImageButton((void*)settingsButtonIcon->GetRendererID(), { lineHeight - padding * 2, lineHeight - padding * 2 }, ImVec2(0, 1), ImVec2(1, 0)))
             {
                 ImGui::OpenPopup("ComponentSettings");  // 打开弹出框
-            }*/
+            }
+
+            ImGui::PopStyleVar(4);
 
             // 移除组件
             bool componentRemoved = false;
@@ -161,6 +145,7 @@ namespace Lucky
             if (opened)
             {
                 ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+                ImGui::SetCursorPosY(ImGui::GetCursorPos().y - padding);
                 ImGui::Separator(); // 分隔符
                 ImGui::PopStyleColor();
 

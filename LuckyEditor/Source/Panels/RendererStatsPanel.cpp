@@ -7,25 +7,14 @@
 
 namespace Lucky
 {
-    RendererStatsPanel::RendererStatsPanel()
-        : EditorWindow("Renderer Stats")
-    {
-
-    }
-
-    RendererStatsPanel::~RendererStatsPanel()
-    {
-
-    }
-
     void RendererStatsPanel::OnUpdate(DeltaTime dt)
     {
         Renderer2D::ResetStats();   // 重置统计数据
     }
 
-    void RendererStatsPanel::OnImGuiRender()
+    void RendererStatsPanel::OnImGuiRender(bool& isOpen)
     {
-        ImGui::Begin(m_Name.c_str());
+        ImGui::Begin("Renderer Stats"/*, &isOpen*/);
         {
             auto stats = Renderer2D::GetStats();    // 渲染器数据
 
@@ -37,10 +26,5 @@ namespace Lucky
             ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
         }
         ImGui::End();
-    }
-
-    void RendererStatsPanel::OnEvent(Event& e)
-    {
-
     }
 }
