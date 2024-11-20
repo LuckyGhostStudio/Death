@@ -3,8 +3,8 @@
 #include "EditorPanel.h"
 
 #include "Lucky/Renderer/Framebuffer.h"
-#include "Lucky/Renderer/EditorCamera.h"
 #include "Lucky/Scene/Scene.h"
+#include "Lucky/Renderer/EditorCamera.h"
 #include "Lucky/Scene/Selection.h"
 
 #include "Lucky/Events/KeyEvent.h"

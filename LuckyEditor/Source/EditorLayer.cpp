@@ -34,7 +34,8 @@ namespace Lucky
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
 
-        m_Framebuffer = Framebuffer::Create(fbSpec);    // 创建帧缓冲区
+        m_SceneViewportFramebuffer = Framebuffer::Create(fbSpec);   // 创建 Scene Viewport 帧缓冲区
+        m_GameViewportFramebuffer = Framebuffer::Create(fbSpec);    // 创建 Game Viewport 帧缓冲区
 
         m_ActiveScene = CreateRef<Scene>();             // 创建场景
 
@@ -59,7 +60,8 @@ namespace Lucky
 
         m_SceneHierarchyPanel = CreateRef<SceneHierarchyPanel>(m_ActiveScene);
         m_InspectorPanel = CreateRef<InspectorPanel>();
-        m_SceneViewportPanel = CreateRef<SceneViewportPanel>(m_Framebuffer, m_ActiveScene);
+        m_SceneViewportPanel = CreateRef<SceneViewportPanel>(m_SceneViewportFramebuffer, m_ActiveScene);
+        m_GameViewportPanel = CreateRef<GameViewportPanel>(m_GameViewportFramebuffer, m_ActiveScene);
         m_RendererStatsPanel = CreateRef<RendererStatsPanel>();
         m_ProjectAssetsPanel = CreateRef<ProjectAssetsPanel>();
     }
@@ -73,6 +75,7 @@ namespace Lucky
     {
         m_RendererStatsPanel->OnUpdate(dt);
         m_SceneViewportPanel->OnUpdate(dt);
+        m_GameViewportPanel->OnUpdate(dt);
     }
 
     void EditorLayer::OnImGuiRender()
@@ -86,13 +89,13 @@ namespace Lucky
             if (ImGui::BeginMenu("File"))
             {
                 // 创建新场景
-                if (ImGui::MenuItem("New", "Ctrl N"))
+                if (ImGui::MenuItem("New", "Ctrl+N"))
                 {
                     NewScene();
                 }
 
                 // 打开文件：加载场景
-                if (ImGui::MenuItem("Open...", "Ctrl O"))
+                if (ImGui::MenuItem("Open...", "Ctrl+O"))
                 {
                     OpenScene();
                 }
@@ -117,7 +120,8 @@ namespace Lucky
         static bool isOpen = true;
         m_SceneHierarchyPanel->OnImGuiRender(isOpen);   // 渲染 Hierarchy 面板
         m_InspectorPanel->OnImGuiRender(isOpen);        // 渲染 Inspector 面板
-        m_SceneViewportPanel->OnImGuiRender(isOpen);    // 渲染 Viewport 面板
+        m_SceneViewportPanel->OnImGuiRender(isOpen);    // 渲染 Scene Viewport 面板
+        m_GameViewportPanel->OnImGuiRender(isOpen);     // 渲染 Game Viewport 面板
         m_RendererStatsPanel->OnImGuiRender(isOpen);    // 渲染 RendererStats 面板
         m_ProjectAssetsPanel->OnImGuiRender(isOpen);    // 渲染 ProjectAssets 面板
     }
@@ -179,7 +183,8 @@ namespace Lucky
     {
         m_ActiveScene = CreateRef<Scene>();         // 创建新场景
         
-        m_SceneViewportPanel->SetSceneContext(m_ActiveScene);   // 设置 Viewport 的场景
+        m_SceneViewportPanel->SetSceneContext(m_ActiveScene);   // 设置 Scene Viewport 的场景
+        m_GameViewportPanel->SetSceneContext(m_ActiveScene);    // 设置 Game Viewport 的场景
         m_SceneHierarchyPanel->SetSceneContext(m_ActiveScene);  // 设置 Hierarchy 的场景
     }
 
@@ -198,7 +203,8 @@ namespace Lucky
     {
         m_ActiveScene = CreateRef<Scene>();             // 创建新场景
 
-        m_SceneViewportPanel->SetSceneContext(m_ActiveScene);   // 设置 Viewport 的场景
+        m_SceneViewportPanel->SetSceneContext(m_ActiveScene);   // 设置 Scene Viewport 的场景
+        m_GameViewportPanel->SetSceneContext(m_ActiveScene);    // 设置 Game Viewport 的场景
         m_SceneHierarchyPanel->SetSceneContext(m_ActiveScene);  // 设置 Hierarchy 的场景
 
         SceneSerializer serializer(m_ActiveScene);      // 场景序列化器

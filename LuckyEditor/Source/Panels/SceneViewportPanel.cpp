@@ -37,7 +37,6 @@ namespace Lucky
             (spec.Width != m_Size.x || spec.Height != m_Size.y))
         {
             m_Framebuffer->Resize((uint32_t)m_Size.x, (uint32_t)m_Size.y);      // 重置帧缓冲区大小
-            m_Scene->OnViewportResize((uint32_t)m_Size.x, (uint32_t)m_Size.y);  // 重置场景视口大小
             m_EditorCamera.SetViewportSize(m_Size.x, m_Size.y);                 // 重置编辑器相机视口大小
         }
 
@@ -87,8 +86,8 @@ namespace Lucky
 
     void SceneViewportPanel::OnImGuiRender(bool& isOpen)
     {
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // 设置 Gui 窗口样式：边界 = 0
-        ImGui::Begin("Scene Viewport");
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0)); // 设置 Gui 窗口样式：边界 = 0
+        ImGui::Begin("Scene");
         {
             auto viewportMinRegion = ImGui::GetWindowContentRegionMin();    // 视口可用区域最小值（视口左上角相对于视口左上角位置）
             auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();    // 视口可用区域最大值（视口右下角相对于视口左上角位置）

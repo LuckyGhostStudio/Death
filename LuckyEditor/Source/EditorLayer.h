@@ -5,9 +5,10 @@
 #include "Lucky/Renderer/EditorCamera.h"
 
 #include "Panels/EditorDockSpace.h"
-#include "Panels/SceneViewportPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/InspectorPanel.h"
+#include "Panels/SceneViewportPanel.h"
+#include "Panels/GameViewportPanel.h"
 #include "Panels/RendererStatsPanel.h"
 #include "Panels/ProjectAssetsPanel.h"
 
@@ -16,7 +17,8 @@ namespace Lucky
     class EditorLayer : public Layer
     {
     private:
-        Ref<Framebuffer> m_Framebuffer;     // 帧缓冲区
+        Ref<Framebuffer> m_SceneViewportFramebuffer;    // 场景视口帧缓冲区
+        Ref<Framebuffer> m_GameViewportFramebuffer;     // 游戏视口帧缓冲区
 
         Ref<Scene> m_ActiveScene;           // 活动场景
         EditorCamera m_EditorCamera;        // 编辑器相机
@@ -27,11 +29,12 @@ namespace Lucky
         EditorDockSpace m_EditorDockSpace;  // 停靠空间
 
         // TODO Add PanelManager
-        Ref<SceneHierarchyPanel> m_SceneHierarchyPanel;  // 场景 Hierarchy 面板
-        Ref<InspectorPanel> m_InspectorPanel;            // 资产 Inspector 面板
-        Ref<SceneViewportPanel> m_SceneViewportPanel;    // 场景 Viewport 面板
-        Ref<RendererStatsPanel> m_RendererStatsPanel;    // 场景 RendererStats 面板
-        Ref<ProjectAssetsPanel> m_ProjectAssetsPanel;    // 项目 Assets 面板
+        Ref<SceneHierarchyPanel> m_SceneHierarchyPanel; // 场景 Hierarchy 面板
+        Ref<InspectorPanel> m_InspectorPanel;           // 资产 Inspector 面板
+        Ref<SceneViewportPanel> m_SceneViewportPanel;   // 场景 Viewport 面板
+        Ref<GameViewportPanel> m_GameViewportPanel;     // 游戏 Viewport 面板
+        Ref<RendererStatsPanel> m_RendererStatsPanel;   // 场景 RendererStats 面板
+        Ref<ProjectAssetsPanel> m_ProjectAssetsPanel;   // 项目 Assets 面板
     public:
         EditorLayer();
 

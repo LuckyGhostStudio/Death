@@ -70,7 +70,7 @@ namespace Lucky
         {
             auto [transform, camera] = cameraView.get<TransformComponent, CameraComponent>(entity);
             
-            // 找到主相机
+            // 找到主相机（第一个）
             if (camera.Camera.IsPrimary())
             {
                 mainCamera = &camera.Camera;
@@ -93,7 +93,7 @@ namespace Lucky
                 {
                     auto [transform, sprite] = spriteGroup.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                    Renderer2D::DrawQuad(transform.Transform, sprite.Color);
+                    Renderer2D::DrawQuad(transform.Transform, sprite.Color, sprite.Sprite, (int)entity);
                 }
             }
             Renderer2D::EndScene(); // 结束渲染场景
@@ -104,7 +104,7 @@ namespace Lucky
     {
         m_ViewportWidth = width;
         m_ViewportHeight = height;
-
+        // TODO 修改为更新 Camera 视口
         auto cameraView = m_Registry.view<CameraComponent>();   // 所有有 Camera 组件的实体
 
         for (auto entity : cameraView)
