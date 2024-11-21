@@ -43,17 +43,6 @@ namespace Lucky
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0)); // 设置 Gui 窗口样式：边界 = 0
         ImGui::Begin("Game");
         {
-            //auto viewportMinRegion = ImGui::GetWindowContentRegionMin();    // 视口可用区域最小值（视口左上角相对于视口左上角位置）
-            //auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();    // 视口可用区域最大值（视口右下角相对于视口左上角位置）
-            //auto viewportOffset = ImGui::GetWindowPos();                    // 视口偏移量：视口面板左上角位置（相对于屏幕左上角）
-
-            //m_Bounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
-            //m_Bounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
-
-            //m_IsFocused = ImGui::IsWindowFocused();   // 当前窗口被聚焦
-            //m_IsHovered = ImGui::IsWindowHovered();   // 鼠标悬停在当前窗口
-
-            //Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused ||*/ !m_IsHovered); // 阻止ImGui事件
 
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();  // 当前面板大小
             m_Size = { viewportPanelSize.x, viewportPanelSize.y };      // 视口大小

@@ -115,8 +115,8 @@ namespace Lucky
 
         style.FrameRounding = 4.8f;             // 控件边框圆度 [0, 12] 4.8 <=> 0.4f
         style.FrameBorderSize = 1.0f;           // 边框尺寸
-        style.FramePadding.y = 3.0f;
-
+        style.FramePadding.y = 4.0f;
+ 
         style.WindowRounding = 4.8f;            // 窗口边框圆度
         style.GrabRounding = 4.8f;              // 拖动条 handle 圆度
         style.PopupRounding = 4.8f;             // 弹出窗口圆度

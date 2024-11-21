@@ -17,7 +17,7 @@ namespace Lucky
     EditorLayer::EditorLayer()
         : Layer("EditorLayer")
     {
-
+        m_PlayButtonIcon = Texture2D::Create("Resources/Icons/ToolBar/PlayButton_Icon.png");
     }
 
     void EditorLayer::OnAttach()
@@ -82,7 +82,22 @@ namespace Lucky
     {
         m_EditorDockSpace.Setup();  // ÉèÖÃ DockSpace
 
-        // ²Ëµ¥Ìõ TODO MenuBarPanel
+        UI_MenuBar();
+        
+        static bool isOpen = true;
+        //ImGui::SetNextWindowPos({ ImGui::GetCursorPosX(), ImGui::GetCursorPosY() + 6 });
+        m_SceneHierarchyPanel->OnImGuiRender(isOpen);   // äÖÈ¾ Hierarchy Ãæ°å
+        m_InspectorPanel->OnImGuiRender(isOpen);        // äÖÈ¾ Inspector Ãæ°å
+        m_GameViewportPanel->OnImGuiRender(isOpen);     // äÖÈ¾ Game Viewport Ãæ°å
+        m_SceneViewportPanel->OnImGuiRender(isOpen);    // äÖÈ¾ Scene Viewport Ãæ°å
+        m_RendererStatsPanel->OnImGuiRender(isOpen);    // äÖÈ¾ RendererStats Ãæ°å
+        m_ProjectAssetsPanel->OnImGuiRender(isOpen);    // äÖÈ¾ ProjectAssets Ãæ°å
+
+        ImGui::ShowDemoWindow();
+    }
+
+    void EditorLayer::UI_MenuBar()
+    {
         if (ImGui::BeginMainMenuBar())
         {
             // ²Ëµ¥£ºFile
@@ -114,16 +129,24 @@ namespace Lucky
 
                 ImGui::EndMenu();
             }
+            
+            //UI_ToolBar();
+
             ImGui::EndMainMenuBar();
         }
+    }
 
-        static bool isOpen = true;
-        m_SceneHierarchyPanel->OnImGuiRender(isOpen);   // äÖÈ¾ Hierarchy Ãæ°å
-        m_InspectorPanel->OnImGuiRender(isOpen);        // äÖÈ¾ Inspector Ãæ°å
-        m_SceneViewportPanel->OnImGuiRender(isOpen);    // äÖÈ¾ Scene Viewport Ãæ°å
-        m_GameViewportPanel->OnImGuiRender(isOpen);     // äÖÈ¾ Game Viewport Ãæ°å
-        m_RendererStatsPanel->OnImGuiRender(isOpen);    // äÖÈ¾ RendererStats Ãæ°å
-        m_ProjectAssetsPanel->OnImGuiRender(isOpen);    // äÖÈ¾ ProjectAssets Ãæ°å
+    void EditorLayer::UI_ToolBar()
+    {
+        float panelWidth = ImGui::GetWindowContentRegionWidth();    // Ãæ°å¿í¶È
+
+        // ÉèÖÃ°´Å¥µÄÎ»ÖÃ
+        ImGui::SetCursorPos({ (panelWidth - 20) * 0.5f, 2 });
+        uint32_t playButtonIconID = m_PlayButtonIcon->GetRendererID();
+        if (ImGui::ImageButton((ImTextureID)playButtonIconID, ImVec2(20, 20), ImVec2(0, 1), ImVec2(1, 0)))
+        {
+
+        }
     }
 
     void EditorLayer::OnEvent(Event& event)

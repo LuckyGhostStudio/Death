@@ -70,7 +70,6 @@ namespace Lucky
 
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // Separator 和 TreeNodeEx 之间的垂直距离为 1
             ImGui::Separator(); // 分隔符
-            //ImGui::SetCursorPosY(ImGui::GetCursorPos().y - 8);
             ImGui::Separator(); // 分隔符
 
             ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);            // 边框圆度
@@ -84,8 +83,19 @@ namespace Lucky
 
             ImVec2 nodePos = ImGui::GetCursorPos();
 
+            static ImVec4 headerColor;
+
             // 组件结点：组件类的哈希值作为结点 id
             bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, "");
+
+            if (ImGui::IsItemHovered())
+            {
+                headerColor = ImGui::GetStyle().Colors[ImGuiCol_HeaderHovered];
+            }
+            else
+            {
+                headerColor = ImGui::GetStyle().Colors[ImGuiCol_Header];
+            }
 
             uint32_t iconID = 0;
             switch (component.Name)
@@ -120,10 +130,12 @@ namespace Lucky
             ImGui::SameLine(contentRegionAvail.x - lineHeight - padding * 2);      // 同一行：可用区域左移
             ImGui::SetCursorPosY(nodePos.y + padding);
             // 组件设置按钮
+            ImGui::PushStyleColor(ImGuiCol_Button, headerColor );
             if (ImGui::ImageButton((void*)m_SettingsButtonIcon->GetRendererID(), { lineHeight - padding * 2, lineHeight - padding * 2 }, ImVec2(0, 1), ImVec2(1, 0)))
             {
                 ImGui::OpenPopup("ComponentSettings");  // 打开弹出框
             }
+            ImGui::PopStyleColor();
 
             ImGui::PopStyleVar(4);
 
@@ -141,10 +153,10 @@ namespace Lucky
                 ImGui::EndPopup();
             }
 
+            ImGui::SetCursorPosY(ImGui::GetCursorPos().y - padding);
             if (opened)
             {
                 ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-                ImGui::SetCursorPosY(ImGui::GetCursorPos().y - padding);
                 ImGui::Separator(); // 分隔符
                 ImGui::PopStyleColor();
 

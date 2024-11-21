@@ -35,6 +35,8 @@ namespace Lucky
         Ref<GameViewportPanel> m_GameViewportPanel;     // 游戏 Viewport 面板
         Ref<RendererStatsPanel> m_RendererStatsPanel;   // 场景 RendererStats 面板
         Ref<ProjectAssetsPanel> m_ProjectAssetsPanel;   // 项目 Assets 面板
+
+        Ref<Texture2D> m_PlayButtonIcon;
     public:
         EditorLayer();
 
@@ -87,6 +89,16 @@ namespace Lucky
         /// 场景另存为
         /// </summary>
         void SaveSceneAs();
+    private:
+        /// <summary>
+        /// 菜单条
+        /// </summary>
+        void UI_MenuBar();
+
+        /// <summary>
+        /// 工具栏
+        /// </summary>
+        void UI_ToolBar();
     private:
         /// <summary>
         /// 按键按下时调用
