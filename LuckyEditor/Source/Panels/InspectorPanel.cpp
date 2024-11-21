@@ -1,7 +1,7 @@
 #include "InspectorPanel.h"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
+// #include <imgui/imgui.h>
+// #include <imgui/imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Lucky/Scene/Components/SelfComponent.h"
@@ -15,6 +15,15 @@
 
 namespace Lucky
 {
+    InspectorPanel::InspectorPanel()
+    {
+        m_SettingsButtonIcon = Texture2D::Create("Resources/Icons/SettingsButton_Icon.png");
+
+        m_TransformIcon = Texture2D::Create("Resources/Icons/Components/Transform_Icon.png");
+        m_CameraIcon = Texture2D::Create("Resources/Icons/Components/Camera_Icon.png");
+        m_SpriteRendererIcon = Texture2D::Create("Resources/Icons/Components/SpriteRenderer_Icon.png");
+    }
+
     void InspectorPanel::OnImGuiRender(bool& isOpen)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 10));    // 窗口 Padding（控件边界到窗口边界的距离）
@@ -71,93 +80,6 @@ namespace Lucky
             }
 
             ImGui::EndPopup();
-        }
-    }
-
-    /// <summary>
-    /// 绘制组件
-    /// </summary>
-    /// <typeparam name="T">组件类型</typeparam>
-    /// <typeparam name="UIFunction">组件功能函数类型</typeparam>
-    /// <param name="name">组件名</param>
-    /// <param name="object">实体</param>
-    /// <param name="uiFunction">组件功能函数</param>
-    template<typename T, typename UIFunction>
-    static void DrawComponent(const std::string& name, Object object, UIFunction uiFunction)
-    {
-        // 树节点标志：打开|框架|延伸到右边|允许重叠|框架边框
-        const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
-
-        // T 组件存在
-        if (object.HasComponent<T>())
-        {
-            auto& component = object.GetComponent<T>();    // 获得组件
-
-            ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();     // 可用区域大小
-            
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // Separator 和 TreeNodeEx 之间的垂直距离为 1
-            ImGui::Separator(); // 分隔符
-            ImGui::Separator(); // 分隔符
-
-            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);            // 边框圆度
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
-            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);          // 边框线宽 0
-            
-            float lineHeight = GImGui->Font->FontSize; // +GImGui->Style.FramePadding.y * 2.0f;    // 行高 = 字体大小 + 边框 y * 2
-            float padding = GImGui->Style.FramePadding.y;
-
-            ImFont* boldFont = ImGui::GetIO().Fonts->Fonts[0];  // 粗体
-            ImGui::PushFont(boldFont);
-
-            //ImVec2 nodePos = ImGui::GetCursorPos(); // 目录结点位置坐标
-
-            // 组件结点：组件类的哈希值作为结点 id
-            bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, name.c_str());
-
-            ImGui::PopFont();
-
-            static Ref<Texture2D> settingsButtonIcon = Texture2D::Create("Resources/Icons/SettingsButton_Icon.png");
-
-            ImGui::SameLine(contentRegionAvail.x - lineHeight - padding);      // 同一行：可用区域左移
-            ImGui::SetCursorPosY(ImGui::GetCursorPos().y + padding);
-            // 组件设置按钮
-            if (ImGui::ImageButton((void*)settingsButtonIcon->GetRendererID(), { lineHeight - padding * 2, lineHeight - padding * 2 }, ImVec2(0, 1), ImVec2(1, 0)))
-            {
-                ImGui::OpenPopup("ComponentSettings");  // 打开弹出框
-            }
-
-            ImGui::PopStyleVar(4);
-
-            // 移除组件
-            bool componentRemoved = false;
-            // 渲染弹出框
-            if (ImGui::BeginPopup("ComponentSettings"))
-            {
-                // 移除组件菜单项
-                if (ImGui::MenuItem("Remove Component"))
-                {
-                    componentRemoved = true;    // 组件标记为移除
-                }
-
-                ImGui::EndPopup();
-            }
-
-            if (opened)
-            {
-                ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-                ImGui::SetCursorPosY(ImGui::GetCursorPos().y - padding);
-                ImGui::Separator(); // 分隔符
-                ImGui::PopStyleColor();
-
-                uiFunction(component);  // 调用组件功能函数：绘制该组件不同的部分
-
-                ImGui::TreePop();       // 展开结点
-            }
-
-            if (componentRemoved)
-            {
-                object.RemoveComponent<T>();    // 移除 T 组件
-            }
         }
     }
 
