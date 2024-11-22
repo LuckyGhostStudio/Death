@@ -80,12 +80,15 @@ namespace Lucky
 
     void EditorLayer::OnImGuiRender()
     {
-        m_EditorDockSpace.Setup();  // 设置 DockSpace
+        // 设置 DockSpace
+        m_EditorDockSpace.Setup([&]()
+        {
+            UI_ToolBar();
+        });
 
         UI_MenuBar();
         
         static bool isOpen = true;
-        //ImGui::SetNextWindowPos({ ImGui::GetCursorPosX(), ImGui::GetCursorPosY() + 6 });
         m_SceneHierarchyPanel->OnImGuiRender(isOpen);   // 渲染 Hierarchy 面板
         m_InspectorPanel->OnImGuiRender(isOpen);        // 渲染 Inspector 面板
         m_GameViewportPanel->OnImGuiRender(isOpen);     // 渲染 Game Viewport 面板
@@ -100,6 +103,9 @@ namespace Lucky
     {
         if (ImGui::BeginMainMenuBar())
         {
+            ImVec2 menuBarSize = ImGui::GetCurrentWindow()->Size;
+            // LC_TRACE("MenuBarSize: ({0} ,{1})", menuBarSize.x, menuBarSize.y);
+
             // 菜单：File
             if (ImGui::BeginMenu("File"))
             {
@@ -129,8 +135,6 @@ namespace Lucky
 
                 ImGui::EndMenu();
             }
-            
-            //UI_ToolBar();
 
             ImGui::EndMainMenuBar();
         }
@@ -141,11 +145,11 @@ namespace Lucky
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
 
         // 设置按钮的位置
-        ImGui::SetCursorPos({ (panelWidth - 20) * 0.5f, 2 });
+        ImGui::SetCursorPos({ (panelWidth - 16) * 0.5f, 28 + 4 });
         uint32_t playButtonIconID = m_PlayButtonIcon->GetRendererID();
         if (ImGui::ImageButton((ImTextureID)playButtonIconID, ImVec2(20, 20), ImVec2(0, 1), ImVec2(1, 0)))
         {
-
+            // TODO 运行
         }
     }
 
