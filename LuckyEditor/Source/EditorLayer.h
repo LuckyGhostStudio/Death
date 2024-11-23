@@ -26,6 +26,12 @@ namespace Lucky
         Object m_SquareObject;              // 正方形物体
         Object m_CameraObject;              // 相机对象
 
+        enum class SceneState
+        {
+            Edit = 0, Play = 1
+        };
+        SceneState m_SceneState = SceneState::Edit; // 场景状态
+
         EditorDockSpace m_EditorDockSpace;  // 停靠空间
 
         // TODO Add PanelManager
@@ -36,7 +42,9 @@ namespace Lucky
         Ref<RendererStatsPanel> m_RendererStatsPanel;   // 场景 RendererStats 面板
         Ref<ProjectAssetsPanel> m_ProjectAssetsPanel;   // 项目 Assets 面板
 
-        Ref<Texture2D> m_PlayButtonIcon;
+        Ref<Texture2D> m_PlayButtonIcon;    // 运行按钮
+
+        float m_MenuBarHeight;
     public:
         EditorLayer();
 
@@ -99,6 +107,10 @@ namespace Lucky
         /// 工具栏
         /// </summary>
         void UI_ToolBar();
+
+        void OnScenePlay();
+
+        void OnSceneStop();
     private:
         /// <summary>
         /// 按键按下时调用

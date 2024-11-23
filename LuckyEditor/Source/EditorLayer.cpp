@@ -8,9 +8,7 @@
 
 #include "Lucky/Scene/SceneSerializer.h"
 #include "Lucky/Utils/PlatformUtils.h"
-
-#include "ImGuizmo.h"
-#include "Lucky/Math/Math.h"
+#include "Lucky/ImGui/GUI.h"
 
 namespace Lucky
 {
@@ -73,6 +71,18 @@ namespace Lucky
 
     void EditorLayer::OnUpdate(DeltaTime dt)
     {
+        switch (m_SceneState)
+        {
+            case Lucky::EditorLayer::SceneState::Edit:
+
+                break;
+            case Lucky::EditorLayer::SceneState::Play:
+                // TODO 更新物理和脚本等
+                break;
+            default:
+                break;
+        }
+
         m_RendererStatsPanel->OnUpdate(dt);
         m_SceneViewportPanel->OnUpdate(dt);
         m_GameViewportPanel->OnUpdate(dt);
@@ -83,11 +93,11 @@ namespace Lucky
         // 设置 DockSpace
         m_EditorDockSpace.Setup([&]()
         {
-            UI_ToolBar();
+            UI_ToolBar();   // 渲染 ToolBar
         });
 
-        UI_MenuBar();
-        
+        UI_MenuBar();       // 渲染 MenuBar
+
         static bool isOpen = true;
         m_SceneHierarchyPanel->OnImGuiRender(isOpen);   // 渲染 Hierarchy 面板
         m_InspectorPanel->OnImGuiRender(isOpen);        // 渲染 Inspector 面板
@@ -96,15 +106,14 @@ namespace Lucky
         m_RendererStatsPanel->OnImGuiRender(isOpen);    // 渲染 RendererStats 面板
         m_ProjectAssetsPanel->OnImGuiRender(isOpen);    // 渲染 ProjectAssets 面板
 
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
     }
 
     void EditorLayer::UI_MenuBar()
     {
         if (ImGui::BeginMainMenuBar())
         {
-            ImVec2 menuBarSize = ImGui::GetCurrentWindow()->Size;
-            // LC_TRACE("MenuBarSize: ({0} ,{1})", menuBarSize.x, menuBarSize.y);
+            m_MenuBarHeight = ImGui::GetCurrentWindow()->Size.y;
 
             // 菜单：File
             if (ImGui::BeginMenu("File"))
@@ -143,14 +152,51 @@ namespace Lucky
     void EditorLayer::UI_ToolBar()
     {
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
+        float lineHeight = GImGui->Font->FontSize;
+        
+        ImGui::Dummy({ 0, m_MenuBarHeight });
+        ImGui::SameLine();
+
+        static ImVec4 playButtonColor = { 0.2196f, 0.2196f, 0.2196f, 1.0f };    // 原色
+
+        static glm::vec4 playButtonColors[4] =
+        {
+            { 0.2196f, 0.2196f, 0.2196f, 1.0f },    // 原色
+            { 0.3882f, 0.3882f, 0.3882f, 1.0f },    // 悬停
+            { 0.2196f, 0.2196f, 0.2196f, 1.0f },    // 激活
+            { 0.2588f, 0.5882f, 0.9804f, 0.3490f }  // 选中
+        };
 
         // 设置按钮的位置
-        ImGui::SetCursorPos({ (panelWidth - 16) * 0.5f, 28 + 4 });
-        uint32_t playButtonIconID = m_PlayButtonIcon->GetRendererID();
-        if (ImGui::ImageButton((ImTextureID)playButtonIconID, ImVec2(20, 20), ImVec2(0, 1), ImVec2(1, 0)))
+        ImGui::SetCursorPos({ (panelWidth - lineHeight) * 0.5f, ImGui::GetCursorPosY() });
+
+        GUI::SelectableImageButton(m_PlayButtonIcon->GetRendererID(), { lineHeight * 0.8f, lineHeight * 0.8f }, playButtonColors, [&]
         {
-            // TODO 运行
-        }
+            switch (m_SceneState)
+            {
+                case SceneState::Edit:
+                    OnScenePlay();  // 运行
+                    break;
+                case SceneState::Play:
+                    OnSceneStop();
+                    break;
+            }
+        });
+    }
+
+    void EditorLayer::OnScenePlay()
+    {
+        m_SceneState = SceneState::Play;
+
+        ImGui::SetWindowFocus("Game");  // 聚焦 Game 窗口
+    }
+
+    void EditorLayer::OnSceneStop()
+    {
+        m_SceneState = SceneState::Edit;
+
+        // temp TODO 聚焦激活的窗口（恢复编辑器数据）
+        ImGui::SetWindowFocus("Scene");
     }
 
     void EditorLayer::OnEvent(Event& event)

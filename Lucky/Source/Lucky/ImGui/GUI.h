@@ -103,6 +103,9 @@ namespace Lucky
 
         template<typename Func>
         inline static void ObjectSelector(const std::string& label, uint32_t textureID, const glm::vec2& size, Func OnSelected, float framePadding = 2.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+
+        template<typename Func>
+        inline static void SelectableImageButton(uint32_t textureID, const glm::vec2& size, const glm::vec4 colors[4], Func OnClicked, float framePadding = -1.0f);
     };
 
     template<typename Func>
@@ -188,6 +191,44 @@ namespace Lucky
 
         ImGui::PopItemWidth();
         ImGui::Columns(1);      // 设置为一列
+
+        ImGui::PopID();
+    }
+
+    template<typename Func>
+    inline void GUI::SelectableImageButton(uint32_t textureID, const glm::vec2& size, const glm::vec4 colors[4], Func OnClicked, float framePadding)
+    {
+        ImGui::PushID(textureID);   // 设置控件 ID
+
+        static bool isSelected = false;
+
+        static ImVec4 buttonColor = { colors[0].r, colors[0].g, colors[0].b,colors[0].a, };         // 原色
+        static ImVec4 buttonHoveredColor = { colors[1].r, colors[1].g, colors[1].b,colors[1].a, };  // 悬浮颜色
+        static ImVec4 buttonActiveColor = { colors[2].r, colors[2].g, colors[2].b,colors[2].a, };   // 激活颜色
+
+        if (isSelected)
+        {
+            buttonColor = { colors[3].r, colors[3].g, colors[3].b,colors[3].a, };
+            buttonHoveredColor = { colors[3].r, colors[3].g, colors[3].b,colors[3].a, };
+            buttonActiveColor = { colors[3].r, colors[3].g, colors[3].b,colors[3].a, };
+        }
+        else
+        {
+            buttonColor = { colors[0].r, colors[0].g, colors[0].b,colors[0].a, };
+            buttonHoveredColor = { colors[1].r, colors[1].g, colors[1].b,colors[1].a, };
+            buttonActiveColor = { colors[2].r, colors[2].g, colors[2].b,colors[2].a, };
+        }
+
+        ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonActiveColor);
+        if (ImGui::ImageButton((ImTextureID)textureID, ImVec2(size.x, size.y), ImVec2(0, 1), ImVec2(1, 0), framePadding))
+        {
+            isSelected = !isSelected;
+
+            OnClicked();
+        }
+        ImGui::PopStyleColor(3);
 
         ImGui::PopID();
     }

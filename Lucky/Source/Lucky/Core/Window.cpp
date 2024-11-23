@@ -60,8 +60,12 @@ namespace Lucky
         m_Context->Init();                              // 初始化上下文
 
         glfwSetWindowUserPointer(m_Window, &m_Data);    // 将数据 m_Data 传递给 m_Window
-        SetVSync(true);                                 // 垂直同步
 
+        SetDPI(GetDpiForSystem());  // 设置 DPI
+        SetVSync(true);             // 垂直同步
+
+        LC_CORE_INFO("DPI: {0}", m_Data.DPI);
+        
         /* 设置 GLFW 的回调函数 */
         // 窗口大小改变
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
@@ -192,5 +196,15 @@ namespace Lucky
     bool Window::IsVSync() const
     {
         return m_Data.VSync;
+    }
+
+    void Window::SetDPI(unsigned int dpi)
+    {
+        m_Data.DPI = dpi;
+    }
+
+    unsigned int Window::GetDPI() const
+    {
+        return m_Data.DPI;
     }
 }

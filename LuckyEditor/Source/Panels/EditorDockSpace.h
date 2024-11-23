@@ -44,8 +44,12 @@ namespace Lucky
             ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-            m_WindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-            m_WindowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+            m_WindowFlags |= ImGuiWindowFlags_NoTitleBar;
+            m_WindowFlags |= ImGuiWindowFlags_NoCollapse;
+            m_WindowFlags |= ImGuiWindowFlags_NoResize;
+            m_WindowFlags |= ImGuiWindowFlags_NoMove;;
+            m_WindowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+            m_WindowFlags |= ImGuiWindowFlags_NoNavFocus;
         }
 
         if (m_Flags)
@@ -53,12 +57,14 @@ namespace Lucky
             m_WindowFlags |= ImGuiWindowFlags_NoBackground;
         }
 
+        static ImVec4 barColor = ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg];
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        //ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg]);
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, barColor);
+        ImGui::PushStyleColor(ImGuiCol_Border, barColor);
         // DockSpace ´°¿Ú
         ImGui::Begin("DockSpace", nullptr, m_WindowFlags);
         {
-            //ImGui::PopStyleColor();
+            ImGui::PopStyleColor(2);
             ImGui::PopStyleVar();
 
             if (m_IsFullScreen)
@@ -71,6 +77,7 @@ namespace Lucky
             if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
             {
                 uiToolBarFunc();    // äÖÈ¾ ToolBar
+
                 ImGui::DockSpace(ImGui::GetID("EditorDockSpace"), ImVec2(0.0f, 0.0f), m_Flags | ImGuiDockNodeFlags_NoWindowMenuButton | ImGuiDockNodeFlags_NoCloseButton);
             }
         }

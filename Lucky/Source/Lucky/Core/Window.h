@@ -71,6 +71,14 @@ namespace Lucky
         bool IsVSync() const;
 
         /// <summary>
+        /// 设置 DPI
+        /// </summary>
+        /// <param name="dpi"></param>
+        void SetDPI(unsigned int dpi);
+
+        unsigned int GetDPI() const;
+
+        /// <summary>
         /// 返回 GLFW 窗口
         /// </summary>
         /// <returns>窗口指针</returns>
@@ -98,6 +106,7 @@ namespace Lucky
             std::string Title;      // 标题
             unsigned int Width;     // 宽
             unsigned int Height;    // 高
+            unsigned DPI;           // DPI
             bool VSync;             // 是否垂直同步
 
             EventCallbackFn EventCallback;  // 事件回调函数
