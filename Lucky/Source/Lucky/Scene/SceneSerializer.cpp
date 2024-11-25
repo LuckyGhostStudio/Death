@@ -7,12 +7,57 @@
 #include "Lucky/Scene/Components/TransformComponent.h"
 #include "Lucky/Scene/Components/SpriteRendererComponent.h"
 #include "Lucky/Scene/Components/CameraComponent.h"
+#include "Lucky/Scene/Components/Rigidbody2DComponent.h"
+#include "Lucky/Scene/Components/BoxCollider2DComponent.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
 namespace YAML
 {
+    /// <summary>
+    /// vec2 转换
+    /// </summary>
+    template<>
+    struct convert<glm::vec2>
+    {
+        /// <summary>
+        /// 将 vec2 转换为 YAML 的节点
+        /// </summary>
+        /// <param name="rhs">vec2 类型</param>
+        /// <returns>结点</returns>
+        static Node encode(const glm::vec2& rhs)
+        {
+            Node node;
+
+            node.push_back(rhs.x);
+            node.push_back(rhs.y);
+
+            node.SetStyle(EmitterStyle::Flow);
+
+            return node;
+        }
+
+        /// <summary>
+        /// 将 YAML 结点类型转换为 vec2
+        /// </summary>
+        /// <param name="node">结点</param>
+        /// <param name="rhs">vec2</param>
+        /// <returns>是否转换成功</returns>
+        static bool decode(const Node& node, glm::vec2& rhs)
+        {
+            if (!node.IsSequence() || node.size() != 2)
+            {
+                return false;
+            }
+
+            rhs.x = node[0].as<float>();
+            rhs.y = node[1].as<float>();
+
+            return true;
+        }
+    };
+
     /// <summary>
     /// vec3 转换
     /// </summary>
@@ -97,9 +142,17 @@ namespace YAML
 
 namespace Lucky
 {
+    YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v)
+    {
+        out << YAML::Flow;    // 流 [x,y]
+        out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
+
+        return out;
+    }
+
     YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v)
     {
-        out << YAML::Flow;    // 流 [x,y,z]
+        out << YAML::Flow;
         out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
 
         return out;
@@ -189,11 +242,46 @@ namespace Lucky
             SpriteRendererComponent& spriteRendererComponent = object.GetComponent<SpriteRendererComponent>();
 
             out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
+            // TODO Texture
 
             out << YAML::EndMap;    // 结束 SpriteRenderer 组件 Map
         }
 
-        out << YAML::EndMap;    //结束物体Map
+        // Rigidbody2D 组件
+        if (object.HasComponent<Rigidbody2DComponent>())
+        {
+            out << YAML::Key << "Rigidbody2DComponent";
+            out << YAML::BeginMap;  // Rigidbody2DComponent
+
+            Rigidbody2DComponent& rigidbody2DComponent = object.GetComponent<Rigidbody2DComponent>();
+            Rigidbody2D& rigidbody2D = rigidbody2DComponent.Rigidbody2d;
+
+            out << YAML::Key << "BodyType" << YAML::Value << (int)rigidbody2D.GetBodyType();
+            out << YAML::Key << "FreezeRotation" << YAML::Value << rigidbody2D.IsFreezeRotation();
+
+            out << YAML::EndMap;    // Rigidbody2DComponent
+        }
+
+        // BoxCollider2D 组件
+        if (object.HasComponent<BoxCollider2DComponent>())
+        {
+            out << YAML::Key << "BoxCollider2DComponent";
+            out << YAML::BeginMap;  // BoxCollider2DComponent
+
+            BoxCollider2DComponent& boxCollider2DComponent = object.GetComponent<BoxCollider2DComponent>();
+            BoxCollider2D& boxCollider2D = boxCollider2DComponent.BoxCollider2d;
+
+            out << YAML::Key << "Offset" << YAML::Value << boxCollider2D.GetOffset();
+            out << YAML::Key << "Size" << YAML::Value << boxCollider2D.GetSize();
+            out << YAML::Key << "Density" << YAML::Value << boxCollider2D.GetDensity();
+            out << YAML::Key << "Friction" << YAML::Value << boxCollider2D.GetFriction();
+            out << YAML::Key << "Restitution" << YAML::Value << boxCollider2D.GetRestitution();
+            out << YAML::Key << "RestitutionThreshold" << YAML::Value << boxCollider2D.GetRestitutionThreshold();
+
+            out << YAML::EndMap;    // BoxCollider2DComponent
+        }
+
+        out << YAML::EndMap;    // 结束物体 Map
     }
 
     void SceneSerializer::Serialize(const std::string& filepath)
@@ -303,6 +391,32 @@ namespace Lucky
                     SpriteRendererComponent& spriteRendererComponent = deserializedObject.AddComponent<SpriteRendererComponent>();  // 添加 SpriteRenderer 组件
 
                     spriteRendererComponent.Color = spriteRendererComponentNode["Color"].as<glm::vec4>();
+                }
+
+                // Rigidbody2D 组件结点
+                YAML::Node rigidbody2DNode = object["Rigidbody2DComponent"];
+                if (rigidbody2DNode)
+                {
+                    Rigidbody2DComponent& rigidbody2DComponent = deserializedObject.AddComponent<Rigidbody2DComponent>();       // 添加 Rigidbody2D 组件
+                    Rigidbody2D& rigidbody2D = rigidbody2DComponent.Rigidbody2d;
+
+                    rigidbody2D.SetBodyType((Rigidbody2D::BodyType)rigidbody2DNode["BodyType"].as<int>());
+                    rigidbody2D.FreezeRotation(rigidbody2DNode["FreezeRotation"].as<bool>());
+                }
+
+                // BoxCollider2D 组件结点
+                YAML::Node boxCollider2DNode = object["BoxCollider2DComponent"];
+                if (boxCollider2DNode)
+                {
+                    BoxCollider2DComponent& boxCollider2DComponent = deserializedObject.AddComponent<BoxCollider2DComponent>(); // 添加 BoxCollider2D 组件
+                    BoxCollider2D& boxCollider2D = boxCollider2DComponent.BoxCollider2d;
+
+                    boxCollider2D.SetOffset(boxCollider2DNode["Offset"].as<glm::vec2>());
+                    boxCollider2D.SetSize(boxCollider2DNode["Size"].as<glm::vec2>());
+                    boxCollider2D.SetDensity(boxCollider2DNode["Density"].as<float>());
+                    boxCollider2D.SetFriction(boxCollider2DNode["Friction"].as<float>());
+                    boxCollider2D.SetRestitution(boxCollider2DNode["Restitution"].as<float>());
+                    boxCollider2D.SetRestitutionThreshold(boxCollider2DNode["RestitutionThreshold"].as<float>());
                 }
             }
         }

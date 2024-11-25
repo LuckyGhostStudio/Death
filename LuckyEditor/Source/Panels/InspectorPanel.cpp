@@ -8,6 +8,8 @@
 #include "Lucky/Scene/Components/TransformComponent.h"
 #include "Lucky/Scene/Components/CameraComponent.h"
 #include "Lucky/Scene/Components/SpriteRendererComponent.h"
+#include "Lucky/Scene/Components/Rigidbody2DComponent.h"
+#include "Lucky/Scene/Components/BoxCollider2DComponent.h"
 
 #include "Lucky/ImGui/GUI.h"
 
@@ -22,6 +24,8 @@ namespace Lucky
         m_TransformIcon = Texture2D::Create("Resources/Icons/Components/Transform_Icon.png");
         m_CameraIcon = Texture2D::Create("Resources/Icons/Components/Camera_Icon.png");
         m_SpriteRendererIcon = Texture2D::Create("Resources/Icons/Components/SpriteRenderer_Icon.png");
+        m_Rigidbody2DIcon = Texture2D::Create("Resources/Icons/Components/Rigidbody_Icon.png");
+        m_BoxCollider2DIcon = Texture2D::Create("Resources/Icons/Components/BoxCollider2D_Icon.png");
     }
 
     void InspectorPanel::OnImGuiRender(bool& isOpen)
@@ -30,6 +34,8 @@ namespace Lucky
         ImGui::Begin("Inspector"/*, &isOpen*/);
         {
             ImGui::PopStyleVar();
+
+            m_IsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 8));   // 垂直间距为 4
 
@@ -75,6 +81,22 @@ namespace Lucky
             if (ImGui::MenuItem("Sprite Renderer"))
             {
                 object.AddComponent<SpriteRendererComponent>();
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            // 添加 Rigidbody2D 组件
+            if (ImGui::MenuItem("Rigidbody 2D"))
+            {
+                object.AddComponent<Rigidbody2DComponent>();
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            // 添加 BoxCollider2D 组件
+            if (ImGui::MenuItem("BoxCollider 2D"))
+            {
+                object.AddComponent<BoxCollider2DComponent>();
 
                 ImGui::CloseCurrentPopup();
             }
@@ -169,6 +191,36 @@ namespace Lucky
             });
 
             GUI::ColorEditor4("Color", spriteRendererComponent.Color);   // 颜色编辑器
+        });
+
+        // 绘制 Rigidbody2D 组件
+        DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", object, [](Rigidbody2DComponent& rigidbody2DComponent)
+        {
+            Rigidbody2D& rigidbody2D = rigidbody2DComponent.Rigidbody2d;
+
+            const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };   // 刚体类型：动态 静态 动力学 
+            const char* currentBodyTypeString = bodyTypeStrings[(int)rigidbody2D.GetBodyType()];    // 当前刚体类型
+
+            // 下拉框 刚体类型
+            GUI::DropdownList("Body Type", currentBodyTypeString, bodyTypeStrings, 3, [&](int index, const char* value)
+            {
+                rigidbody2D.SetBodyType((Rigidbody2D::BodyType)index);              // 设置刚体类型
+            });
+
+            GUI::CheckBox("Freeze Rotation", &rigidbody2D.IsFreezeRotation_Ref());  // 是否冻结旋转 Z 轴 勾选框
+        });
+
+        // 绘制 BoxCollider2D 组件
+        DrawComponent<BoxCollider2DComponent>("BoxCollider 2D", object, [](BoxCollider2DComponent& boxCollider2DComponent)
+        {
+            BoxCollider2D& boxCollider2D = boxCollider2DComponent.BoxCollider2d;
+
+            GUI::DragFloatN("Offset", glm::value_ptr(boxCollider2D.GetOffset()), 0.01f, GUI::ValueType::Float2);
+            GUI::DragFloatN("Size", glm::value_ptr(boxCollider2D.GetSize()), 0.01f, GUI::ValueType::Float2, 0.0f);
+
+            GUI::DragFloatN("Density", &boxCollider2D.GetDensity_Ref());
+            GUI::DragFloatN("Friction", &boxCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
+            GUI::DragFloatN("Restitution", &boxCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
         });
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // 垂直间距为 1

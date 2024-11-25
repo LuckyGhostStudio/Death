@@ -26,11 +26,14 @@ namespace Lucky
         Object m_SquareObject;              // 正方形物体
         Object m_CameraObject;              // 相机对象
 
+        /// <summary>
+        /// 场景状态
+        /// </summary>
         enum class SceneState
         {
             Edit = 0, Play = 1
         };
-        SceneState m_SceneState = SceneState::Edit; // 场景状态
+        SceneState m_SceneState = SceneState::Edit;
 
         EditorDockSpace m_EditorDockSpace;  // 停靠空间
 

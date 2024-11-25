@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Lucky/Core/DeltaTime.h"
-#include "Lucky/Events/Event.h"
-#include "Lucky/Events/MouseEvent.h"
+#include "Lucky/Core/Events/Event.h"
+#include "Lucky/Core/Events/MouseEvent.h"
 #include "Camera.h"
 
 #include <glm/glm.hpp>
@@ -20,7 +20,7 @@ namespace Lucky
         float m_Far = 1000.0f;                  // 远裁剪平面
         float m_AspectRatio = 1280.0f / 720.0f; // 屏幕宽高比
 
-        glm::mat4 m_ViewMatrix;                         // 视图矩阵
+        glm::mat4 m_ViewMatrix;                 // 视图矩阵
 
         glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };    // 相机位置
         glm::vec3 m_FocalPoint = { 0.0f, 0.0f, 0.0f };  // 焦点位置

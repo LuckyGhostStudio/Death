@@ -16,6 +16,8 @@ namespace Lucky
     {
         ImGui::Begin("Renderer Stats"/*, &isOpen*/);
         {
+            m_IsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+
             auto stats = Renderer2D::GetStats();    // äÖÈ¾Æ÷Êý¾Ý
 
             ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());  // Ö¡ÂÊ

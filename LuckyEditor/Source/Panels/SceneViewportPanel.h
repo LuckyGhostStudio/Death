@@ -7,8 +7,8 @@
 #include "Lucky/Renderer/EditorCamera.h"
 #include "Lucky/Scene/Selection.h"
 
-#include "Lucky/Events/KeyEvent.h"
-#include "Lucky/Events/MouseEvent.h"
+#include "Lucky/Core/Events/KeyEvent.h"
+#include "Lucky/Core/Events/MouseEvent.h"
 
 #include <glm/glm.hpp>
 
@@ -29,7 +29,6 @@ namespace Lucky
         glm::vec2 m_Bounds[2];              // 视口边界（左上角，右下角）
         glm::vec2 m_Size = { 0.0f, 0.0f };  // 视口大小：随 m_Bounds 更新
 
-        bool m_IsFocused = false;   // 视口被聚焦 +
         bool m_IsHovered = false;   // 视口被鼠标悬停 +
 
         int m_GizmoType = -1;       // Gizmo 操作类型 -1无 0平移 1旋转 2缩放 + TODO class Gizmo

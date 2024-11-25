@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Lucky/Core/Core.h"
-#include "Lucky/Input/KeyCodes.h"
-#include "Lucky/Input/MouseButtonCodes.h"
+#include "Lucky/Core/Input/KeyCodes.h"
+#include "Lucky/Core/Input/MouseButtonCodes.h"
 
 namespace Lucky
 {

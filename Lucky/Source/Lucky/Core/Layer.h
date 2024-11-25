@@ -2,7 +2,7 @@
 
 #include "Lucky/Core/Core.h"
 #include "Lucky/Core/DeltaTime.h"
-#include "Lucky/Events/Event.h"
+#include "Lucky/Core/Events/Event.h"
 
 namespace Lucky
 {

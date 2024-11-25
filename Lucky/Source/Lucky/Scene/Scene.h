@@ -5,6 +5,8 @@
 #include "Lucky/Core/DeltaTime.h"
 #include "Lucky/Renderer/EditorCamera.h"
 
+class b2World;
+
 namespace Lucky
 {
     class Object;
@@ -18,6 +20,8 @@ namespace Lucky
         friend class Object;                // 友元类 Object
         friend class SceneHierarchyPanel;   // 友元类 SceneHierarchyPanel
         friend class SceneSerializer;       // 友元类 SceneSerializer
+
+        b2World* m_PhysicsWorld = nullptr;
 
         entt::registry m_Registry;          // 实体集合：实体 id 集合（unsigned int 集合）
         std::string m_Name;                 // 场景名
@@ -52,6 +56,10 @@ namespace Lucky
         /// </summary>
         /// <param name="object">物体</param>
         void DeleteObject(Object object);
+
+        void OnRuntimeStart();
+
+        void OnRuntimeStop();
 
         /// <summary>
         /// 编辑器更新：每帧调用

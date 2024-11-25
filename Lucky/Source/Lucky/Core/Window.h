@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Lucky/Core/Core.h"
-#include "Lucky/Events/Event.h"
+#include "Lucky/Core/Events/Event.h"
 #include "Lucky/Renderer/OpenGLContext.h"
 
 #include <GLFW/glfw3.h>

@@ -26,6 +26,8 @@ namespace Lucky
         Ref<Texture2D> m_TransformIcon;
         Ref<Texture2D> m_CameraIcon;
         Ref<Texture2D> m_SpriteRendererIcon;
+        Ref<Texture2D> m_Rigidbody2DIcon;
+        Ref<Texture2D> m_BoxCollider2DIcon;
     private:
         /// <summary>
         /// Ìí¼Ó×é¼þ UI
@@ -108,6 +110,12 @@ namespace Lucky
                     break;
                 case ComponentName::SpriteRenderer:
                     iconID = m_SpriteRendererIcon->GetRendererID();
+                    break;
+                case ComponentName::Rigidbody2D:
+                    iconID = m_Rigidbody2DIcon->GetRendererID();
+                    break;
+                case ComponentName::BoxCollider2D:
+                    iconID = m_BoxCollider2DIcon->GetRendererID();
                     break;
                 case ComponentName::None:
                     break;

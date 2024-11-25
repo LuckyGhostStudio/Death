@@ -43,6 +43,7 @@ namespace Lucky
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0)); // 设置 Gui 窗口样式：边界 = 0
         ImGui::Begin("Game");
         {
+            m_IsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();  // 当前面板大小
             m_Size = { viewportPanelSize.x, viewportPanelSize.y };      // 视口大小

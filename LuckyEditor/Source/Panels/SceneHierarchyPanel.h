@@ -14,8 +14,6 @@ namespace Lucky
     {
     private:
         Ref<Scene> m_Scene;         // 面板显示的场景
-
-        bool m_IsFocused = false;   // 面板被聚焦
     private:
         /// <summary>
         /// 绘制物体结点

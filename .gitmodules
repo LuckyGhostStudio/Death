@@ -16,3 +16,6 @@
 [submodule "Lucky/Vendor/ImGuizmo"]
 	path = Lucky/Vendor/ImGuizmo
 	url = https://github.com/TheCherno/ImGuizmo
+[submodule "Lucky/Vendor/Box2D"]
+	path = Lucky/Vendor/Box2D
+	url = https://github.com/LuckyGhostStudio/box2d

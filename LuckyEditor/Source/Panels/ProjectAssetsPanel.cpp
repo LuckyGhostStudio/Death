@@ -24,6 +24,8 @@ namespace Lucky
         {
             ImGui::PopStyleVar();
 
+            m_IsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+
             // 点击鼠标 && 鼠标悬停在该窗口（点击空白位置）
             if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered())
             {

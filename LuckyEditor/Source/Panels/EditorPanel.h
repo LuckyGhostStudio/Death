@@ -2,7 +2,7 @@
 
 #include "Lucky/Core/Core.h"
 #include "Lucky/Scene/Scene.h"
-#include "Lucky/Events/Event.h"
+#include "Lucky/Core/Events/Event.h"
 
 namespace Lucky
 {
@@ -11,6 +11,8 @@ namespace Lucky
     /// </summary>
     class EditorPanel
     {
+    protected:
+        bool m_IsFocused = false;
     public:
         virtual ~EditorPanel() = default;
 
@@ -31,5 +33,7 @@ namespace Lucky
         /// </summary>
         /// <param name="context">Scene иообнд</param>
         virtual void SetSceneContext(const Ref<Scene>& context) {}
+
+        bool IsFocused() const { return m_IsFocused; }
     };
 }

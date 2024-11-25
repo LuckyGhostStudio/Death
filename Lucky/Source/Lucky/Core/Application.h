@@ -5,8 +5,8 @@
 #include "Lucky/Core/LayerStack.h"
 #include "Lucky/Core/DeltaTime.h"
 
-#include "Lucky/Events/Event.h"
-#include "Lucky/Events/ApplicationEvent.h"
+#include "Lucky/Core/Events/Event.h"
+#include "Lucky/Core/Events/ApplicationEvent.h"
 
 #include "Lucky/ImGui/ImGuiLayer.h"
 

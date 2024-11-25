@@ -9,6 +9,7 @@
 #include "Lucky/Scene/SceneSerializer.h"
 #include "Lucky/Utils/PlatformUtils.h"
 #include "Lucky/ImGui/GUI.h"
+#include "Lucky/Core/Log.h"
 
 namespace Lucky
 {
@@ -78,6 +79,7 @@ namespace Lucky
                 break;
             case Lucky::EditorLayer::SceneState::Play:
                 // TODO 更新物理和脚本等
+                m_GameViewportPanel->OnUpdate(dt);
                 break;
             default:
                 break;
@@ -85,7 +87,7 @@ namespace Lucky
 
         m_RendererStatsPanel->OnUpdate(dt);
         m_SceneViewportPanel->OnUpdate(dt);
-        m_GameViewportPanel->OnUpdate(dt);
+        //m_GameViewportPanel->OnUpdate(dt);    // TODO 更新由主相机渲染的编辑器场景
     }
 
     void EditorLayer::OnImGuiRender()
@@ -189,14 +191,18 @@ namespace Lucky
         m_SceneState = SceneState::Play;
 
         ImGui::SetWindowFocus("Game");  // 聚焦 Game 窗口
+
+        m_ActiveScene->OnRuntimeStart();
     }
 
     void EditorLayer::OnSceneStop()
     {
         m_SceneState = SceneState::Edit;
 
-        // temp TODO 聚焦激活的窗口（恢复编辑器数据）
+        // Temp TODO 聚焦运行前的焦点窗口（恢复编辑器数据）
         ImGui::SetWindowFocus("Scene");
+
+        m_ActiveScene->OnRuntimeStop();
     }
 
     void EditorLayer::OnEvent(Event& event)

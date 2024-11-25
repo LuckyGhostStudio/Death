@@ -1,9 +1,9 @@
 #include "lcpch.h"
 #include "Window.h"
 
-#include "Lucky/Events/ApplicationEvent.h"
-#include "Lucky/Events/KeyEvent.h"
-#include "Lucky/Events/MouseEvent.h"
+#include "Lucky/Core/Events/ApplicationEvent.h"
+#include "Lucky/Core/Events/KeyEvent.h"
+#include "Lucky/Core/Events/MouseEvent.h"
 
 namespace Lucky
 {

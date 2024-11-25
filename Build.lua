@@ -13,7 +13,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"     -- 输出目
 
 -- 包含目录列表
 IncludeDir = {}
--- IncludeDir["Box2D"] = "Lucky/Vendor/Box2D/include"
+IncludeDir["Box2D"] = "Lucky/Vendor/Box2D/include"
 IncludeDir["GLFW"] = "Lucky/Vendor/GLFW/include"
 IncludeDir["GLAD"] = "Lucky/Vendor/GLAD/include"
 IncludeDir["ImGui"] = "Lucky/Vendor/imgui"
@@ -24,7 +24,7 @@ IncludeDir["yaml_cpp"] = "Lucky/Vendor/yaml-cpp/include"
 IncludeDir["ImGuizmo"] = "Lucky/Vendor/ImGuizmo"
 
 group "Dependencies"
-    -- include "Lucky/Vendor/Box2D"     -- 包含 Box2D 目录
+    include "Lucky/Vendor/Box2D"        -- 包含 Box2D 目录
     include "Lucky/Vendor/GLFW"         -- 包含 GLFW 目录
     include "Lucky/Vendor/GLAD"         -- 包含 GLAD 目录
     include "Lucky/Vendor/imgui"        -- 包含 imgui 目录
@@ -67,7 +67,7 @@ project "Lucky"         -- 项目
         "%{prj.name}/Source",
         "%{prj.name}/Vendor",
         "%{prj.name}/Vendor/spdlog/include",
-        -- "%{IncludeDir.Box2D}",
+        "%{IncludeDir.Box2D}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.GLAD}",
         "%{IncludeDir.ImGui}",
@@ -80,7 +80,7 @@ project "Lucky"         -- 项目
 
     links
     {
-        -- "Box2D",     -- 引用 Box2D
+        "Box2D",        -- 引用 Box2D
         "GLFW",         -- 引用 GLFW
         "GLAD",         -- 引用 GLAD
         "ImGui",        -- 引用 imgui

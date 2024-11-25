@@ -2,7 +2,7 @@
 
 #include "Lucky/Core/Core.h"
 #include "Lucky/Core/Application.h"
-#include "Lucky/Input/Input.h"
+#include "Lucky/Core/Input/Input.h"
 #include "Lucky/Renderer/RenderCommand.h"
 
 #include "Lucky/Scene/Components/TransformComponent.h"

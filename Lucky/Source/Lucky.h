@@ -5,9 +5,9 @@
 #include "Lucky/Core/Layer.h"
 #include "Lucky/Core/DeltaTime.h"
 
-#include "Lucky/Input/Input.h"
-#include "Lucky/Input/KeyCodes.h"
-#include "Lucky/Input/MouseButtonCodes.h"
+#include "Lucky/Core/Input/Input.h"
+#include "Lucky/Core/Input/KeyCodes.h"
+#include "Lucky/Core/Input/MouseButtonCodes.h"
 
 #include "Lucky/ImGui/ImGuiLayer.h"
 

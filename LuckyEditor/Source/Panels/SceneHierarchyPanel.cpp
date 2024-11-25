@@ -1,7 +1,7 @@
 #include "SceneHierarchyPanel.h"
 
 #include "Lucky/Core/Log.h"
-#include "Lucky/Input/Input.h"
+#include "Lucky/Core/Input/Input.h"
 #include "Lucky/Scene/Components/SelfComponent.h"
 #include "Lucky/Scene/Selection.h"
 
@@ -35,11 +35,11 @@ namespace Lucky
 
             // 遍历场景所有实体，并调用 each 内的函数
             m_Scene->m_Registry.each([&](auto ObjectID)
-                {
-                    Object object{ ObjectID, m_Scene.get() };
+            {
+                Object object{ ObjectID, m_Scene.get() };
 
-                    DrawObjectNode(object); // 绘制物体结点
-                });
+                DrawObjectNode(object); // 绘制物体结点
+            });
 
             ImGui::PopStyleVar();
 
