@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Components/IDComponent.h"
+#include "Components/SelfComponent.h"
+
 #include "Scene.h"
 
 #include "entt.hpp"
@@ -76,6 +79,9 @@ namespace Lucky
         operator bool() const { return m_ObjectID != entt::null; }
         operator entt::entity() const { return m_ObjectID; }
         operator uint32_t() const { return (uint32_t)m_ObjectID; }
+
+        UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+        const std::string& GetName() { return GetComponent<SelfComponent>().Name; }
 
         bool operator==(const Object& other)
         {

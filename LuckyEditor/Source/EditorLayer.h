@@ -23,7 +23,6 @@ namespace Lucky
         Ref<Scene> m_ActiveScene;           // 活动场景
         EditorCamera m_EditorCamera;        // 编辑器相机
 
-        Object m_SquareObject;              // 正方形物体
         Object m_CameraObject;              // 相机对象
 
         /// <summary>

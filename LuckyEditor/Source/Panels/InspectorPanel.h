@@ -48,25 +48,25 @@ namespace Lucky
         /// <summary>
         /// 绘制组件
         /// </summary>
-        /// <typeparam name="T">组件类型</typeparam>
+        /// <typeparam name="TComponent">组件类型</typeparam>
         /// <typeparam name="UIFunction">组件功能函数类型</typeparam>
         /// <param name="name">组件名</param>
         /// <param name="object">实体</param>
         /// <param name="uiFunction">组件功能函数</param>
-        template<typename T, typename UIFunction>
+        template<typename TComponent, typename UIFunction>
         void DrawComponent(const std::string& name, Object object, UIFunction uiFunction);
     };
 
-    template<typename T, typename UIFunction>
+    template<typename TComponent, typename UIFunction>
     inline void InspectorPanel::DrawComponent(const std::string& name, Object object, UIFunction uiFunction)
     {
         // 树节点标志：打开|框架|延伸到右边|允许重叠|框架边框
         const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-        // T 组件存在
-        if (object.HasComponent<T>())
+        // TComponent 组件存在
+        if (object.HasComponent<TComponent>())
         {
-            auto& component = object.GetComponent<T>();    // 获得组件
+            auto& component = object.GetComponent<TComponent>();            // 获得组件
 
             ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();     // 可用区域大小
 
@@ -88,7 +88,7 @@ namespace Lucky
             static ImVec4 headerColor;
 
             // 组件结点：组件类的哈希值作为结点 id
-            bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, "");
+            bool opened = ImGui::TreeNodeEx((void*)typeid(TComponent).hash_code(), flags, "");
 
             if (ImGui::IsItemHovered())
             {
@@ -100,24 +100,24 @@ namespace Lucky
             }
 
             uint32_t iconID = 0;
-            switch (component.Name)
+            switch (component.Type)
             {
-                case ComponentName::Transform:
+                case ComponentType::Transform:
                     iconID = m_TransformIcon->GetRendererID();
                     break;
-                case ComponentName::Camera:
+                case ComponentType::Camera:
                     iconID = m_CameraIcon->GetRendererID();
                     break;
-                case ComponentName::SpriteRenderer:
+                case ComponentType::SpriteRenderer:
                     iconID = m_SpriteRendererIcon->GetRendererID();
                     break;
-                case ComponentName::Rigidbody2D:
+                case ComponentType::Rigidbody2D:
                     iconID = m_Rigidbody2DIcon->GetRendererID();
                     break;
-                case ComponentName::BoxCollider2D:
+                case ComponentType::BoxCollider2D:
                     iconID = m_BoxCollider2DIcon->GetRendererID();
                     break;
-                case ComponentName::None:
+                case ComponentType::None:
                     break;
             }
             
@@ -165,7 +165,7 @@ namespace Lucky
             if (opened)
             {
                 ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-                ImGui::Separator(); // 分隔符
+                ImGui::Separator();
                 ImGui::PopStyleColor();
 
                 uiFunction(component);  // 调用组件功能函数：绘制该组件不同的部分
@@ -175,7 +175,7 @@ namespace Lucky
 
             if (componentRemoved)
             {
-                object.RemoveComponent<T>();    // 移除 T 组件
+                object.RemoveComponent<TComponent>();    // 移除 TComponent 组件
             }
         }
     }

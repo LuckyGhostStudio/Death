@@ -8,16 +8,18 @@ namespace Lucky
     /// <summary>
     /// 相机组件
     /// </summary>
-    struct CameraComponent : public Component
+    struct CameraComponent
     {
+        ComponentType Type = ComponentType::Camera;
+
         SceneCamera Camera;     // 场景相机
 
-        CameraComponent()
-            : Component(ComponentName::Camera) {}
-
-        CameraComponent(const SceneCamera& camera)
-            : Component(ComponentName::Camera), Camera(camera) {}
-
+        CameraComponent() = default;
         CameraComponent(const CameraComponent&) = default;
+        CameraComponent(const SceneCamera& camera)
+            : Camera(camera)
+        {
+
+        }
     };
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Component.h"
-
 #include "Lucky/Renderer/Transform.h"
 
 namespace Lucky
@@ -9,16 +8,16 @@ namespace Lucky
     /// <summary>
     /// Transform 组件（默认组件）
     /// </summary>
-    struct TransformComponent : public Component
+    struct TransformComponent
     {
+        ComponentType Type = ComponentType::Transform;
+
         Transform Transform;
 
-        TransformComponent()
-            : Component(ComponentName::Transform, true) {}
+        TransformComponent() = default;
+        TransformComponent(const TransformComponent&) = default;
 
         TransformComponent(const glm::vec3& position)
-            : Component(ComponentName::Transform, true), Transform(position) {}
-
-        TransformComponent(const TransformComponent&) = default;
+            : Transform(position) {}
     };
 }

@@ -11,12 +11,16 @@ namespace Lucky
     /// </summary>
     struct SelfComponent
     {
-        std::string ObjectName; // 挂载此组件的物体名
-        bool ObjectEnable;      // 物体启用状态
+        ComponentType Type = ComponentType::Self;
+
+        std::string Name;   // 挂载此组件的物体名
 
         SelfComponent() = default;
         SelfComponent(const SelfComponent&) = default;
-        SelfComponent(const std::string& objectName, bool objectEnable = true)
-            : ObjectName(objectName), ObjectEnable(objectEnable) {}
+        SelfComponent(const std::string& name)
+            : Name(name)
+        {
+
+        }
     };
 }

@@ -48,19 +48,25 @@ namespace Lucky
 
     Object Scene::CreateObject(const std::string& name)
     {
+        return CreateObject(UUID(), name);
+    }
+
+    Object Scene::CreateObject(UUID uuid, const std::string& name)
+    {
         Object object = { m_Registry.create(), this };  // 创建实体
 
-        // std::string n = name + std::to_string((uint32_t)object);
-        
-        object.AddComponent<SelfComponent>(name);       // 添加 Self 组件（默认组件）
-        object.AddComponent<TransformComponent>();      // 添加 Transform 组件（默认组件）
+        object.AddComponent<IDComponent>(uuid);     // 添加 ID 组件（默认组件）
+        object.AddComponent<SelfComponent>(name);   // 添加 Self 组件（默认组件）
+        object.AddComponent<TransformComponent>();  // 添加 Transform 组件（默认组件）
+
+        LC_TRACE("Created Object：[ENTT = {0}, UUID {1}, Name {2}]", (uint32_t)object, uuid, name);
 
         return object;
     }
 
     void Scene::DeleteObject(Object object)
     {
-        LC_TRACE("当前已删除物体：{0} ", (uint32_t)object);
+        LC_TRACE("Removed Object：[ENTT = {0}, UUID {1}, Name {2}]", (uint32_t)object, object.GetUUID(), object.GetName());
 
         m_Registry.destroy(object);
     }
@@ -232,10 +238,16 @@ namespace Lucky
         return {};
     }
 
-    template<typename T>
-    void Scene::OnComponentAdded(Object object, T& component)
+    template<typename TComponent>
+    void Scene::OnComponentAdded(Object object, TComponent& component)
     {
-        static_assert(sizeof(T) == 0);
+        static_assert(sizeof(TComponent) == 0);
+    }
+
+    template<>
+    void Scene::OnComponentAdded<IDComponent>(Object object, IDComponent& component)
+    {
+
     }
 
     template<>

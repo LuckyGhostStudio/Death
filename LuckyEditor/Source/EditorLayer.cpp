@@ -50,9 +50,6 @@ namespace Lucky
 
         // m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f); // 创建编辑器相机
 
-        m_SquareObject = m_ActiveScene->CreateObject("Square");         // 创建正方形物体
-        m_SquareObject.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));    // 添加 SpriteRenderer 组件
-
         m_CameraObject = m_ActiveScene->CreateObject("Main Camera");    // 创建相机对象
         m_CameraObject.AddComponent<CameraComponent>();                 // 添加 Camera 组件
         m_CameraObject.GetComponent<TransformComponent>().Transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));

@@ -110,7 +110,7 @@ namespace Lucky
         // Self 组件
         if (object.HasComponent<SelfComponent>())
         {
-            auto& name = object.GetComponent<SelfComponent>().ObjectName;   // 物体名
+            auto& name = object.GetComponent<SelfComponent>().Name;   // 物体名
 
             char buffer[256];                               // 输入框内容 buffer
             memset(buffer, 0, sizeof(buffer));              // 将 buffer 置零

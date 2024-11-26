@@ -3,6 +3,10 @@
 #include "Lucky/Core/Log.h"
 #include "Lucky/Core/Input/Input.h"
 #include "Lucky/Scene/Components/SelfComponent.h"
+#include "Lucky/Scene/Components/SpriteRendererComponent.h"
+#include "Lucky/Scene/Components/CameraComponent.h"
+#include "Lucky/Scene/Components/Rigidbody2DComponent.h"
+#include "Lucky/Scene/Components/BoxCollider2DComponent.h"
 #include "Lucky/Scene/Selection.h"
 
 #include <imgui/imgui.h>
@@ -50,12 +54,34 @@ namespace Lucky
             }
 
             // 创建物体 右键点击窗口白区域弹出菜单：- 右键 不在物体项上
-            if (ImGui::BeginPopupContextWindow(0, 1, false))
+            if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
             {
-                // 菜单项：创建空物体
-                if (ImGui::MenuItem("Create Empty Object"))
+                Object newObject;
+
+                // 创建空物体
+                if (ImGui::MenuItem("Create Empty"))
                 {
-                    m_Scene->CreateObject("Empty Object");  // 创建空物体
+                    m_Scene->CreateObject("Object");
+                }
+                // 创建 Sprite
+                if (ImGui::MenuItem("Sprite"))
+                {
+                    newObject = m_Scene->CreateObject("Sprite");
+                    newObject.AddComponent<SpriteRendererComponent>();
+                }
+                // 创建 Camera
+                if (ImGui::MenuItem("Camera"))
+                {
+                    newObject = m_Scene->CreateObject("Camera");
+                    newObject.AddComponent<CameraComponent>();
+                }
+                // 创建 2D 刚体 TODO Test
+                if (ImGui::MenuItem("Rigidbody 2D"))
+                {
+                    newObject = m_Scene->CreateObject("Rigidbody 2D");
+                    newObject.AddComponent<SpriteRendererComponent>();
+                    newObject.AddComponent<Rigidbody2DComponent>();
+                    newObject.AddComponent<BoxCollider2DComponent>();
                 }
 
                 ImGui::EndPopup();
@@ -66,7 +92,7 @@ namespace Lucky
 
     void SceneHierarchyPanel::DrawObjectNode(Object object)
     {
-        auto& name = object.GetComponent<SelfComponent>().ObjectName;   // 物体名
+        std::string& name = object.GetComponent<SelfComponent>().Name;  // 物体名
 
         // 树结点标志
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -97,7 +123,7 @@ namespace Lucky
         {
             Selection::Object = object; // 设置选中物体
 
-            LC_TRACE("当前选中物体：{0} {1}", Selection::Object.GetComponent<SelfComponent>().ObjectName, (uint32_t)Selection::Object);
+            LC_TRACE("Selected Object：[ENTT = {0}, UUID {1}, Name {2}]", (uint32_t)Selection::Object, Selection::Object.GetUUID(), Selection::Object.GetName());
         }
 
         // 删除物体
@@ -106,7 +132,7 @@ namespace Lucky
         if (ImGui::BeginPopupContextItem())
         {
             // 菜单项：删除物体
-            if (ImGui::MenuItem("Delete Object"))
+            if (ImGui::MenuItem("Delete"))
             {
                 objectDeleted = true;   // 物体标记为已删除：渲染结束后面的 UI 再删除该物体
             }

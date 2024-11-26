@@ -3,6 +3,7 @@
 #include "entt.hpp"
 
 #include "Lucky/Core/DeltaTime.h"
+#include "Lucky/Core/UUID.h"
 #include "Lucky/Renderer/EditorCamera.h"
 
 class b2World;
@@ -50,6 +51,7 @@ namespace Lucky
         /// <param name="name">物体名</param>
         /// <returns>物体</returns>
         Object CreateObject(const std::string& name = "Object");
+        Object CreateObject(UUID uuid, const std::string& name = "Object");
 
         /// <summary>
         /// 删除物体

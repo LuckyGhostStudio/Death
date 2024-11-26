@@ -1,50 +1,14 @@
 Scene: Untitled
 Objects:
-  - Object: 12837192831273
+  - Object: 10767520870866311874
     SelfComponent:
-      ObjectName: Box
-      ObjectEnable: true
+      Name: Ground
     TransformComponent:
-      Position: [-0.103626423, 0.470344692, 0]
-      Rotation: [0, 0, 0.0102674197]
-      Scale: [1, 1, 1]
+      Position: [-0.188127667, -3.01402378, 0]
+      Rotation: [0, 0, 555.481567]
+      Scale: [10.7448378, 0.603960335, 1]
     SpriteRendererComponent:
-      Color: [0, 1, 0, 1]
-    Rigidbody2DComponent:
-      BodyType: 1
-      FreezeRotation: false
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [1, 1]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
-  - Object: 12837192831273
-    SelfComponent:
-      ObjectName: Main Camera
-      ObjectEnable: true
-    TransformComponent:
-      Position: [-0.0445270538, -2.12662721, 3]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    CameraComponent:
-      Primary: true
-      ProjectionType: 0
-      Size: 5
-      FOV: 1.32645023
-      Near: 0.00999999978
-      Far: 1000
-  - Object: 12837192831273
-    SelfComponent:
-      ObjectName: Ground
-      ObjectEnable: true
-    TransformComponent:
-      Position: [-0.129261672, -3.05907249, 0]
-      Rotation: [0, 0, 0]
-      Scale: [15.842927, 0.550281703, 2.23000002]
-    SpriteRendererComponent:
-      Color: [1, 0.847262263, 0, 1]
+      Color: [1, 0.72622472, 0, 1]
     Rigidbody2DComponent:
       BodyType: 0
       FreezeRotation: false
@@ -55,3 +19,36 @@ Objects:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
+  - Object: 3715998782598349539
+    SelfComponent:
+      Name: Box
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.548771322, 1, 0.45821327, 1]
+    Rigidbody2DComponent:
+      BodyType: 1
+      FreezeRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  - Object: 11665800973918046058
+    SelfComponent:
+      Name: Main Camera
+    TransformComponent:
+      Position: [0, 0, 3]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Primary: true
+      ProjectionType: 0
+      Size: 5
+      FOV: 0.785398185
+      Near: 0.00999999978
+      Far: 1000

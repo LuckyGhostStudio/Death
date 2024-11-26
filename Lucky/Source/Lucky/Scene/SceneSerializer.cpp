@@ -176,11 +176,11 @@ namespace Lucky
     /// 序列化物体
     /// </summary>
     /// <param name="out">发射器</param>
-    /// <param name="entity">物体</param>
-    static void SerializeEntity(YAML::Emitter& out, Object object)
+    /// <param name="object">物体</param>
+    static void SerializeObject(YAML::Emitter& out, Object object)
     {
         out << YAML::BeginMap;  // 开始物体 Map
-        out << YAML::Key << "Object" << YAML::Value << "12837192831273"; // TODO: Object ID goes here
+        out << YAML::Key << "Object" << YAML::Value << object.GetUUID();
 
         // Self 组件
         if (object.HasComponent<SelfComponent>())
@@ -190,8 +190,7 @@ namespace Lucky
 
             SelfComponent& selfComponent = object.GetComponent<SelfComponent>(); // Self 组件
 
-            out << YAML::Key << "ObjectName" << YAML::Value << selfComponent.ObjectName;
-            out << YAML::Key << "ObjectEnable" << YAML::Value << selfComponent.ObjectEnable;
+            out << YAML::Key << "Name" << YAML::Value << selfComponent.Name;
 
             out << YAML::EndMap;    // 结束 Self 组件 Map
         }
@@ -301,7 +300,7 @@ namespace Lucky
                 return;
             }
 
-            SerializeEntity(out, object);   // 序列化物体
+            SerializeObject(out, object);   // 序列化物体
         });
 
         out << YAML::EndSeq;    // 结束物体序列
@@ -338,7 +337,7 @@ namespace Lucky
             // 遍历结点下所有物体
             for (auto object : objects)
             {
-                uint64_t uuid = object["Object"].as<uint64_t>();    // 物体 uuid TODO
+                uint64_t uuid = object["Object"].as<uint64_t>();    // UUID
                 
                 std::string objectName;
 
@@ -346,13 +345,13 @@ namespace Lucky
                 YAML::Node selfComponentNode = object["SelfComponent"];
                 if (selfComponentNode)
                 {
-                    objectName = selfComponentNode["ObjectName"].as<std::string>(); // 物体名
+                    objectName = selfComponentNode["Name"].as<std::string>(); // 物体名
                     // TODO ObjectEnable
                 }
 
-                LC_CORE_TRACE("Deserialized object with ID = {0}, name = {1}", uuid, objectName);
+                LC_CORE_TRACE("Deserialized Object: [UUID = {0}, Name = {1}]", uuid, objectName);
 
-                Object deserializedObject = m_Scene->CreateObject(objectName);  // 创建物体 TODO 使用 uuid
+                Object deserializedObject = m_Scene->CreateObject(uuid, objectName);  // 创建物体
 
                 // Transform 组件结点
                 YAML::Node transformComponentNode = object["TransformComponent"];
