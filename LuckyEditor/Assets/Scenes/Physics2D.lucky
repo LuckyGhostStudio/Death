@@ -1,24 +1,19 @@
 Scene: Untitled
 Objects:
-  - Object: 10767520870866311874
+  - Object: 11665800973918046058
     SelfComponent:
-      Name: Ground
+      Name: Main Camera
     TransformComponent:
-      Position: [-0.188127667, -3.01402378, 0]
-      Rotation: [0, 0, 555.481567]
-      Scale: [10.7448378, 0.603960335, 1]
-    SpriteRendererComponent:
-      Color: [1, 0.72622472, 0, 1]
-    Rigidbody2DComponent:
-      BodyType: 0
-      FreezeRotation: false
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [1, 1]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
+      Position: [0, 0, 3]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Primary: true
+      ProjectionType: 0
+      Size: 5
+      FOV: 0.785398185
+      Near: 0.00999999978
+      Far: 1000
   - Object: 3715998782598349539
     SelfComponent:
       Name: Box
@@ -38,17 +33,22 @@ Objects:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
-  - Object: 11665800973918046058
+  - Object: 10767520870866311874
     SelfComponent:
-      Name: Main Camera
+      Name: Ground
     TransformComponent:
-      Position: [0, 0, 3]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    CameraComponent:
-      Primary: true
-      ProjectionType: 0
-      Size: 5
-      FOV: 0.785398185
-      Near: 0.00999999978
-      Far: 1000
+      Position: [-0.188127667, -3.01402378, 0]
+      Rotation: [0, 0, -164.518433]
+      Scale: [10.7448378, 0.603960335, 1]
+    SpriteRendererComponent:
+      Color: [1, 0.72622472, 0, 1]
+    Rigidbody2DComponent:
+      BodyType: 0
+      FreezeRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5

@@ -88,7 +88,7 @@ namespace Lucky
             b2BodyDef bodyDef;
             bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.GetBodyType());              // 类型 TODO 运行时更改
             bodyDef.position.Set(transform.GetPosition().x, transform.GetPosition().y); // 位置
-            bodyDef.angle = transform.GetRotation().z;                                  // 旋转
+            bodyDef.angle = glm::radians(transform.GetRotation().z);                    // 旋转 deg
 
             b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);    // 创建 2D Body
             body->SetFixedRotation(rb2d.IsFreezeRotation());        // 设置 固定旋转选项
@@ -161,9 +161,13 @@ namespace Lucky
                 const auto& position = body->GetPosition();
                 transform.GetPosition().x = position.x;
                 transform.GetPosition().y = position.y;
-                transform.GetRotation().z = glm::degrees(body->GetAngle());
 
-                LC_TRACE("PositionY: {0}", position.y);
+                LC_TRACE("RZ1: {0}", body->GetAngle());
+                LC_TRACE("RZ2: {0}", glm::degrees(body->GetAngle()));
+                LC_TRACE("RZ3: {0}", transform.GetRotation().z);
+
+                transform.GetRotation().z = glm::degrees(body->GetAngle()); // deg
+                LC_TRACE("RZ3: {0}", transform.GetRotation().z);
             }
         }
 
