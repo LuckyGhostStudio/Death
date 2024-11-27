@@ -8,7 +8,7 @@
 namespace Lucky
 {
     /// <summary>
-    /// 游戏视口面板：Main Camera 渲染的画面 TODO 添加一个 ViewportPanel 基类
+    /// 游戏视口面板：Main Camera 渲染的画面 TODO 添加一个 ViewportPanel 基类 每个 Viewport 需要一个 Camera
     /// </summary>
     class GameViewportPanel : public EditorPanel
     {
@@ -25,7 +25,9 @@ namespace Lucky
         virtual void SetSceneContext(const Ref<Scene>& scene) override;
         Ref<Scene> GetSceneContext() const { return m_Scene; }
 
-        void OnUpdate(DeltaTime dt);
+        void OnUpdateEditor(DeltaTime dt);
+
+        void OnUpdateRuntime(DeltaTime dt);
 
         virtual void OnImGuiRender(bool& isOpen) override;
 

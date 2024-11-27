@@ -221,7 +221,7 @@ namespace Lucky
             CameraComponent& cameraComponent = object.GetComponent<CameraComponent>();
             SceneCamera& camera = cameraComponent.Camera;
 
-            out << YAML::Key << "Primary" << YAML::Value << camera.IsPrimary();
+            out << YAML::Key << "Primary" << YAML::Value << cameraComponent.Primary;
 
             out << YAML::Key << "ProjectionType" << YAML::Value << (int)camera.GetProjectionType();
             out << YAML::Key << "Size" << YAML::Value << camera.GetSize();
@@ -374,13 +374,14 @@ namespace Lucky
 
                     SceneCamera& camera = cameraComponent.Camera;
 
+                    cameraComponent.Primary = cameraComponentNode["Primary"].as<bool>();
+
                     camera.SetProjectionType((SceneCamera::ProjectionType)cameraComponentNode["ProjectionType"].as<int>());
 
                     camera.SetSize(cameraComponentNode["Size"].as<float>());
                     camera.SetFOV(cameraComponentNode["FOV"].as<float>());
                     camera.SetNearClip(cameraComponentNode["Near"].as<float>());
                     camera.SetFarClip(cameraComponentNode["Far"].as<float>());
-                    camera.SetPrimary(cameraComponentNode["Primary"].as<bool>());
                 }
 
                 // SpriteRenderer 组件结点

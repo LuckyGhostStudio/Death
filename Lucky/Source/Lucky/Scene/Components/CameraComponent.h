@@ -12,6 +12,7 @@ namespace Lucky
     {
         ComponentType Type = ComponentType::Camera;
 
+        bool Primary = false;   // 主相机
         SceneCamera Camera;     // 场景相机
 
         CameraComponent() = default;

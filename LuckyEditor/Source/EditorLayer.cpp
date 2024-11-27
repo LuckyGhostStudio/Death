@@ -69,22 +69,21 @@ namespace Lucky
 
     void EditorLayer::OnUpdate(DeltaTime dt)
     {
+        m_RendererStatsPanel->OnUpdate(dt);
+        m_SceneViewportPanel->OnUpdate(dt);
+
         switch (m_SceneState)
         {
             case Lucky::EditorLayer::SceneState::Edit:
-
+                m_GameViewportPanel->OnUpdateEditor(dt);    // Temp 更新由主相机渲染的编辑器场景
                 break;
             case Lucky::EditorLayer::SceneState::Play:
                 // TODO 更新物理和脚本等
-                m_GameViewportPanel->OnUpdate(dt);
+                m_GameViewportPanel->OnUpdateRuntime(dt);   // Temp 更新物理
                 break;
             default:
                 break;
         }
-
-        m_RendererStatsPanel->OnUpdate(dt);
-        m_SceneViewportPanel->OnUpdate(dt);
-        //m_GameViewportPanel->OnUpdate(dt);    // TODO 更新由主相机渲染的编辑器场景
     }
 
     void EditorLayer::OnImGuiRender()

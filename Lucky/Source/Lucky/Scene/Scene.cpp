@@ -87,6 +87,7 @@ namespace Lucky
             // 2D Body 定义数据
             b2BodyDef bodyDef;
             bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.GetBodyType());              // 类型 TODO 运行时更改
+            // TODO 运行时更新 Transform 参数时更新对应的 Rigidbody2D 和 Collier2D 数据
             bodyDef.position.Set(transform.GetPosition().x, transform.GetPosition().y); // 位置
             bodyDef.angle = glm::radians(transform.GetRotation().z);                    // 旋转 deg
 
@@ -111,7 +112,9 @@ namespace Lucky
                 fixtureDef.restitution = bc2d.GetRestitution();
                 fixtureDef.restitutionThreshold = bc2d.GetRestitutionThreshold();
 
-                body->CreateFixture(&fixtureDef);   // 创建 Fixture
+                body->CreateFixture(&fixtureDef);       // 创建 Fixture
+
+                bc2d.SetRuntimeFixture(&fixtureDef);    // 设置运行时 Fixture 数据
             }
         }
     }
@@ -138,39 +141,8 @@ namespace Lucky
         Renderer2D::EndScene();
     }
 
-    void Scene::OnUpdateRuntime(DeltaTime dt)
+    void Scene::OnUpdateEditor(DeltaTime dt)
     {
-        // Physics
-        {
-            const int32_t velocityIterations = 6;   // 速度迭代次数
-            const int32_t positionIterations = 2;   // 位置迭代次数
-
-            m_PhysicsWorld->Step(dt, velocityIterations, positionIterations);
-
-            auto rb2DView = m_Registry.view<Rigidbody2DComponent>();
-            for (auto e : rb2DView)
-            {
-                Object object = { e, this };
-
-                Transform& transform = object.GetComponent<TransformComponent>().Transform;
-                Rigidbody2D& rb2d = object.GetComponent<Rigidbody2DComponent>().Rigidbody2d;
-
-                b2Body* body = (b2Body*)rb2d.GetRuntimeBody();  // 运行时 Body 数据
-
-                // 从 Box2D 更新 Transform 数据
-                const auto& position = body->GetPosition();
-                transform.GetPosition().x = position.x;
-                transform.GetPosition().y = position.y;
-
-                LC_TRACE("RZ1: {0}", body->GetAngle());
-                LC_TRACE("RZ2: {0}", glm::degrees(body->GetAngle()));
-                LC_TRACE("RZ3: {0}", transform.GetRotation().z);
-
-                transform.GetRotation().z = glm::degrees(body->GetAngle()); // deg
-                LC_TRACE("RZ3: {0}", transform.GetRotation().z);
-            }
-        }
-
         Camera* mainCamera = nullptr;   // 主相机
         Transform cameraTransform;      // 相机 transform
 
@@ -180,9 +152,9 @@ namespace Lucky
         for (auto entity : cameraView)
         {
             auto [transform, camera] = cameraView.get<TransformComponent, CameraComponent>(entity);
-            
+
             // 找到主相机（第一个）
-            if (camera.Camera.IsPrimary())
+            if (camera.Primary)
             {
                 mainCamera = &camera.Camera;
                 cameraTransform = transform.Transform;
@@ -211,6 +183,36 @@ namespace Lucky
         }
     }
 
+    void Scene::OnUpdateRuntime(DeltaTime dt)
+    {
+        // Physics 2D
+        {
+            const int32_t velocityIterations = 6;   // 速度迭代次数
+            const int32_t positionIterations = 2;   // 位置迭代次数
+
+            m_PhysicsWorld->Step(dt, velocityIterations, positionIterations);
+
+            auto rb2DView = m_Registry.view<Rigidbody2DComponent>();
+            for (auto e : rb2DView)
+            {
+                Object object = { e, this };
+
+                Transform& transform = object.GetComponent<TransformComponent>().Transform;
+                Rigidbody2D& rb2d = object.GetComponent<Rigidbody2DComponent>().Rigidbody2d;
+
+                b2Body* body = (b2Body*)rb2d.GetRuntimeBody();  // 运行时 Body 数据
+
+                // 从 Box2D 更新 Transform 数据
+                const auto& position = body->GetPosition();
+                transform.GetPosition().x = position.x;
+                transform.GetPosition().y = position.y;
+                transform.GetRotation().z = glm::degrees(body->GetAngle()); // deg
+            }
+        }
+
+        // Runtime: 物理 脚本
+    }
+
     void Scene::OnViewportResize(uint32_t width, uint32_t height)
     {
         m_ViewportWidth = width;
@@ -231,9 +233,9 @@ namespace Lucky
         
         for (auto object : view)
         {
-            const auto& camera = view.get<CameraComponent>(object).Camera;  // Camera
+            const auto& camera = view.get<CameraComponent>(object);  // Camera
             // 主相机
-            if (camera.IsPrimary())
+            if (camera.Primary)
             {
                 return Object{ object, this };  // 相机实体
             }

@@ -31,13 +31,13 @@ namespace Lucky
         uint32_t m_ViewportHeight = 720;    // 场景视口高
     private:
         /// <summary>
-        /// object 添加 T 组件时调用
+        /// object 添加 TComponent 组件时调用
         /// </summary>
-        /// <typeparam name="T">组件类型</typeparam>
+        /// <typeparam name="TComponent">组件类型</typeparam>
         /// <param name="object">物体</param>
         /// <param name="component">组件</param>
-        template<typename T>
-        void OnComponentAdded(Object object, T& component);
+        template<typename TComponent>
+        void OnComponentAdded(Object object, TComponent& component);
     public:
         Scene(const std::string& name = "New Scene");
         ~Scene();
@@ -69,6 +69,8 @@ namespace Lucky
         /// <param name="dt">帧间隔</param>
         /// <param name="camera">编辑器相机</param>
         void OnUpdateEditor(DeltaTime dt, EditorCamera& camera);
+
+        void OnUpdateEditor(DeltaTime dt);
 
         /// <summary>
         /// 运行时更新：每帧调用

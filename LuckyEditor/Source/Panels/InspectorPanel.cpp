@@ -148,7 +148,7 @@ namespace Lucky
         {
             auto& camera = cameraComponent.Camera;
 
-            GUI::CheckBox("Main Camera", &camera.IsPrimary_Ref());    // 主相机设置框
+            GUI::CheckBox("Main Camera", &cameraComponent.Primary); // 主相机设置框
 
             const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };                            // 投影类型：透视 正交 
             const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];   // 当前投影类型

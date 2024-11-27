@@ -24,6 +24,7 @@ namespace Lucky
         BoxCollider2D() = default;
         BoxCollider2D(const BoxCollider2D&) = default;
 
+        // TODO 设置参数时更新 fixture 的数据 ((b2FixtureDef*)bc2d.GetRuntimeFixture())->density = ...
         glm::vec2& GetOffset() { return m_Offset; }
         void SetOffset(const glm::vec2& offset) { m_Offset = offset; }
 

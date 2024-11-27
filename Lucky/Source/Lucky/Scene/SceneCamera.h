@@ -30,8 +30,6 @@ namespace Lucky
             Orthographic = 1    // 正交投影
         };
     private:
-        bool m_Primary = true;              // 是否是主相机
-
         glm::vec4 m_BackgroundColor = { 0.2f, 0.3f, 0.5f, 1.0f };       // 清屏颜色
 
         ClearFlag m_ClearFlag = ClearFlag::Color;                       // 清屏类型
@@ -74,10 +72,6 @@ namespace Lucky
         /// <param name="width">宽</param>
         /// <param name="height">高</param>
         void SetViewportSize(uint32_t width, uint32_t height);
-
-        bool IsPrimary() const { return m_Primary; }
-        bool& IsPrimary_Ref() { return m_Primary; }
-        void SetPrimary(bool primary) { m_Primary = primary; }
 
         const glm::vec4& GetBackgroundColor() const { return m_BackgroundColor; }
         void SetBackgroundColor(const glm::vec4& background) { m_BackgroundColor = background; }
