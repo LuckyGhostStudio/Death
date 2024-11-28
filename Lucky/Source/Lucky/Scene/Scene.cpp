@@ -46,6 +46,82 @@ namespace Lucky
 
     }
 
+    /// <summary>
+    /// 复制 TComponent 类型的组件：src -> dst 注册表
+    /// </summary>
+    /// <typeparam name="TComponent">组件类型</typeparam>
+    /// <param name="dstRegistry">目标注册表</param>
+    /// <param name="srcRegistry">源注册表</param>
+    /// <param name="enttMap">UUID - entt 映射表</param>
+    template<typename TComponent>
+    static void CopyComponent(entt::registry& dstRegistry, entt::registry& srcRegistry, const std::unordered_map<UUID, entt::entity>& enttMap)
+    {
+        auto view = srcRegistry.view<TComponent>(); // 源注册表所有 TComponent 类型的组件
+
+        for (auto e : view)
+        {
+            UUID uuid = srcRegistry.get<IDComponent>(e).ID;
+            LC_CORE_ASSERT(enttMap.find(uuid) != enttMap.end(), "UUID Not Found in enttMap.");
+
+            entt::entity dstEnttID = enttMap.at(uuid);
+            auto& component = srcRegistry.get<TComponent>(e);
+
+            dstRegistry.emplace_or_replace<TComponent>(dstEnttID, component);   // 添加或替换到目标注册表
+        }
+    }
+
+    /// <summary>
+    /// 复制 TComponent 类型的组件：src -> dst 物体
+    /// </summary>
+    /// <typeparam name="TComponent">组件类型</typeparam>
+    /// <param name="dstObj">目标物体</param>
+    /// <param name="srcObj">源物体</param>
+    template<typename TComponent>
+    static void CopyComponentIfExists(Object dstObj, Object srcObj)
+    {
+        if (srcObj.HasComponent<TComponent>())
+        {
+            dstObj.AddOrReplaceComponent<TComponent>(srcObj.GetComponent<TComponent>());    // 添加或替换组件到目标物体
+        }
+    }
+
+    Ref<Scene> Scene::Copy(Ref<Scene> other)
+    {
+        Ref<Scene> newScene = CreateRef<Scene>();   // 新场景
+
+        // 场景参数 TODO 新参数
+        newScene->m_Name = other->m_Name;
+        newScene->m_ViewportWidth = other->m_ViewportWidth;
+        newScene->m_ViewportHeight = other->m_ViewportHeight;
+
+        auto& srcSceneRegistry = other->m_Registry;     // 待复制场景注册表
+        auto& dstSceneRegistry = newScene->m_Registry;  // 新场景注册表
+
+        std::unordered_map<UUID, entt::entity> enttMap; // UUID - entt 映射表
+
+        // 在新场景创建物体
+        auto idView = srcSceneRegistry.view<IDComponent>();
+        for (auto e : idView)
+        {
+            UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
+            const std::string& name = srcSceneRegistry.get<SelfComponent>(e).Name;
+
+            Object newObject = newScene->CreateObject(uuid, name);  // 创建新对象
+
+            enttMap[uuid] = (entt::entity)newObject;    // 添加到 Map
+        }
+
+        // 复制 除了 IDComponent SelfComponent 的所有组件：src -> dst 场景注册表
+        CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        // TODO 新组件
+
+        return newScene;
+    }
+
     Object Scene::CreateObject(const std::string& name)
     {
         return CreateObject(UUID(), name);
@@ -102,7 +178,7 @@ namespace Lucky
 
                 // 2D 形状数据
                 b2PolygonShape boxShape;
-                boxShape.SetAsBox(bc2d.GetSize().x * transform.GetScale().x, bc2d.GetSize().y * transform.GetScale().y);
+                boxShape.SetAsBox(bc2d.GetSize().x * 0.5f * transform.GetScale().x, bc2d.GetSize().y * 0.5f * transform.GetScale().y);
 
                 // 2D Fixture 定义数据：物理对象的数据
                 b2FixtureDef fixtureDef;
@@ -225,6 +301,21 @@ namespace Lucky
             auto& cameraComponent = cameraView.get<CameraComponent>(entity);    // 获得 Camera 组件
             cameraComponent.Camera.SetViewportSize(width, height);              // 设置视口大小
         }
+    }
+
+    void Scene::DuplicateObject(Object object)
+    {
+        std::string name = object.GetName();
+        Object newObject = CreateObject(name);  // 创建新物体
+
+        // 复制 除了 IDComponent SelfComponent 的所有组件：src -> dst 物体
+        CopyComponentIfExists<TransformComponent>(newObject, object);
+        CopyComponentIfExists<SpriteRendererComponent>(newObject, object);
+        CopyComponentIfExists<CameraComponent>(newObject, object);
+        CopyComponentIfExists<Rigidbody2DComponent>(newObject, object);
+        CopyComponentIfExists<BoxCollider2DComponent>(newObject, object);
+
+        LC_TRACE("Copied Object：[ENTT = {0}, UUID {1}, Name {2}] -> [ENTT = {3}, UUID {4}, Name {5}]", (uint32_t)object, object.GetUUID(), name, (uint32_t)newObject, newObject.GetUUID(), name);
     }
 
     Object Scene::GetPrimaryCameraObject()

@@ -41,6 +41,21 @@ namespace Lucky
         }
 
         /// <summary>
+        /// 添加或替换 T 类型组件
+        /// </summary>
+        /// <typeparam name="T">组件类型</typeparam>
+        /// <typeparam name="...Args">组件参数类型</typeparam>
+        /// <param name="...args">组件参数列表</param>
+        /// <returns></returns>
+        template<typename T, typename... Args>
+        T& AddOrReplaceComponent(Args&&... args)
+        {
+            T& component = m_Scene->m_Registry.emplace_or_replace<T>(m_ObjectID, std::forward<Args>(args)...);
+            m_Scene->OnComponentAdded<T>(*this, component);
+            return component;
+        }
+
+        /// <summary>
         /// 返回 T 类型组件
         /// </summary>
         /// <typeparam name="T">组件类型</typeparam>

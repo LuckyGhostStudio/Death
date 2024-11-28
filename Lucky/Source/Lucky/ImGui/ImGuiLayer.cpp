@@ -73,8 +73,8 @@ namespace Lucky
         {
             ImGuiIO& io = ImGui::GetIO();
 
-            e.m_Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;        // 捕获鼠标事件
-            e.m_Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;  // 捕获键盘事件
+            //e.m_Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;        // 捕获鼠标事件
+            //e.m_Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;  // 捕获键盘事件
         }
     }
 

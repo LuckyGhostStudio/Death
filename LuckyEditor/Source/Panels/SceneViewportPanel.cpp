@@ -99,7 +99,7 @@ namespace Lucky
             m_IsFocused = ImGui::IsWindowFocused();   // 当前窗口被聚焦
             m_IsHovered = ImGui::IsWindowHovered();   // 鼠标悬停在当前窗口
 
-            Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused ||*/ !m_IsHovered); // 阻止ImGui事件
+            //Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused ||*/ !m_IsHovered); // 阻止ImGui事件
 
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();  // 当前面板大小
             m_Size = { viewportPanelSize.x, viewportPanelSize.y };      // 视口大小

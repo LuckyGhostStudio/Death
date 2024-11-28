@@ -36,7 +36,8 @@ namespace Lucky
         m_SceneViewportFramebuffer = Framebuffer::Create(fbSpec);   // 创建 Scene Viewport 帧缓冲区
         m_GameViewportFramebuffer = Framebuffer::Create(fbSpec);    // 创建 Game Viewport 帧缓冲区
 
-        m_ActiveScene = CreateRef<Scene>();             // 创建场景
+        m_CurrentScene = CreateRef<Scene>();    // 创建场景
+        m_EditorScene = m_CurrentScene;
 
         auto commandLineArgs = Application::GetInstance().GetCommandLineArgs();
         // 从命令行加载场景
@@ -44,20 +45,20 @@ namespace Lucky
         {
             const char* sceneFilePath = commandLineArgs[1];
 
-            SceneSerializer serializer(m_ActiveScene);
+            SceneSerializer serializer(m_CurrentScene);
             serializer.Deserialize(sceneFilePath);
         }
 
         // m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f); // 创建编辑器相机
 
-        m_CameraObject = m_ActiveScene->CreateObject("Main Camera");    // 创建相机对象
+        m_CameraObject = m_CurrentScene->CreateObject("Main Camera");    // 创建相机对象
         m_CameraObject.AddComponent<CameraComponent>();                 // 添加 Camera 组件
         m_CameraObject.GetComponent<TransformComponent>().Transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
-        m_SceneHierarchyPanel = CreateRef<SceneHierarchyPanel>(m_ActiveScene);
+        m_SceneHierarchyPanel = CreateRef<SceneHierarchyPanel>(m_CurrentScene);
         m_InspectorPanel = CreateRef<InspectorPanel>();
-        m_SceneViewportPanel = CreateRef<SceneViewportPanel>(m_SceneViewportFramebuffer, m_ActiveScene);
-        m_GameViewportPanel = CreateRef<GameViewportPanel>(m_GameViewportFramebuffer, m_ActiveScene);
+        m_SceneViewportPanel = CreateRef<SceneViewportPanel>(m_SceneViewportFramebuffer, m_CurrentScene);
+        m_GameViewportPanel = CreateRef<GameViewportPanel>(m_GameViewportFramebuffer, m_CurrentScene);
         m_RendererStatsPanel = CreateRef<RendererStatsPanel>();
         m_ProjectAssetsPanel = CreateRef<ProjectAssetsPanel>();
     }
@@ -186,27 +187,130 @@ namespace Lucky
     {
         m_SceneState = SceneState::Play;
 
-        ImGui::SetWindowFocus("Game");  // 聚焦 Game 窗口
+        m_RuntimeScene = Scene::Copy(m_EditorScene); // 复制编辑状态的场景
 
-        m_ActiveScene->OnRuntimeStart();
+        // 设置所有面板的场景上下文
+        m_SceneViewportPanel->SetSceneContext(m_RuntimeScene);
+        m_GameViewportPanel->SetSceneContext(m_RuntimeScene);
+        m_SceneHierarchyPanel->SetSceneContext(m_RuntimeScene);
+
+        m_RuntimeScene->OnRuntimeStart();   // 开始运行
+
+        ImGui::SetWindowFocus("Game");  // TODO Temp 聚焦 Game 窗口
+
+        m_CurrentScene = m_RuntimeScene;
     }
 
     void EditorLayer::OnSceneStop()
     {
+        m_RuntimeScene->OnRuntimeStop(); // 停止运行
+
         m_SceneState = SceneState::Edit;
 
-        // Temp TODO 聚焦运行前的焦点窗口（恢复编辑器数据）
-        ImGui::SetWindowFocus("Scene");
+        m_RuntimeScene = nullptr;       // 卸载运行时场景
 
-        m_ActiveScene->OnRuntimeStop();
+        // 设置所有面板的场景上下文
+        m_SceneViewportPanel->SetSceneContext(m_EditorScene);
+        m_GameViewportPanel->SetSceneContext(m_EditorScene);
+        m_SceneHierarchyPanel->SetSceneContext(m_EditorScene);
+
+        ImGui::SetWindowFocus("Scene"); // Temp TODO 聚焦运行前的焦点窗口（恢复编辑器数据）
+
+        m_CurrentScene = m_EditorScene; // 恢复当前场景到编辑时场景
+    }
+
+    void EditorLayer::NewScene()
+    {
+        m_EditorScene = CreateRef<Scene>();         // 创建新场景
+        m_SceneFilePath = std::filesystem::path();  // 场景路径
+
+        // 设置所有面板的场景上下文
+        m_SceneViewportPanel->SetSceneContext(m_EditorScene);
+        m_GameViewportPanel->SetSceneContext(m_EditorScene);
+        m_SceneHierarchyPanel->SetSceneContext(m_EditorScene);
+
+        m_CurrentScene = m_EditorScene;
+    }
+
+    void EditorLayer::OpenScene()
+    {
+        // 打开文件对话框（文件类型名\0 文件类型.lucky）
+        std::string filepath = FileDialogs::OpenFile("Lucky Scene(*.lucky)\0*.lucky\0");
+
+        // 路径不为空
+        if (!filepath.empty())
+        {
+            OpenScene(filepath);    // 打开场景
+        }
+    }
+
+    void EditorLayer::OpenScene(const std::filesystem::path& filepath)
+    {
+        // 非编辑状态
+        if (m_SceneState != SceneState::Edit)
+        {
+            OnSceneStop();  // 停止运行场景
+        }
+
+        // 不是场景文件
+        if (filepath.extension().string() != ".lucky")
+        {
+            LC_WARN("Can not Load {0} - Not a Scene File.", filepath.filename().string());
+            return;
+        }
+
+        Ref<Scene> newScene = CreateRef<Scene>();   // 创建新场景
+        SceneSerializer serializer(newScene);       // 场景序列化器
+        // 反序列化：加载文件场景到新场景
+        if (serializer.Deserialize(filepath.string()))
+        {
+            m_EditorScene = newScene;
+
+            // 设置所有面板的场景上下文
+            m_SceneViewportPanel->SetSceneContext(m_EditorScene);
+            m_GameViewportPanel->SetSceneContext(m_EditorScene);
+            m_SceneHierarchyPanel->SetSceneContext(m_EditorScene);
+
+            m_CurrentScene = m_EditorScene; // 当前场景
+            m_SceneFilePath = filepath;     // 当前场景路径
+        }
+    }
+
+    void EditorLayer::SaveScene()
+    {
+        if (!m_SceneFilePath.empty())
+        {
+            SerializeScene(m_EditorScene, m_SceneFilePath); // 序列化活动场景到当前场景
+        }
+        else
+        {
+            SaveSceneAs();  // 场景另存为
+        }
+    }
+
+    void EditorLayer::SaveSceneAs()
+    {
+        std::string filepath = FileDialogs::SaveFile("Lucky Scene(*.lucky)\0*.lucky\0");    // 保存文件对话框（文件类型名\0 文件类型.lucky）
+
+        // 路径不为空
+        if (!filepath.empty())
+        {
+            SerializeScene(m_EditorScene, filepath);    // 序列化场景
+            m_SceneFilePath = filepath;             // 场景路径
+        }
+    }
+
+    void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& filepath)
+    {
+        SceneSerializer serializer(scene);          // 场景序列化器
+        serializer.Serialize(filepath.string());    // 序列化：保存场景
     }
 
     void EditorLayer::OnEvent(Event& event)
     {
         EventDispatcher dispatcher(event);
 
-        dispatcher.Dispatch<KeyPressedEvent>(LC_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));                    // 调用按键按下事件
-        dispatcher.Dispatch<MouseButtonPressedEvent>(LC_BIND_EVENT_FUNC(EditorLayer::OnMouseButtonPressed));    // 调用鼠标按钮按下事件
+        dispatcher.Dispatch<KeyPressedEvent>(LC_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));    // 调用按键按下事件
 
         m_SceneHierarchyPanel->OnEvent(event);
         m_SceneViewportPanel->OnEvent(event);
@@ -226,75 +330,33 @@ namespace Lucky
         // 菜单快捷键
         switch (e.GetKeyCode())
         {
-            case Key::N:
-                if (control)
-                {
-                    NewScene();     // 创建新场景：Ctrl+N
-                }
-                break;
-            case Key::O:
-                if (control)
-                {
-                    OpenScene();    // 打开场景：Ctrl+O
-                }
-                break;
-            case Key::S:
-                if (control && shift)
+        case Key::N:
+            if (control)
+            {
+                NewScene();     // 创建新场景：Ctrl+N
+            }
+            break;
+        case Key::O:
+            if (control)
+            {
+                OpenScene();    // 打开场景：Ctrl+O
+            }
+            break;
+        case Key::S:
+            if (control)
+            {
+                if (shift)
                 {
                     SaveSceneAs();  // 场景另存为：Ctrl+Shift+S
                 }
-                break;
+                else
+                {
+                    SaveScene();    // 保存到当前场景： Ctrl+S
+                }
+            }
+            break;
         }
 
         return false;
-    }
-
-    bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
-    {
-        return false;
-    }
-
-    void EditorLayer::NewScene()
-    {
-        m_ActiveScene = CreateRef<Scene>();         // 创建新场景
-        
-        m_SceneViewportPanel->SetSceneContext(m_ActiveScene);   // 设置 Scene Viewport 的场景
-        m_GameViewportPanel->SetSceneContext(m_ActiveScene);    // 设置 Game Viewport 的场景
-        m_SceneHierarchyPanel->SetSceneContext(m_ActiveScene);  // 设置 Hierarchy 的场景
-    }
-
-    void EditorLayer::OpenScene()
-    {
-        std::string filepath = FileDialogs::OpenFile("Lucky Scene(*.lucky)\0*.lucky\0");    // 打开文件对话框（文件类型名\0 文件类型.lucky）
-
-        // 路径不为空
-        if (!filepath.empty())
-        {
-            OpenScene(filepath);    // 打开场景
-        }
-    }
-
-    void EditorLayer::OpenScene(const std::filesystem::path& filepath)
-    {
-        m_ActiveScene = CreateRef<Scene>();             // 创建新场景
-
-        m_SceneViewportPanel->SetSceneContext(m_ActiveScene);   // 设置 Scene Viewport 的场景
-        m_GameViewportPanel->SetSceneContext(m_ActiveScene);    // 设置 Game Viewport 的场景
-        m_SceneHierarchyPanel->SetSceneContext(m_ActiveScene);  // 设置 Hierarchy 的场景
-
-        SceneSerializer serializer(m_ActiveScene);      // 场景序列化器
-        serializer.Deserialize(filepath.string());      // 反序列化：加载文件场景到新场景
-    }
-
-    void EditorLayer::SaveSceneAs()
-    {
-        std::string filepath = FileDialogs::SaveFile("Lucky Scene(*.lucky)\0*.lucky\0");    // 保存文件对话框（文件类型名\0 文件类型.lucky）
-
-        // 路径不为空
-        if (!filepath.empty())
-        {
-            SceneSerializer serializer(m_ActiveScene);  // 场景序列化器
-            serializer.Serialize(filepath);             // 序列化：保存场景
-        }
     }
 }

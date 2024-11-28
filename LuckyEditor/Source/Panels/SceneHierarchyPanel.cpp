@@ -1,5 +1,6 @@
 #include "SceneHierarchyPanel.h"
 
+#include "Lucky/Core/Application.h"
 #include "Lucky/Core/Log.h"
 #include "Lucky/Core/Input/Input.h"
 #include "Lucky/Scene/Components/SelfComponent.h"
@@ -37,54 +38,59 @@ namespace Lucky
 
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));   // 设置树节点之间的垂直距离为 0
 
-            // 遍历场景所有实体，并调用 each 内的函数
-            m_Scene->m_Registry.each([&](auto ObjectID)
+            if (m_Scene)
             {
-                Object object{ ObjectID, m_Scene.get() };
-
-                DrawObjectNode(object); // 绘制物体结点
-            });
-
-            ImGui::PopStyleVar();
-
-            // 点击鼠标 && 鼠标悬停在该窗口（点击空白位置）
-            if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered())
-            {
-                Selection::Object = {}; // 取消选中：置空选中物体
-            }
-
-            // 创建物体 右键点击窗口白区域弹出菜单：- 右键 不在物体项上
-            if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
-            {
-                Object newObject;
-
-                // 创建空物体
-                if (ImGui::MenuItem("Create Empty"))
+                // TODO 添加场景名节点 场景保存状态显示 Name *
+                // 遍历场景所有实体，并调用 each 内的函数
+                m_Scene->m_Registry.each([&](auto ObjectID)
                 {
-                    m_Scene->CreateObject("Object");
-                }
-                // 创建 Sprite
-                if (ImGui::MenuItem("Sprite"))
+                    Object object{ ObjectID, m_Scene.get() };
+
+                    DrawObjectNode(object); // 绘制物体结点
+                });
+
+
+                ImGui::PopStyleVar();
+
+                // 点击鼠标 && 鼠标悬停在该窗口（点击空白位置）
+                if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered())
                 {
-                    newObject = m_Scene->CreateObject("Sprite");
-                    newObject.AddComponent<SpriteRendererComponent>();
-                }
-                // 创建 Camera
-                if (ImGui::MenuItem("Camera"))
-                {
-                    newObject = m_Scene->CreateObject("Camera");
-                    newObject.AddComponent<CameraComponent>();
-                }
-                // 创建 2D 刚体 TODO Test
-                if (ImGui::MenuItem("Rigidbody 2D"))
-                {
-                    newObject = m_Scene->CreateObject("Rigidbody 2D");
-                    newObject.AddComponent<SpriteRendererComponent>();
-                    newObject.AddComponent<Rigidbody2DComponent>();
-                    newObject.AddComponent<BoxCollider2DComponent>();
+                    Selection::Object = {}; // 取消选中：置空选中物体
                 }
 
-                ImGui::EndPopup();
+                // 创建物体 右键点击窗口白区域弹出菜单：- 右键 不在物体项上
+                if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+                {
+                    Object newObject;
+
+                    // 创建空物体
+                    if (ImGui::MenuItem("Create Empty"))
+                    {
+                        m_Scene->CreateObject("Object");
+                    }
+                    // 创建 Sprite
+                    if (ImGui::MenuItem("Sprite"))
+                    {
+                        newObject = m_Scene->CreateObject("Sprite");
+                        newObject.AddComponent<SpriteRendererComponent>();
+                    }
+                    // 创建 Camera
+                    if (ImGui::MenuItem("Camera"))
+                    {
+                        newObject = m_Scene->CreateObject("Camera");
+                        newObject.AddComponent<CameraComponent>();
+                    }
+                    // 创建 2D 刚体 TODO Test
+                    if (ImGui::MenuItem("Rigidbody 2D"))
+                    {
+                        newObject = m_Scene->CreateObject("Rigidbody 2D");
+                        newObject.AddComponent<SpriteRendererComponent>();
+                        newObject.AddComponent<Rigidbody2DComponent>();
+                        newObject.AddComponent<BoxCollider2DComponent>();
+                    }
+
+                    ImGui::EndPopup();
+                }
             }
         }
         ImGui::End();
@@ -160,13 +166,47 @@ namespace Lucky
         }
     }
 
-    void SceneHierarchyPanel::OnEvent(Event& e)
+    void SceneHierarchyPanel::OnDuplicateObject()
     {
-        if (!m_IsFocused)
+        if (Selection::Object)
         {
-            return;
+            m_Scene->DuplicateObject(Selection::Object);    // 复制当前选中物体
+        }
+    }
+
+    void SceneHierarchyPanel::OnEvent(Event& event)
+    {
+        //if (!m_IsFocused)
+        //{
+        //    return;
+        //}
+
+        EventDispatcher dispatcher(event);
+
+        dispatcher.Dispatch<KeyPressedEvent>(LC_BIND_EVENT_FUNC(SceneHierarchyPanel::OnKeyPressed));    // 调用按键按下事件
+    }
+
+    bool SceneHierarchyPanel::OnKeyPressed(KeyPressedEvent& e)
+    {
+        // 快捷键：重复次数 == 0
+        if (e.GetRepeatCount() > 0)
+        {
+            return false;
         }
 
-        // TODO Object Event
+        bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl); // Ctrl 键按下
+        bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);       // Shift 键按下
+
+        switch (e.GetKeyCode())
+        {
+            case Key::D:
+                if (control)
+                {
+                    OnDuplicateObject();    // Ctrl+D 复制物体
+                }
+                break;
+        }
+
+        return false;
     }
 }

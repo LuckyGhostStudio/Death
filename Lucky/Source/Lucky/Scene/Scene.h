@@ -46,6 +46,13 @@ namespace Lucky
         inline void SetName(const std::string& name) { m_Name = name; }
 
         /// <summary>
+        /// 复制场景：引用
+        /// </summary>
+        /// <param name="other">待复制场景</param>
+        /// <returns></returns>
+        static Ref<Scene> Copy(Ref<Scene> other);
+
+        /// <summary>
         /// 创建物体
         /// </summary>
         /// <param name="name">物体名</param>
@@ -84,6 +91,12 @@ namespace Lucky
         /// <param name="width">宽</param>
         /// <param name="height">高</param>
         void OnViewportResize(uint32_t width, uint32_t height);
+
+        /// <summary>
+        /// 复制物体：完全复制（UUID 除外）
+        /// </summary>
+        /// <param name="object">待复制对象</param>
+        void DuplicateObject(Object object);
 
         /// <summary>
         /// 返回主相机

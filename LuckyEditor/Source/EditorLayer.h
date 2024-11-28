@@ -20,10 +20,14 @@ namespace Lucky
         Ref<Framebuffer> m_SceneViewportFramebuffer;    // 场景视口帧缓冲区
         Ref<Framebuffer> m_GameViewportFramebuffer;     // 游戏视口帧缓冲区
 
-        Ref<Scene> m_ActiveScene;           // 活动场景
-        EditorCamera m_EditorCamera;        // 编辑器相机
+        Ref<Scene> m_CurrentScene;              // 当前场景
+        Ref<Scene> m_EditorScene;               // 编辑时场景
+        Ref<Scene> m_RuntimeScene;              // 运行时场景
+        std::filesystem::path m_SceneFilePath;  // 场景文件路径
 
-        Object m_CameraObject;              // 相机对象
+        EditorCamera m_EditorCamera;    // 编辑器相机
+
+        Object m_CameraObject;          // 相机对象
 
         /// <summary>
         /// 场景状态
@@ -72,12 +76,26 @@ namespace Lucky
         /// 渲染 ImGui
         /// </summary>
         virtual void OnImGuiRender() override;
+    private:
+        /// <summary>
+        /// 菜单条
+        /// </summary>
+        void UI_MenuBar();
 
         /// <summary>
-        /// 事件处理函数
+        /// 工具栏
         /// </summary>
-        /// <param name="event">事件</param>
-        virtual void OnEvent(Event& event) override;
+        void UI_ToolBar();
+
+        /// <summary>
+        /// 场景开始运行时调用
+        /// </summary>
+        void OnScenePlay();
+
+        /// <summary>
+        /// 场景停止运行时调用
+        /// </summary>
+        void OnSceneStop();
 
         /// <summary>
         /// 创建新场景
@@ -96,23 +114,27 @@ namespace Lucky
         void OpenScene(const std::filesystem::path& filepath);
 
         /// <summary>
+        /// 保存场景到当前场景
+        /// </summary>
+        void SaveScene();
+
+        /// <summary>
         /// 场景另存为
         /// </summary>
         void SaveSceneAs();
-    private:
-        /// <summary>
-        /// 菜单条
-        /// </summary>
-        void UI_MenuBar();
 
         /// <summary>
-        /// 工具栏
+        /// 序列化场景
         /// </summary>
-        void UI_ToolBar();
-
-        void OnScenePlay();
-
-        void OnSceneStop();
+        /// <param name="scene">场景</param>
+        /// <param name="path">路径</param>
+        void SerializeScene(Ref<Scene> scene, const std::filesystem::path& filepath);
+    public:
+        /// <summary>
+        /// 事件处理函数
+        /// </summary>
+        /// <param name="event">事件</param>
+        virtual void OnEvent(Event& event) override;
     private:
         /// <summary>
         /// 按键按下时调用
@@ -120,12 +142,5 @@ namespace Lucky
         /// <param name="e">按键按下事件</param>
         /// <returns>处理结果</returns>
         bool OnKeyPressed(KeyPressedEvent& e);
-
-        /// <summary>
-        /// 鼠标按钮按下时调用
-        /// </summary>
-        /// <param name="e">鼠标按钮按下事件</param>
-        /// <returns>处理结果</returns>
-        bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
     };
 }
