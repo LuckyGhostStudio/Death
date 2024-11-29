@@ -176,11 +176,6 @@ namespace Lucky
 
     void SceneHierarchyPanel::OnEvent(Event& event)
     {
-        //if (!m_IsFocused)
-        //{
-        //    return;
-        //}
-
         EventDispatcher dispatcher(event);
 
         dispatcher.Dispatch<KeyPressedEvent>(LC_BIND_EVENT_FUNC(SceneHierarchyPanel::OnKeyPressed));    // 调用按键按下事件

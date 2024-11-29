@@ -66,6 +66,10 @@ namespace Lucky
         /// <param name="objectID">ÎïÌå ID</param>
         static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int objectID = -1);
 
+        static void DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int objectID = -1);
+
+        static void DrawRect(const Transform& transform, const glm::vec4& color, int objectID = -1);
+
         static float GetLineWidth();
         static void SetLineWidth(float width);
 

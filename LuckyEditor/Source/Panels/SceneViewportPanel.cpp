@@ -174,6 +174,11 @@ namespace Lucky
 
     void SceneViewportPanel::OnEvent(Event& e)
     {
+        if (!m_IsHovered)
+        {
+            return;
+        }
+
         m_EditorCamera.OnEvent(e);      // 编辑器相机事件
 
         EventDispatcher dispatcher(e);
