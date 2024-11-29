@@ -9,6 +9,7 @@
 #include "Components/CameraComponent.h"
 #include "Components/Rigidbody2DComponent.h"
 #include "Components/BoxCollider2DComponent.h"
+#include "Components/CircleCollider2DComponent.h"
 
 #include "Object.h"
 
@@ -17,6 +18,7 @@
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 
 namespace Lucky
 {
@@ -117,6 +119,7 @@ namespace Lucky
         CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         // TODO 新组件
 
         return newScene;
@@ -176,11 +179,11 @@ namespace Lucky
             {
                 BoxCollider2D& bc2d = object.GetComponent<BoxCollider2DComponent>().BoxCollider2d;
 
-                // 2D 形状数据
+                // 2D 多边形形状数据
                 b2PolygonShape boxShape;
                 boxShape.SetAsBox(bc2d.GetSize().x * 0.5f * transform.GetScale().x, bc2d.GetSize().y * 0.5f * transform.GetScale().y);
 
-                // 2D Fixture 定义数据：物理对象的数据
+                // 2D Fixture 定义数据：物理对象的数据 TODO Physics Material
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape = &boxShape;
                 fixtureDef.density = bc2d.GetDensity();
@@ -191,6 +194,28 @@ namespace Lucky
                 body->CreateFixture(&fixtureDef);       // 创建 Fixture
 
                 bc2d.SetRuntimeFixture(&fixtureDef);    // 设置运行时 Fixture 数据
+            }
+
+            if (object.HasComponent<CircleCollider2DComponent>())
+            {
+                CircleCollider2D& cc2d = object.GetComponent<CircleCollider2DComponent>().CircleCollider2d;
+
+                // 2D 圆形形状数据
+                b2CircleShape circleShape;
+                circleShape.m_p.Set(cc2d.GetOffset().x, cc2d.GetOffset().y);
+                circleShape.m_radius = cc2d.GetRadius();
+
+                // 2D Fixture 定义数据：物理对象的数据 TODO Physics Material
+                b2FixtureDef fixtureDef;
+                fixtureDef.shape = &circleShape;
+                fixtureDef.density = cc2d.GetDensity();
+                fixtureDef.friction = cc2d.GetFriction();
+                fixtureDef.restitution = cc2d.GetRestitution();
+                fixtureDef.restitutionThreshold = cc2d.GetRestitutionThreshold();
+
+                body->CreateFixture(&fixtureDef);       // 创建 Fixture
+
+                cc2d.SetRuntimeFixture(&fixtureDef);    // 设置运行时 Fixture 数据
             }
         }
     }
@@ -314,6 +339,8 @@ namespace Lucky
         CopyComponentIfExists<CameraComponent>(newObject, object);
         CopyComponentIfExists<Rigidbody2DComponent>(newObject, object);
         CopyComponentIfExists<BoxCollider2DComponent>(newObject, object);
+        CopyComponentIfExists<CircleCollider2DComponent>(newObject, object);
+        // TODO 新组件
 
         LC_TRACE("Copied Object：[ENTT = {0}, UUID {1}, Name {2}] -> [ENTT = {3}, UUID {4}, Name {5}]", (uint32_t)object, object.GetUUID(), name, (uint32_t)newObject, newObject.GetUUID(), name);
     }
@@ -381,6 +408,11 @@ namespace Lucky
 
     template<>
     void Scene::OnComponentAdded<BoxCollider2DComponent>(Object object, BoxCollider2DComponent& component)
+    {
+    }
+    
+    template<>
+    void Scene::OnComponentAdded<CircleCollider2DComponent>(Object object, CircleCollider2DComponent& component)
     {
     }
 }

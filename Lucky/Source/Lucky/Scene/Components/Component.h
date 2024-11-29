@@ -15,7 +15,9 @@ namespace Lucky
         Transform,
         SpriteRenderer,
         Camera,
+
         Rigidbody2D,
-        BoxCollider2D
+        BoxCollider2D,
+        CircleCollider2D
     };
 }

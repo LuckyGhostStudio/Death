@@ -9,6 +9,7 @@
 #include "Lucky/Scene/Components/CameraComponent.h"
 #include "Lucky/Scene/Components/Rigidbody2DComponent.h"
 #include "Lucky/Scene/Components/BoxCollider2DComponent.h"
+#include "Lucky/Scene/Components/CircleCollider2DComponent.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -272,12 +273,33 @@ namespace Lucky
 
             out << YAML::Key << "Offset" << YAML::Value << boxCollider2D.GetOffset();
             out << YAML::Key << "Size" << YAML::Value << boxCollider2D.GetSize();
+
             out << YAML::Key << "Density" << YAML::Value << boxCollider2D.GetDensity();
             out << YAML::Key << "Friction" << YAML::Value << boxCollider2D.GetFriction();
             out << YAML::Key << "Restitution" << YAML::Value << boxCollider2D.GetRestitution();
             out << YAML::Key << "RestitutionThreshold" << YAML::Value << boxCollider2D.GetRestitutionThreshold();
 
             out << YAML::EndMap;    // BoxCollider2DComponent
+        }
+
+        // CircleCollider2D 组件
+        if (object.HasComponent<CircleCollider2DComponent>())
+        {
+            out << YAML::Key << "CircleCollider2DComponent";
+            out << YAML::BeginMap;  // CircleCollider2DComponent
+
+            CircleCollider2DComponent& circleCollider2DComponent = object.GetComponent<CircleCollider2DComponent>();
+            CircleCollider2D& circleCollider2D = circleCollider2DComponent.CircleCollider2d;
+
+            out << YAML::Key << "Offset" << YAML::Value << circleCollider2D.GetOffset();
+            out << YAML::Key << "Radius" << YAML::Value << circleCollider2D.GetRadius();
+
+            out << YAML::Key << "Density" << YAML::Value << circleCollider2D.GetDensity();
+            out << YAML::Key << "Friction" << YAML::Value << circleCollider2D.GetFriction();
+            out << YAML::Key << "Restitution" << YAML::Value << circleCollider2D.GetRestitution();
+            out << YAML::Key << "RestitutionThreshold" << YAML::Value << circleCollider2D.GetRestitutionThreshold();
+
+            out << YAML::EndMap;    // CircleCollider2DComponent
         }
 
         out << YAML::EndMap;    // 结束物体 Map
@@ -413,10 +435,27 @@ namespace Lucky
 
                     boxCollider2D.SetOffset(boxCollider2DNode["Offset"].as<glm::vec2>());
                     boxCollider2D.SetSize(boxCollider2DNode["Size"].as<glm::vec2>());
+
                     boxCollider2D.SetDensity(boxCollider2DNode["Density"].as<float>());
                     boxCollider2D.SetFriction(boxCollider2DNode["Friction"].as<float>());
                     boxCollider2D.SetRestitution(boxCollider2DNode["Restitution"].as<float>());
                     boxCollider2D.SetRestitutionThreshold(boxCollider2DNode["RestitutionThreshold"].as<float>());
+                }
+
+                // CircleCollider2D 组件结点
+                YAML::Node circleCollider2DNode = object["CircleCollider2DComponent"];
+                if (circleCollider2DNode)
+                {
+                    CircleCollider2DComponent& circleCollider2DComponent = deserializedObject.AddComponent<CircleCollider2DComponent>(); // 添加 BoxCollider2D 组件
+                    CircleCollider2D& circleCollider2D = circleCollider2DComponent.CircleCollider2d;
+
+                    circleCollider2D.SetOffset(circleCollider2DNode["Offset"].as<glm::vec2>());
+                    circleCollider2D.SetRadius(circleCollider2DNode["Radius"].as<float>());
+
+                    circleCollider2D.SetDensity(circleCollider2DNode["Density"].as<float>());
+                    circleCollider2D.SetFriction(circleCollider2DNode["Friction"].as<float>());
+                    circleCollider2D.SetRestitution(circleCollider2DNode["Restitution"].as<float>());
+                    circleCollider2D.SetRestitutionThreshold(circleCollider2DNode["RestitutionThreshold"].as<float>());
                 }
             }
         }

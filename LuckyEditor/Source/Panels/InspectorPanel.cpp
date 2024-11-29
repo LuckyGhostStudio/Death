@@ -10,6 +10,7 @@
 #include "Lucky/Scene/Components/SpriteRendererComponent.h"
 #include "Lucky/Scene/Components/Rigidbody2DComponent.h"
 #include "Lucky/Scene/Components/BoxCollider2DComponent.h"
+#include "Lucky/Scene/Components/CircleCollider2DComponent.h"
 
 #include "Lucky/ImGui/GUI.h"
 
@@ -66,7 +67,7 @@ namespace Lucky
             ImGui::OpenPopup("AddComponent");   // 打开弹出框
         }
 
-        // 渲染弹出框
+        // 渲染弹出框 TODO 检查组件是否可以添加多个
         if (ImGui::BeginPopup("AddComponent"))
         {
             // 添加 Camera 组件
@@ -94,9 +95,17 @@ namespace Lucky
             }
 
             // 添加 BoxCollider2D 组件
-            if (ImGui::MenuItem("BoxCollider 2D"))
+            if (ImGui::MenuItem("Box Collider 2D"))
             {
                 object.AddComponent<BoxCollider2DComponent>();
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            // 添加 CircleCollider2D 组件
+            if (ImGui::MenuItem("Circle Collider 2D"))
+            {
+                object.AddComponent<CircleCollider2DComponent>();
 
                 ImGui::CloseCurrentPopup();
             }
@@ -221,6 +230,19 @@ namespace Lucky
             GUI::DragFloatN("Density", &boxCollider2D.GetDensity_Ref());
             GUI::DragFloatN("Friction", &boxCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
             GUI::DragFloatN("Restitution", &boxCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
+        });
+
+        // 绘制 CircleCollider2D 组件
+        DrawComponent<CircleCollider2DComponent>("CircleCollider 2D", object, [](CircleCollider2DComponent& circleCollider2DComponent)
+        {
+            CircleCollider2D& circleCollider2D = circleCollider2DComponent.CircleCollider2d;
+
+            GUI::DragFloatN("Offset", glm::value_ptr(circleCollider2D.GetOffset()), 0.01f, GUI::ValueType::Float2);
+            GUI::DragFloatN("Radius", &circleCollider2D.GetRadius_Ref(), 0.01f, GUI::ValueType::Float2, 0.0f);
+
+            GUI::DragFloatN("Density", &circleCollider2D.GetDensity_Ref());
+            GUI::DragFloatN("Friction", &circleCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
+            GUI::DragFloatN("Restitution", &circleCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
         });
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // 垂直间距为 1
