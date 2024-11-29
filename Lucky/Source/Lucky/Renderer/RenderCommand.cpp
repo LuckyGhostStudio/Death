@@ -11,6 +11,8 @@ namespace Lucky
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // 最终颜色 = src * alpha + des * (1 - alpha)
 
         glEnable(GL_DEPTH_TEST);                            // 启用深度测试
+
+        glEnable(GL_LINE_SMOOTH);   // 平滑直线
     }
 
     void RenderCommand::SetClearColor(const glm::vec4& color)
@@ -30,9 +32,21 @@ namespace Lucky
 
     void RenderCommand::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)
     {
+        vertexArray->Bind();
         uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
 
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);  // 顶点数组索引绘制三角形
-        glBindTexture(GL_TEXTURE_2D, 0);                                // 清空纹理槽
+    }
+
+    void RenderCommand::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+    {
+        vertexArray->Bind();
+
+        glDrawArrays(GL_LINES, 0, vertexCount); // 绘制直线
+    }
+
+    void RenderCommand::SetLineWidth(float width)
+    {
+        glLineWidth(width);
     }
 }

@@ -56,7 +56,19 @@ namespace Lucky
         /// <param name="texture">纹理</param>
         /// <param name="objectID">物体 ID</param>
         static void DrawQuad(const Transform& transform, const glm::vec4& color, Ref<Texture2D>& texture, int objectID = -1);
-    
+
+        /// <summary>
+        /// 绘制直线 TODO LineRenderer in Component
+        /// </summary>
+        /// <param name="p0">起点</param>
+        /// <param name="p1">终点</param>
+        /// <param name="color">颜色</param>
+        /// <param name="objectID">物体 ID</param>
+        static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int objectID = -1);
+
+        static float GetLineWidth();
+        static void SetLineWidth(float width);
+
         /// <summary>
         /// 统计数据
         /// </summary>

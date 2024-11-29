@@ -43,5 +43,18 @@ namespace Lucky
         /// <param name="vertexArray">待绘制的顶点数组</param>
         /// <param name="indexCount">索引个数</param>
         static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0);
+
+        /// <summary>
+        /// 绘制直线
+        /// </summary>
+        /// <param name="vertexArray">待绘制顶点数组</param>
+        /// <param name="vertexCount">直线顶点个数</param>
+        static void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount);
+
+        /// <summary>
+        /// 设置线宽
+        /// </summary>
+        /// <param name="width">宽度</param>
+        static void SetLineWidth(float width);
     };
 }

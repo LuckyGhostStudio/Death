@@ -19,7 +19,19 @@ namespace Lucky
         glm::vec4 Color;    // 颜色
         glm::vec2 TexCoord; // 纹理坐标
         float TexIndex;     // 纹理索引
+
         int ObjectID;       // 物体 ID
+    };
+
+    /// <summary>
+    /// 直线顶点
+    /// </summary>
+    struct LineVertex
+    {
+        glm::vec3 Position; // 位置
+        glm::vec4 Color;    // 颜色
+
+        int ObjectID;
     };
 
     /// <summary>
@@ -37,9 +49,18 @@ namespace Lucky
         Ref<Shader> TextureShader;          // 纹理着色器
         Ref<Texture2D> WhiteTexture;        // 白色纹理
 
-        uint32_t QuadIndexCount = 0;                    // 四边形索引个数
-        QuadVertex* QuadVertexBufferBase = nullptr;     // 顶点数据
-        QuadVertex* QuadVertexBufferPtr = nullptr;      // 顶点数据指针
+        Ref<VertexArray> LineVertexArray;   // 直线顶点数组
+        Ref<VertexBuffer> LineVertexBuffer; // 直线顶点缓冲区
+        Ref<Shader> LineShader;             // 直线着色器
+
+        uint32_t QuadIndexCount = 0;                // 四边形索引个数
+        QuadVertex* QuadVertexBufferBase = nullptr; // 顶点数据
+        QuadVertex* QuadVertexBufferPtr = nullptr;  // 顶点数据指针
+
+        uint32_t LineVertexCount = 0;               // 直线顶点个数
+        LineVertex* LineVertexBufferBase = nullptr; // 直线顶点数据    
+        LineVertex* LineVertexBufferPtr = nullptr;  // 直线顶点数据指针
+        float LineWidth = 2.0f;                     // 线宽
 
         std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;   // 纹理槽列表 存储纹理
         uint32_t TextureSlotIndex = 1;                              // 纹理槽索引 0 = White
@@ -101,6 +122,19 @@ namespace Lucky
         s_Data.QuadVertexArray->SetIndexBuffer(quadIB);                                 // 设置 IndexBuffer
         delete[] quadIndices;
 
+        // Lines
+        s_Data.LineVertexArray = VertexArray::Create();
+        s_Data.LineVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(LineVertex));
+
+        s_Data.LineVertexBuffer->SetLayout(
+        {
+            { ShaderDataType::Float3, "a_Position" },
+            { ShaderDataType::Float4, "a_Color"    },
+            { ShaderDataType::Int,    "a_ObjectID" }
+        });
+        s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
+        s_Data.LineVertexBufferBase = new LineVertex[s_Data.MaxVertices];
+
         s_Data.WhiteTexture = Texture2D::Create(1, 1);                      // 创建宽高为 1 的纹理
         uint32_t whitTextureData = 0xffffffff;                              // 255 白色
         s_Data.WhiteTexture->SetData(&whitTextureData, sizeof(uint32_t));   // 设置纹理数据 size = 1 * 1 * 4 == sizeof(uint32_t)
@@ -113,6 +147,7 @@ namespace Lucky
         }
 
         s_Data.TextureShader = Shader::Create("Assets/Shaders/TextureShader");  // 创建 Texture 着色器
+        s_Data.LineShader = Shader::Create("Assets/Shaders/LineShader");        // 创建 Line 着色器
 
         s_Data.TextureSlots[0] = s_Data.WhiteTexture;   // 0 号纹理槽为白色纹理（默认）
 
@@ -154,33 +189,51 @@ namespace Lucky
 
     void Renderer2D::StartBatch()
     {
+        // Quad
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;   // 初始化顶点数据指针
+
+        // Line
+        s_Data.LineVertexCount = 0;
+        s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
 
         s_Data.TextureSlotIndex = 1;    // 纹理槽索引从 1 开始 0 为白色纹理
     }
 
     void Renderer2D::Flush()
     {
-        if (s_Data.QuadIndexCount == 0)
+        // Quad
+        if (s_Data.QuadIndexCount)
         {
-            return;
-        }
-        
-        uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);   // 数据大小（字节）
-        s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);    // 设置顶点缓冲区数据
+            uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);   // 数据大小（字节）
+            s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);    // 设置顶点缓冲区数据
 
-        // 绑定所有纹理
-        for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+            // 绑定所有纹理
+            for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+            {
+                s_Data.TextureSlots[i]->Bind(i);    // 绑定 i 号纹理槽
+            }
+
+            s_Data.TextureShader->Bind();   // 绑定 Texture 着色器
+
+            RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);  // 绘制
+
+            s_Data.Stats.DrawCalls++;       // 绘制调用次数 ++
+        }
+
+        // Line
+        if (s_Data.LineVertexCount)
         {
-            s_Data.TextureSlots[i]->Bind(i);    // 绑定 i 号纹理槽
+            uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
+            s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
+
+            s_Data.LineShader->Bind();
+
+            RenderCommand::SetLineWidth(s_Data.LineWidth);
+            RenderCommand::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+
+            s_Data.Stats.DrawCalls++;
         }
-        
-        s_Data.TextureShader->Bind();   // 绑定 Texture 着色器
-
-        RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);  // 绘制
-
-        s_Data.Stats.DrawCalls++;       // 绘制调用次数 ++
     }
 
     void Renderer2D::NextBatch()
@@ -282,6 +335,33 @@ namespace Lucky
         s_Data.QuadIndexCount += 6;     // 索引个数增加
 
         s_Data.Stats.QuadCount++;       // 四边形个数 ++
+    }
+
+    void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int objectID)
+    {
+        // 起点
+        s_Data.LineVertexBufferPtr->Position = p0;
+        s_Data.LineVertexBufferPtr->Color = color;
+        s_Data.LineVertexBufferPtr->ObjectID = objectID;
+        s_Data.LineVertexBufferPtr++;
+
+        // 终点
+        s_Data.LineVertexBufferPtr->Position = p1;
+        s_Data.LineVertexBufferPtr->Color = color;
+        s_Data.LineVertexBufferPtr->ObjectID = objectID;
+        s_Data.LineVertexBufferPtr++;
+
+        s_Data.LineVertexCount += 2;    // Line 顶点个数 +2
+    }
+
+    float Renderer2D::GetLineWidth()
+    {
+        return s_Data.LineWidth;
+    }
+
+    void Renderer2D::SetLineWidth(float width)
+    {
+        s_Data.LineWidth = width;
     }
 
     Renderer2D::Statistics Renderer2D::GetStats()
