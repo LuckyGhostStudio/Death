@@ -375,7 +375,7 @@ namespace Lucky
         }
     }
 
-    void Scene::DuplicateObject(Object object)
+    Object Scene::DuplicateObject(Object object)
     {
         std::string name = object.GetName();
         Object newObject = CreateObject(name);  // 创建新物体
@@ -390,6 +390,8 @@ namespace Lucky
         // TODO 新组件
 
         LC_TRACE("Copied Object：[ENTT = {0}, UUID {1}, Name {2}] -> [ENTT = {3}, UUID {4}, Name {5}]", (uint32_t)object, object.GetUUID(), name, (uint32_t)newObject, newObject.GetUUID(), name);
+
+        return newObject;
     }
 
     Object Scene::GetPrimaryCameraObject()

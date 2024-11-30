@@ -170,7 +170,17 @@ namespace Lucky
     {
         if (Selection::Object)
         {
-            m_Scene->DuplicateObject(Selection::Object);    // 复制当前选中物体
+            Object newObject = m_Scene->DuplicateObject(Selection::Object); // 复制当前选中物体
+            Selection::Object = newObject;
+        }
+    }
+
+    void SceneHierarchyPanel::OnDeleteObject()
+    {
+        if (Selection::Object)
+        {
+            m_Scene->DeleteObject(Selection::Object);   // 删除选中物体
+            Selection::Object = {};                     // 清空已选中物体
         }
     }
 
@@ -183,8 +193,8 @@ namespace Lucky
 
     bool SceneHierarchyPanel::OnKeyPressed(KeyPressedEvent& e)
     {
-        // 快捷键：重复次数 == 0
-        if (e.GetRepeatCount() > 0)
+        // 按键重复
+        if (e.IsRepeat())
         {
             return false;
         }
@@ -199,6 +209,9 @@ namespace Lucky
                 {
                     OnDuplicateObject();    // Ctrl+D 复制物体
                 }
+                break;
+            case Key::Delete:
+                OnDeleteObject();    // Delete 删除物体
                 break;
         }
 

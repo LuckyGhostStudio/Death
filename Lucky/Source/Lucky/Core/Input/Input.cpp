@@ -10,8 +10,8 @@ namespace Lucky
     bool Input::IsKeyPressed(KeyCode keycode)
     {
         auto window = static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow());   // GLFW 窗口
-        auto state = glfwGetKey(window, (int)keycode);          // 获取 keycode 按键状态
-        return state == GLFW_PRESS || state == GLFW_REPEAT;     // 按键按下 || 按键重复
+        auto state = glfwGetKey(window, (int)keycode);  // 获取 keycode 按键状态
+        return state == GLFW_PRESS;                     // 按键按下
     }
     bool Input::IsMouseButtonPressed(MouseCode button)
     {

@@ -28,12 +28,23 @@ namespace Lucky
         }
     };
 
+    /// <summary>
+    /// Application 规范
+    /// </summary>
+    struct ApplicationSpecification
+    {
+        std::string Name = "Lucky Application";
+        std::string WorkingDirectory;               // 项目工作目录
+
+        ApplicationCommandLineArgs CommandLineArgs; // 命令行参数
+    };
+
     class Application
     {
     private:
         static Application* s_Instance; // 静态实例
 
-        ApplicationCommandLineArgs m_CommandLineArgs;   // 命令行参数
+        ApplicationSpecification m_Specification;   // App 规范
         
         Scope<Window> m_Window;         // 窗口
         ImGuiLayer* m_ImGuiLayer;       // ImGui 层指针
@@ -46,7 +57,7 @@ namespace Lucky
         float m_LastFrameTime = 0.0f;   // 上一帧时间
         float m_FramesPerSecond = 0.0f; // 帧率
     public:
-        Application(const std::string& name = "Lucky Editor", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
+        Application(const ApplicationSpecification& specification);
 
         virtual ~Application();
 
@@ -102,7 +113,7 @@ namespace Lucky
         /// <returns>ImGui 层</returns>
         ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 
-        ApplicationCommandLineArgs GetCommandLineArgs() const { return m_CommandLineArgs; }
+        const ApplicationSpecification& GetSpecification() const { return m_Specification; }
     private:
         /// <summary>
         /// 窗口关闭回调函数

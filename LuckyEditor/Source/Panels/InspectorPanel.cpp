@@ -52,7 +52,7 @@ namespace Lucky
         ImGui::End();
     }
 
-    void InspectorPanel::AddComponents(Object object)
+    void InspectorPanel::DrawAddComponents(Object object)
     {
         float panelWidth = ImGui::GetWindowContentRegionWidth() + ImGui::GetStyle().WindowPadding.x * 2;    // 面板宽度
 
@@ -68,48 +68,14 @@ namespace Lucky
             ImGui::OpenPopup("AddComponent");   // 打开弹出框
         }
 
-        // 渲染弹出框 TODO 检查组件是否可以添加多个
+        // 渲染弹出框
         if (ImGui::BeginPopup("AddComponent"))
         {
-            // 添加 Camera 组件
-            if (ImGui::MenuItem("Camera"))
-            {
-                object.AddComponent<CameraComponent>();
-
-                ImGui::CloseCurrentPopup();
-            }
-
-            // 添加 SpriteRenderer 组件
-            if (ImGui::MenuItem("Sprite Renderer"))
-            {
-                object.AddComponent<SpriteRendererComponent>();
-
-                ImGui::CloseCurrentPopup();
-            }
-
-            // 添加 Rigidbody2D 组件
-            if (ImGui::MenuItem("Rigidbody 2D"))
-            {
-                object.AddComponent<Rigidbody2DComponent>();
-
-                ImGui::CloseCurrentPopup();
-            }
-
-            // 添加 BoxCollider2D 组件
-            if (ImGui::MenuItem("Box Collider 2D"))
-            {
-                object.AddComponent<BoxCollider2DComponent>();
-
-                ImGui::CloseCurrentPopup();
-            }
-
-            // 添加 CircleCollider2D 组件
-            if (ImGui::MenuItem("Circle Collider 2D"))
-            {
-                object.AddComponent<CircleCollider2DComponent>();
-
-                ImGui::CloseCurrentPopup();
-            }
+            DrawAddComponentItemButton<CameraComponent>("Camera");
+            DrawAddComponentItemButton<SpriteRendererComponent>("Sprite Renderer");
+            DrawAddComponentItemButton<Rigidbody2DComponent>("Rigidbody 2D");
+            DrawAddComponentItemButton<BoxCollider2DComponent>("Box Collider 2D");
+            DrawAddComponentItemButton<CircleCollider2DComponent>("Circle Collider 2D");
 
             ImGui::EndPopup();
         }
@@ -265,6 +231,6 @@ namespace Lucky
         ImGui::PopStyleVar();
         ImGui::Separator(); // 分隔线
 
-        AddComponents(object);      // 添加组件 UI
+        DrawAddComponents(object); // 绘制添加组件 UI
     }
 }

@@ -35,6 +35,11 @@ namespace Lucky
         /// 复制物体时调用
         /// </summary>
         void OnDuplicateObject();
+
+        /// <summary>
+        /// 删除物体时调用
+        /// </summary>
+        void OnDeleteObject();
     public:
         virtual void OnEvent(Event& event) override;
     private:

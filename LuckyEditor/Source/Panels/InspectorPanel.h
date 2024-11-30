@@ -31,10 +31,10 @@ namespace Lucky
         Ref<Texture2D> m_CircleCollider2DIcon;
     private:
         /// <summary>
-        /// 添加组件 UI
+        /// 绘制添加组件 UI
         /// </summary>
         /// <param name="object"></param>
-        void AddComponents(Object object);
+        void DrawAddComponents(Object object);
 
         /// <summary>
         /// 绘制物体的所有组件 UI
@@ -53,13 +53,21 @@ namespace Lucky
         /// <typeparam name="UIFunction">组件功能函数类型</typeparam>
         /// <param name="name">组件名</param>
         /// <param name="object">实体</param>
-        /// <param name="uiFunction">组件功能函数</param>
+        /// <param name="OnOpened">组件打开时调用</param>
         template<typename TComponent, typename UIFunction>
-        void DrawComponent(const std::string& name, Object object, UIFunction uiFunction);
+        void DrawComponent(const std::string& name, Object object, UIFunction OnOpened);
+
+        /// <summary>
+        /// 绘制添加组件按钮
+        /// </summary>
+        /// <typeparam name="TComponent">组件类型</typeparam>
+        /// <param name="name"></param>
+        template<typename TComponent>
+        void DrawAddComponentItemButton(const std::string& name);
     };
 
     template<typename TComponent, typename UIFunction>
-    inline void InspectorPanel::DrawComponent(const std::string& name, Object object, UIFunction uiFunction)
+    inline void InspectorPanel::DrawComponent(const std::string& name, Object object, UIFunction OnOpened)
     {
         // 树节点标志：打开|框架|延伸到右边|允许重叠|框架边框
         const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -159,7 +167,7 @@ namespace Lucky
                 ImGui::Separator();
                 ImGui::PopStyleColor();
 
-                uiFunction(component);  // 调用组件功能函数：绘制该组件不同的部分
+                OnOpened(component);    // 调用组件功能函数：绘制该组件不同的部分
 
                 ImGui::TreePop();       // 展开结点
             }
@@ -168,6 +176,25 @@ namespace Lucky
             {
                 object.RemoveComponent<TComponent>();    // 移除 TComponent 组件
             }
+        }
+    }
+
+    template<typename TComponent>
+    inline void InspectorPanel::DrawAddComponentItemButton(const std::string& name)
+    {
+        // TODO 判断该组件是否可以添加多个
+        if (Selection::Object.HasComponent<TComponent>())
+        {
+            // TODO 弹出错误 MessageBox
+            return;
+        }
+
+        // 添加 TComponent 组件
+        if (ImGui::MenuItem(name.c_str()))
+        {
+            Selection::Object.AddComponent<TComponent>();
+
+            ImGui::CloseCurrentPopup();
         }
     }
 }

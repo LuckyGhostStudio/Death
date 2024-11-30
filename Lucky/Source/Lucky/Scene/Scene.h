@@ -100,7 +100,7 @@ namespace Lucky
         /// 复制物体：完全复制（UUID 除外）
         /// </summary>
         /// <param name="object">待复制对象</param>
-        void DuplicateObject(Object object);
+        Object DuplicateObject(Object object);
 
         /// <summary>
         /// 返回主相机

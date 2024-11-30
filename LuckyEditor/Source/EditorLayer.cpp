@@ -39,7 +39,7 @@ namespace Lucky
         m_CurrentScene = CreateRef<Scene>();    // 创建场景
         m_EditorScene = m_CurrentScene;
 
-        auto commandLineArgs = Application::GetInstance().GetCommandLineArgs();
+        auto commandLineArgs = Application::GetInstance().GetSpecification().CommandLineArgs;
         // 从命令行加载场景
         if (commandLineArgs.Count > 1)
         {
@@ -127,6 +127,12 @@ namespace Lucky
                 if (ImGui::MenuItem("Open...", "Ctrl+O"))
                 {
                     OpenScene();
+                }
+
+                // 保存场景
+                if (ImGui::MenuItem("Save", "Ctrl+S"))
+                {
+                    SaveScene();
                 }
 
                 // 另存为：保存场景
@@ -318,8 +324,8 @@ namespace Lucky
 
     bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
     {
-        // 快捷键：重复次数 == 0
-        if (e.GetRepeatCount() > 0)
+        // 按键重复
+        if (e.IsRepeat())
         {
             return false;
         }

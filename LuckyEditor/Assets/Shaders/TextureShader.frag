@@ -18,6 +18,12 @@ layout(binding = 0) uniform sampler2D u_Textures[32];   // 纹理 0 - 31
 
 void main()
 {
+    // 丢弃透明度为 0 的片元
+    if (v_Input.Color.a == 0.0)
+    {
+        discard;
+    }
+
     o_Color = texture(u_Textures[int(v_Input.TexIndex)], v_Input.TexCoord) * v_Input.Color;
     o_ObjectID = v_ObjectID;
 }

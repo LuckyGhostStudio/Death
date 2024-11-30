@@ -3,20 +3,30 @@
 
 #include "Lucky/Renderer/Renderer.h"
 
+#include <filesystem>
+
 #include <GLFW/glfw3.h>
 
 namespace Lucky
 {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application(const std::string& name, ApplicationCommandLineArgs args)
-        : m_CommandLineArgs(args)
+    Application::Application(const ApplicationSpecification& specification)
+        : m_Specification(specification)
     {
         LC_CORE_ASSERT(!s_Instance, "Application already exists!");
 
         s_Instance = this;
 
-        m_Window = Window::Create(WindowProps(name));      // 创建窗口
+        // 设置项目当前工作目录
+        if (!m_Specification.WorkingDirectory.empty())
+        {
+            std::filesystem::current_path(m_Specification.WorkingDirectory);
+        }
+
+        LC_CORE_INFO("Working Directory: {0}", std::filesystem::current_path().string());
+
+        m_Window = Window::Create(WindowProps(m_Specification.Name));           // 创建窗口
         m_Window->SetEventCallback(LC_BIND_EVENT_FUNC(Application::OnEvent));   // 设置回调函数
 
         Renderer::Init();   // 初始化渲染器

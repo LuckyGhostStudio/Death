@@ -110,7 +110,7 @@ namespace Lucky
                 }
                 case GLFW_REPEAT:   // 按键重复
                 {
-                    KeyPressedEvent event(key, 1);  // 按键按下事件
+                    KeyPressedEvent event(key, true);   // 按键按下事件
                     data.EventCallback(event);
                     break;
                 }

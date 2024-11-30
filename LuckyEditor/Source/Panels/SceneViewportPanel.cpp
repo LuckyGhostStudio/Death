@@ -259,8 +259,8 @@ namespace Lucky
 
     bool SceneViewportPanel::OnKeyPressed(KeyPressedEvent& e)
     {
-        // 快捷键：重复次数 == 0
-        if (e.GetRepeatCount() > 0)
+        // 按键重复
+        if (e.IsRepeat())
         {
             return false;
         }
