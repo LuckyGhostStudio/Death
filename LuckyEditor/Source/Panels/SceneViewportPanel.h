@@ -29,8 +29,9 @@ namespace Lucky
         glm::vec2 m_Bounds[2];              // 视口边界（左上角，右下角）
         glm::vec2 m_Size = { 0.0f, 0.0f };  // 视口大小：随 m_Bounds 更新
 
-        bool m_IsHovered = false;   // 视口被鼠标悬停 +
+        bool m_IsHovered = false;   // 视口被鼠标悬停
 
+        bool m_ShowGizmos = true;   // 显示 Gizmos
         int m_GizmoType = -1;       // Gizmo 操作类型 -1无 0平移 1旋转 2缩放 + TODO class Gizmo
     public:
         SceneViewportPanel() = default;
@@ -40,6 +41,8 @@ namespace Lucky
         Ref<Scene> GetSceneContext() const { return m_Scene; }
 
         void OnUpdate(DeltaTime dt);
+
+        void OnGizmosRender();
 
         virtual void OnImGuiRender(bool& isOpen) override;
 

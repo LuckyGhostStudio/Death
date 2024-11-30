@@ -225,9 +225,9 @@ namespace Lucky
             BoxCollider2D& boxCollider2D = boxCollider2DComponent.BoxCollider2d;
 
             GUI::DragFloatN("Offset", glm::value_ptr(boxCollider2D.GetOffset()), 0.01f, GUI::ValueType::Float2);
-            GUI::DragFloatN("Size", glm::value_ptr(boxCollider2D.GetSize()), 0.01f, GUI::ValueType::Float2, 0.0f);
+            GUI::DragFloatN("Size", glm::value_ptr(boxCollider2D.GetSize()), 0.01f, GUI::ValueType::Float2, 0.0001f, 1000000.0f);
 
-            GUI::DragFloatN("Density", &boxCollider2D.GetDensity_Ref());
+            GUI::DragFloatN("Density", &boxCollider2D.GetDensity_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
             GUI::DragFloatN("Friction", &boxCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
             GUI::DragFloatN("Restitution", &boxCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
         });
@@ -238,9 +238,9 @@ namespace Lucky
             CircleCollider2D& circleCollider2D = circleCollider2DComponent.CircleCollider2d;
 
             GUI::DragFloatN("Offset", glm::value_ptr(circleCollider2D.GetOffset()), 0.01f, GUI::ValueType::Float2);
-            GUI::DragFloatN("Radius", &circleCollider2D.GetRadius_Ref(), 0.01f, GUI::ValueType::Float2, 0.0f);
+            GUI::DragFloatN("Radius", &circleCollider2D.GetRadius_Ref(), 0.01f, GUI::ValueType::Float, 0.0001f, 1000000.0f);
 
-            GUI::DragFloatN("Density", &circleCollider2D.GetDensity_Ref());
+            GUI::DragFloatN("Density", &circleCollider2D.GetDensity_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
             GUI::DragFloatN("Friction", &circleCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
             GUI::DragFloatN("Restitution", &circleCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
         });

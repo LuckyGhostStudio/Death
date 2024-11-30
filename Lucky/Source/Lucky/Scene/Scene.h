@@ -103,5 +103,16 @@ namespace Lucky
         /// </summary>
         /// <returns>主相机</returns>
         Object GetPrimaryCameraObject();
+
+        /// <summary>
+        /// 返回具有 TComponents 类型组件的所有 Entt
+        /// </summary>
+        /// <typeparam name="...TComponents">组件类型列表</typeparam>
+        /// <returns>Entts</returns>
+        template<typename... TComponents>
+        auto GetAllEntitiesWith()
+        {
+            return m_Registry.view<TComponents...>();
+        }
     };
 }

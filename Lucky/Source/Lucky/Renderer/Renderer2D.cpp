@@ -60,7 +60,7 @@ namespace Lucky
         uint32_t LineVertexCount = 0;               // 直线顶点个数
         LineVertex* LineVertexBufferBase = nullptr; // 直线顶点数据    
         LineVertex* LineVertexBufferPtr = nullptr;  // 直线顶点数据指针
-        float LineWidth = 2.0f;                     // 线宽
+        float LineWidth = 1.0f;                     // 线宽
 
         std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;   // 纹理槽列表 存储纹理
         uint32_t TextureSlotIndex = 1;                              // 纹理槽索引 0 = White
@@ -367,18 +367,38 @@ namespace Lucky
         DrawLine(p3, p0, color);
     }
 
-    void Renderer2D::DrawRect(const Transform& transform, const glm::vec4& color, int objectID)
+    void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int objectID)
     {
         glm::vec3 lineVertices[4];
         for (size_t i = 0; i < 4; i++)
         {
-            lineVertices[i] = transform.GetTransform() * s_Data.QuadVerticesPositions[i];
+            lineVertices[i] = transform * s_Data.QuadVerticesPositions[i];
         }
 
         DrawLine(lineVertices[0], lineVertices[1], color);
         DrawLine(lineVertices[1], lineVertices[2], color);
         DrawLine(lineVertices[2], lineVertices[3], color);
         DrawLine(lineVertices[3], lineVertices[0], color);
+    }
+
+    void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color, int objectID)
+    {
+        int segments = 32;  // 段数
+
+        for (int i = 0; i < segments; i++)
+        {
+            // 起点位置
+            float angle = 2.0f * glm::pi<float>() * (float)i / segments;
+            glm::vec4 startPosition = { glm::cos(angle), glm::sin(angle), 0.0f, 1.0f };
+            // 终点位置
+            angle = 2.0f * glm::pi<float>() * (float)((i + 1) % segments) / segments;
+            glm::vec4 endPosition = { glm::cos(angle), glm::sin(angle), 0.0f, 1.0f };
+
+            glm::vec3 p0 = transform * startPosition;
+            glm::vec3 p1 = transform * endPosition;
+
+            DrawLine(p0, p1, color, objectID);
+        }
     }
 
     float Renderer2D::GetLineWidth()

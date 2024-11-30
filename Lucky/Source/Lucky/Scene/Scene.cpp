@@ -161,61 +161,61 @@ namespace Lucky
             Object object = { e, this };
 
             Transform& transform = object.GetComponent<TransformComponent>().Transform;
-            Rigidbody2D& rb2d = object.GetComponent<Rigidbody2DComponent>().Rigidbody2d;
+            Rigidbody2D& rigidbody2D = object.GetComponent<Rigidbody2DComponent>().Rigidbody2d;
 
             // 2D Body 定义数据
             b2BodyDef bodyDef;
-            bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.GetBodyType());              // 类型 TODO 运行时更改
+            bodyDef.type = Rigidbody2DTypeToBox2DBody(rigidbody2D.GetBodyType());       // 类型 TODO 运行时更改
             // TODO 运行时更新 Transform 参数时更新对应的 Rigidbody2D 和 Collier2D 数据
             bodyDef.position.Set(transform.GetPosition().x, transform.GetPosition().y); // 位置
             bodyDef.angle = glm::radians(transform.GetRotation().z);                    // 旋转 deg
 
             b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);    // 创建 2D Body
-            body->SetFixedRotation(rb2d.IsFreezeRotation());        // 设置 固定旋转选项
+            body->SetFixedRotation(rigidbody2D.IsFreezeRotation()); // 设置 固定旋转选项
 
-            rb2d.SetRuntimeBody(body);  // 设置运行时 Body 数据
+            rigidbody2D.SetRuntimeBody(body);  // 设置运行时 Body 数据
 
             if (object.HasComponent<BoxCollider2DComponent>())
             {
-                BoxCollider2D& bc2d = object.GetComponent<BoxCollider2DComponent>().BoxCollider2d;
+                BoxCollider2D& boxCollider2D = object.GetComponent<BoxCollider2DComponent>().BoxCollider2d;
 
                 // 2D 多边形形状数据
                 b2PolygonShape boxShape;
-                boxShape.SetAsBox(bc2d.GetSize().x * 0.5f * transform.GetScale().x, bc2d.GetSize().y * 0.5f * transform.GetScale().y);
+                boxShape.SetAsBox(boxCollider2D.GetSize().x * 0.5f * glm::abs(transform.GetScale().x), boxCollider2D.GetSize().y * 0.5f * glm::abs(transform.GetScale().y), b2Vec2(boxCollider2D.GetOffset().x, boxCollider2D.GetOffset().y), 0.0f);
 
                 // 2D Fixture 定义数据：物理对象的数据 TODO Physics Material
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape = &boxShape;
-                fixtureDef.density = bc2d.GetDensity();
-                fixtureDef.friction = bc2d.GetFriction();
-                fixtureDef.restitution = bc2d.GetRestitution();
-                fixtureDef.restitutionThreshold = bc2d.GetRestitutionThreshold();
+                fixtureDef.density = boxCollider2D.GetDensity();
+                fixtureDef.friction = boxCollider2D.GetFriction();
+                fixtureDef.restitution = boxCollider2D.GetRestitution();
+                fixtureDef.restitutionThreshold = boxCollider2D.GetRestitutionThreshold();
 
-                body->CreateFixture(&fixtureDef);       // 创建 Fixture
+                body->CreateFixture(&fixtureDef);   // 创建 Fixture
 
-                bc2d.SetRuntimeFixture(&fixtureDef);    // 设置运行时 Fixture 数据
+                boxCollider2D.SetRuntimeFixture(&fixtureDef);   // 设置运行时 Fixture 数据
             }
 
             if (object.HasComponent<CircleCollider2DComponent>())
             {
-                CircleCollider2D& cc2d = object.GetComponent<CircleCollider2DComponent>().CircleCollider2d;
+                CircleCollider2D& circleCollider2D = object.GetComponent<CircleCollider2DComponent>().CircleCollider2d;
 
                 // 2D 圆形形状数据
                 b2CircleShape circleShape;
-                circleShape.m_p.Set(cc2d.GetOffset().x, cc2d.GetOffset().y);
-                circleShape.m_radius = cc2d.GetRadius();
+                circleShape.m_p.Set(circleCollider2D.GetOffset().x, circleCollider2D.GetOffset().y);
+                circleShape.m_radius = glm::max(glm::abs(transform.GetScale().x), glm::abs(transform.GetScale().y)) * circleCollider2D.GetRadius();
 
                 // 2D Fixture 定义数据：物理对象的数据 TODO Physics Material
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape = &circleShape;
-                fixtureDef.density = cc2d.GetDensity();
-                fixtureDef.friction = cc2d.GetFriction();
-                fixtureDef.restitution = cc2d.GetRestitution();
-                fixtureDef.restitutionThreshold = cc2d.GetRestitutionThreshold();
+                fixtureDef.density = circleCollider2D.GetDensity();
+                fixtureDef.friction = circleCollider2D.GetFriction();
+                fixtureDef.restitution = circleCollider2D.GetRestitution();
+                fixtureDef.restitutionThreshold = circleCollider2D.GetRestitutionThreshold();
 
-                body->CreateFixture(&fixtureDef);       // 创建 Fixture
+                body->CreateFixture(&fixtureDef);   // 创建 Fixture
 
-                cc2d.SetRuntimeFixture(&fixtureDef);    // 设置运行时 Fixture 数据
+                circleCollider2D.SetRuntimeFixture(&fixtureDef);    // 设置运行时 Fixture 数据
             }
         }
     }
@@ -293,15 +293,15 @@ namespace Lucky
 
             m_PhysicsWorld->Step(dt, velocityIterations, positionIterations);
 
-            auto rb2DView = m_Registry.view<Rigidbody2DComponent>();
-            for (auto e : rb2DView)
+            auto rigidbody2DView = m_Registry.view<Rigidbody2DComponent>();
+            for (auto e : rigidbody2DView)
             {
                 Object object = { e, this };
 
                 Transform& transform = object.GetComponent<TransformComponent>().Transform;
-                Rigidbody2D& rb2d = object.GetComponent<Rigidbody2DComponent>().Rigidbody2d;
+                Rigidbody2D& rigidbody2D = object.GetComponent<Rigidbody2DComponent>().Rigidbody2d;
 
-                b2Body* body = (b2Body*)rb2d.GetRuntimeBody();  // 运行时 Body 数据
+                b2Body* body = (b2Body*)rigidbody2D.GetRuntimeBody();   // 运行时 Body 数据
 
                 // 从 Box2D 更新 Transform 数据
                 const auto& position = body->GetPosition();

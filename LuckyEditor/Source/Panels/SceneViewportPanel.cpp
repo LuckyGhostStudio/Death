@@ -4,8 +4,11 @@
 #include "Lucky/Core/Application.h"
 #include "Lucky/Core/Input/Input.h"
 #include "Lucky/Renderer/RenderCommand.h"
+#include "Lucky/Renderer/Renderer2D.h"
 
 #include "Lucky/Scene/Components/TransformComponent.h"
+#include "Lucky/Scene/Components/BoxCollider2DComponent.h"
+#include "Lucky/Scene/Components/CircleCollider2DComponent.h"
 
 #include <imgui/imgui.h>
 #include <ImGuizmo.h>
@@ -81,7 +84,72 @@ namespace Lucky
             // LC_CORE_WARN("pixelData:{0}", pixelData);
         }
 
+        OnGizmosRender();    // 绘制 Gizmos
+
         m_Framebuffer->Unbind();    // 解除绑定帧缓冲区
+    }
+
+    void SceneViewportPanel::OnGizmosRender()
+    {
+        if (!m_ShowGizmos) return;
+
+        Renderer2D::BeginScene(m_EditorCamera);
+
+        // Box Collider 2D
+        {
+            auto view = m_Scene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+            for (auto entity : view)
+            {
+                Object obj = { entity, m_Scene.get() };
+                // 当前选中项
+                if (Selection::Object == obj)
+                {
+                    auto [transformComponent, boxCollider2DComponent] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
+
+                    Transform& transform = transformComponent.Transform;
+                    BoxCollider2D& boxCollider2D = boxCollider2DComponent.BoxCollider2d;
+
+                    // BoxCollider2D 相对于 obj 的 Transform TODO bug: Offset 和 Scale 同时改变，刚体位置会不正确
+                    glm::mat4 boxLocalTransform = glm::translate(glm::mat4(1.0f), glm::vec3(boxCollider2D.GetOffset(), 0.001f))
+                        * glm::scale(glm::mat4(1.0f), glm::vec3(boxCollider2D.GetSize(), 1.0f));
+
+                    glm::mat4 trans = transform.GetTransform() * boxLocalTransform; // 最终 Transform
+
+                    Renderer2D::DrawRect(trans, glm::vec4(0.5686f, 0.9569f, 0.5451f, 1));   // 绘制 BoxCollider2D
+                }
+            }
+        }
+
+        // Circle Collider 2D
+        {
+            auto view = m_Scene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+            for (auto entity : view)
+            {
+                Object obj = { entity, m_Scene.get() };
+                // 当前选中项
+                if (Selection::Object == obj)
+                {
+                    auto [transformComponent, circleCollider2DComponent] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
+
+                    Transform& transform = transformComponent.Transform;
+                    CircleCollider2D& circleCollider2D = circleCollider2DComponent.CircleCollider2d;
+
+                    // obj 调整 Scale 后的 Transform TODO bug: Offset 和 Scale 同时改变，刚体位置会不正确
+                    glm::mat4 parentTransform = glm::translate(glm::mat4(1.0f), transform.GetPosition())
+                        * glm::toMat4(glm::quat(glm::radians(transform.GetRotation())))
+                        * glm::scale(glm::mat4(1.0f), glm::vec3(glm::max(glm::abs(transform.GetScale().x), glm::abs(transform.GetScale().y))));
+                    // CircleCollider2D 相对于 obj 的Transform
+                    glm::mat4 circLocalTransform = glm::translate(glm::mat4(1.0f), glm::vec3(circleCollider2D.GetOffset(), 0.001f))
+                        * glm::scale(glm::mat4(1.0f), glm::vec3(circleCollider2D.GetRadius()));
+
+                    glm::mat4 trans = parentTransform * circLocalTransform; // 最终 Transform
+
+                    Renderer2D::DrawCircle(trans, glm::vec4(0.5686f, 0.9569f, 0.5451f, 1));   // 绘制 CircleCollider2D
+                }
+            }
+        }
+
+        Renderer2D::EndScene();
     }
 
     void SceneViewportPanel::OnImGuiRender(bool& isOpen)
