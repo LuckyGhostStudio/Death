@@ -28,6 +28,7 @@ namespace Lucky
         Ref<Texture2D> m_SpriteRendererIcon;
         Ref<Texture2D> m_Rigidbody2DIcon;
         Ref<Texture2D> m_BoxCollider2DIcon;
+        Ref<Texture2D> m_CircleCollider2DIcon;
     private:
         /// <summary>
         /// 添加组件 UI
@@ -102,23 +103,13 @@ namespace Lucky
             uint32_t iconID = 0;
             switch (component.Type)
             {
-                case ComponentType::Transform:
-                    iconID = m_TransformIcon->GetRendererID();
-                    break;
-                case ComponentType::Camera:
-                    iconID = m_CameraIcon->GetRendererID();
-                    break;
-                case ComponentType::SpriteRenderer:
-                    iconID = m_SpriteRendererIcon->GetRendererID();
-                    break;
-                case ComponentType::Rigidbody2D:
-                    iconID = m_Rigidbody2DIcon->GetRendererID();
-                    break;
-                case ComponentType::BoxCollider2D:
-                    iconID = m_BoxCollider2DIcon->GetRendererID();
-                    break;
-                case ComponentType::None:
-                    break;
+                case ComponentType::Transform:          iconID = m_TransformIcon->GetRendererID();          break;
+                case ComponentType::Camera:             iconID = m_CameraIcon->GetRendererID();             break;
+                case ComponentType::SpriteRenderer:     iconID = m_SpriteRendererIcon->GetRendererID();     break;
+                case ComponentType::Rigidbody2D:        iconID = m_Rigidbody2DIcon->GetRendererID();        break;
+                case ComponentType::BoxCollider2D:      iconID = m_BoxCollider2DIcon->GetRendererID();      break;
+                case ComponentType::CircleCollider2D:   iconID = m_CircleCollider2DIcon->GetRendererID();   break;
+                case ComponentType::None: break;
             }
             
             // 组件 Icon

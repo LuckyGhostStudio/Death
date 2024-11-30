@@ -361,10 +361,10 @@ namespace Lucky
         glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
         glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 
-        DrawLine(p0, p1, color);
-        DrawLine(p1, p2, color);
-        DrawLine(p2, p3, color);
-        DrawLine(p3, p0, color);
+        DrawLine(p0, p1, color, objectID);
+        DrawLine(p1, p2, color, objectID);
+        DrawLine(p2, p3, color, objectID);
+        DrawLine(p3, p0, color, objectID);
     }
 
     void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int objectID)
@@ -375,10 +375,10 @@ namespace Lucky
             lineVertices[i] = transform * s_Data.QuadVerticesPositions[i];
         }
 
-        DrawLine(lineVertices[0], lineVertices[1], color);
-        DrawLine(lineVertices[1], lineVertices[2], color);
-        DrawLine(lineVertices[2], lineVertices[3], color);
-        DrawLine(lineVertices[3], lineVertices[0], color);
+        DrawLine(lineVertices[0], lineVertices[1], color, objectID);
+        DrawLine(lineVertices[1], lineVertices[2], color, objectID);
+        DrawLine(lineVertices[2], lineVertices[3], color, objectID);
+        DrawLine(lineVertices[3], lineVertices[0], color, objectID);
     }
 
     void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color, int objectID)

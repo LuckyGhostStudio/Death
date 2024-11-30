@@ -95,6 +95,8 @@ namespace Lucky
 
         Renderer2D::BeginScene(m_EditorCamera);
 
+        // TODO Camera
+
         // Box Collider 2D
         {
             auto view = m_Scene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();

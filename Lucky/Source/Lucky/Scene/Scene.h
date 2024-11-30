@@ -38,6 +38,10 @@ namespace Lucky
         /// <param name="component">×é¼þ</param>
         template<typename TComponent>
         void OnComponentAdded(Object object, TComponent& component);
+
+        void OnPhysics2DStart();
+
+        void OnPhysics2DStop();
     public:
         Scene(const std::string& name = "New Scene");
         ~Scene();

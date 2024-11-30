@@ -13,7 +13,7 @@ namespace Lucky
         glm::vec2 m_Offset = { 0.0f, 0.0f };
         glm::vec2 m_Size = { 1.0f, 1.0f };
 
-        // TODO 移动到 Physics Material
+        // TODO 移动到 Physics Material -> Asset
         float m_Density = 1.0f;                 // 密度	kg / m ^ 2
         float m_Friction = 0.5f;                // 摩擦力[0, 1]
         float m_Restitution = 0.0f;             // 恢复系数：为0则没有弹性[0, 1]

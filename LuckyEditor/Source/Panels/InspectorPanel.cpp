@@ -27,6 +27,7 @@ namespace Lucky
         m_SpriteRendererIcon = Texture2D::Create("Resources/Icons/Components/SpriteRenderer_Icon.png");
         m_Rigidbody2DIcon = Texture2D::Create("Resources/Icons/Components/Rigidbody_Icon.png");
         m_BoxCollider2DIcon = Texture2D::Create("Resources/Icons/Components/BoxCollider2D_Icon.png");
+        m_CircleCollider2DIcon = Texture2D::Create("Resources/Icons/Components/CircleCollider2D_Icon.png");
     }
 
     void InspectorPanel::OnImGuiRender(bool& isOpen)
@@ -207,13 +208,27 @@ namespace Lucky
         {
             Rigidbody2D& rigidbody2D = rigidbody2DComponent.Rigidbody2d;
 
-            const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };   // 刚体类型：动态 静态 动力学 
+            // 刚体类型
+            const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };                   // 刚体类型：动态 静态 动力学 
             const char* currentBodyTypeString = bodyTypeStrings[(int)rigidbody2D.GetBodyType()];    // 当前刚体类型
-
-            // 下拉框 刚体类型
+            
             GUI::DropdownList("Body Type", currentBodyTypeString, bodyTypeStrings, 3, [&](int index, const char* value)
             {
-                rigidbody2D.SetBodyType((Rigidbody2D::BodyType)index);              // 设置刚体类型
+                rigidbody2D.SetBodyType((Rigidbody2D::BodyType)index);  // 设置刚体类型
+            });
+
+            GUI::DragFloatN("Mass", &rigidbody2D.GetMass_Ref(), 0.01f, GUI::ValueType::Float, 0.01f, 1000000.0f);
+            GUI::DragFloatN("Linear Drag", &rigidbody2D.GetLinearDrag_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
+            GUI::DragFloatN("Angular Drag", &rigidbody2D.GetAngularDrag_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
+            GUI::DragFloatN("Gravity Scale", &rigidbody2D.GetGravityScale_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
+
+            // 碰撞检测模式
+            const char* collisionDetectionStrings[] = { "Discrete", "Continuous" };                                                 // 碰撞检测模式：离散 连续
+            const char* currentCollisionDetectionString = collisionDetectionStrings[(int)rigidbody2D.GetCollisionDetectionMode()];  // 当前碰撞检测模式
+
+            GUI::DropdownList("Collision Detection", currentCollisionDetectionString, collisionDetectionStrings, 2, [&](int index, const char* value)
+            {
+                rigidbody2D.SetCollisionDetectionMode((Rigidbody2D::CollisionDetectionMode)index);  // 设置碰撞检测模式
             });
 
             GUI::CheckBox("Freeze Rotation", &rigidbody2D.IsFreezeRotation_Ref());  // 是否冻结旋转 Z 轴 勾选框
@@ -225,11 +240,11 @@ namespace Lucky
             BoxCollider2D& boxCollider2D = boxCollider2DComponent.BoxCollider2d;
 
             GUI::DragFloatN("Offset", glm::value_ptr(boxCollider2D.GetOffset()), 0.01f, GUI::ValueType::Float2);
-            GUI::DragFloatN("Size", glm::value_ptr(boxCollider2D.GetSize()), 0.01f, GUI::ValueType::Float2, 0.0001f, 1000000.0f);
+            GUI::DragFloatN("Size", glm::value_ptr(boxCollider2D.GetSize()), 0.01f, GUI::ValueType::Float2, 0.01f, 1000000.0f);
 
             GUI::DragFloatN("Density", &boxCollider2D.GetDensity_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
             GUI::DragFloatN("Friction", &boxCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
-            GUI::DragFloatN("Restitution", &boxCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
+            // GUI::DragFloatN("Restitution", &boxCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
         });
 
         // 绘制 CircleCollider2D 组件
@@ -238,11 +253,11 @@ namespace Lucky
             CircleCollider2D& circleCollider2D = circleCollider2DComponent.CircleCollider2d;
 
             GUI::DragFloatN("Offset", glm::value_ptr(circleCollider2D.GetOffset()), 0.01f, GUI::ValueType::Float2);
-            GUI::DragFloatN("Radius", &circleCollider2D.GetRadius_Ref(), 0.01f, GUI::ValueType::Float, 0.0001f, 1000000.0f);
+            GUI::DragFloatN("Radius", &circleCollider2D.GetRadius_Ref(), 0.01f, GUI::ValueType::Float, 0.01f, 1000000.0f);
 
             GUI::DragFloatN("Density", &circleCollider2D.GetDensity_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
             GUI::DragFloatN("Friction", &circleCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
-            GUI::DragFloatN("Restitution", &circleCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
+            // GUI::DragFloatN("Restitution", &circleCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
         });
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // 垂直间距为 1
