@@ -37,9 +37,9 @@ namespace Lucky
         
         stbi_set_flip_vertically_on_load(1);    // ¥π÷±∑≠◊™
 
-        unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);   // º”‘ÿÕº∆¨
+        stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0); // º”‘ÿÕº∆¨
 
-        LC_CORE_ASSERT(data, "Failed to load image!");  // º”‘ÿ ß∞‹
+        LC_CORE_ASSERT(data, stbi_failure_reason(), "Failed to load image! {0}");  // º”‘ÿ ß∞‹
 
         m_Width = width;
         m_Height = height;

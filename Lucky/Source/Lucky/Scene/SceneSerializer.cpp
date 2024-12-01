@@ -241,8 +241,8 @@ namespace Lucky
 
             SpriteRendererComponent& spriteRendererComponent = object.GetComponent<SpriteRendererComponent>();
 
+            out << YAML::Key << "Sprite" << YAML::Value << spriteRendererComponent.Sprite->GetPath();
             out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
-            // TODO Texture
 
             out << YAML::EndMap;    // 结束 SpriteRenderer 组件 Map
         }
@@ -257,6 +257,14 @@ namespace Lucky
             Rigidbody2D& rigidbody2D = rigidbody2DComponent.Rigidbody2d;
 
             out << YAML::Key << "BodyType" << YAML::Value << (int)rigidbody2D.GetBodyType();
+
+            out << YAML::Key << "Mass" << YAML::Value << rigidbody2D.GetMass();
+            out << YAML::Key << "LinearDrag" << YAML::Value << rigidbody2D.GetLinearDrag();
+            out << YAML::Key << "AngularDrag" << YAML::Value << rigidbody2D.GetAngularDrag();
+            out << YAML::Key << "GravityScale" << YAML::Value << rigidbody2D.GetGravityScale();
+
+            out << YAML::Key << "CollisionDetectionMode" << YAML::Value << (int)rigidbody2D.GetCollisionDetectionMode();
+
             out << YAML::Key << "FreezeRotation" << YAML::Value << rigidbody2D.IsFreezeRotation();
 
             out << YAML::EndMap;    // Rigidbody2DComponent
@@ -412,6 +420,11 @@ namespace Lucky
                 {
                     SpriteRendererComponent& spriteRendererComponent = deserializedObject.AddComponent<SpriteRendererComponent>();  // 添加 SpriteRenderer 组件
 
+                    const std::string spritePath = spriteRendererComponentNode["Sprite"].as<std::string>();
+                    if (spritePath != "")
+                    {
+                        spriteRendererComponent.Sprite = Texture2D::Create(spritePath);
+                    }
                     spriteRendererComponent.Color = spriteRendererComponentNode["Color"].as<glm::vec4>();
                 }
 
@@ -419,10 +432,18 @@ namespace Lucky
                 YAML::Node rigidbody2DNode = object["Rigidbody2DComponent"];
                 if (rigidbody2DNode)
                 {
-                    Rigidbody2DComponent& rigidbody2DComponent = deserializedObject.AddComponent<Rigidbody2DComponent>();       // 添加 Rigidbody2D 组件
+                    Rigidbody2DComponent& rigidbody2DComponent = deserializedObject.AddComponent<Rigidbody2DComponent>();   // 添加 Rigidbody2D 组件
                     Rigidbody2D& rigidbody2D = rigidbody2DComponent.Rigidbody2d;
 
                     rigidbody2D.SetBodyType((Rigidbody2D::BodyType)rigidbody2DNode["BodyType"].as<int>());
+
+                    rigidbody2D.SetMass(rigidbody2DNode["Mass"].as<float>());
+                    rigidbody2D.SetLinearDrag(rigidbody2DNode["LinearDrag"].as<float>());
+                    rigidbody2D.SetAngularDrag(rigidbody2DNode["AngularDrag"].as<float>());
+                    rigidbody2D.SetGravityScale(rigidbody2DNode["GravityScale"].as<float>());
+
+                    rigidbody2D.SetCollisionDetectionMode((Rigidbody2D::CollisionDetectionMode)rigidbody2DNode["CollisionDetectionMode"].as<int>());
+
                     rigidbody2D.FreezeRotation(rigidbody2DNode["FreezeRotation"].as<bool>());
                 }
 

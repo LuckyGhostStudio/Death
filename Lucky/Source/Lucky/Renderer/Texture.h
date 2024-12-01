@@ -17,6 +17,7 @@ namespace Lucky
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
         virtual uint32_t GetRendererID() const = 0;
+        virtual const std::string& GetPath() const = 0;
 
         /// <summary>
         /// 设置纹理数据
@@ -70,6 +71,7 @@ namespace Lucky
         virtual uint32_t GetWidth() const override { return m_Width; }
         virtual uint32_t GetHeight() const  override { return m_Height; }
         virtual uint32_t GetRendererID() const  override { return m_RendererID; }
+        virtual const std::string& GetPath() const override { return m_Path; }
 
         /// <summary>
         /// 设置纹理数据
