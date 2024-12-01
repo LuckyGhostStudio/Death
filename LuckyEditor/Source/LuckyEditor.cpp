@@ -13,11 +13,6 @@ namespace Lucky
         {
             PushLayer(new EditorLayer());
         }
-
-        ~LuckyEditor()
-        {
-
-        }
     };
 
     Application* CreateApplication(ApplicationCommandLineArgs args)
