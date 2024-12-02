@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Lucky/Renderer/Renderer.h"
+#include "Lucky/Scripting/ScriptEngine.h"
 
 #include <filesystem>
 
@@ -29,7 +30,8 @@ namespace Lucky
         m_Window = Window::Create(WindowProps(m_Specification.Name));           // 创建窗口
         m_Window->SetEventCallback(LC_BIND_EVENT_FUNC(Application::OnEvent));   // 设置回调函数
 
-        Renderer::Init();   // 初始化渲染器
+        Renderer::Init();       // 初始化渲染器
+        ScriptEngine::Init();   // 初始化脚本引擎
 
         m_ImGuiLayer = new ImGuiLayer();    // 创建 ImGui 层
         PushOverlay(m_ImGuiLayer);          // 添加 ImGuiLayer 到覆盖层
@@ -37,6 +39,7 @@ namespace Lucky
 
     Application::~Application()
     {
+        ScriptEngine::Shutdown();
         Renderer::Shutdown();
     }
 
