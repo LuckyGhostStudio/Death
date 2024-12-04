@@ -2,7 +2,7 @@
 #include "Application.h"
 
 #include "Lucky/Renderer/Renderer.h"
-#include "Lucky/Scripting/ScriptEngine.h"
+#include "Lucky/Script/ScriptEngine.h"
 
 #include <filesystem>
 
