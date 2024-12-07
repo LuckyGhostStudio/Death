@@ -29,6 +29,7 @@ namespace Lucky
         Ref<Texture2D> m_Rigidbody2DIcon;
         Ref<Texture2D> m_BoxCollider2DIcon;
         Ref<Texture2D> m_CircleCollider2DIcon;
+        Ref<Texture2D> m_ScriptIcon;
     private:
         /// <summary>
         /// 绘制添加组件 UI
@@ -117,6 +118,7 @@ namespace Lucky
                 case ComponentType::Rigidbody2D:        iconID = m_Rigidbody2DIcon->GetRendererID();        break;
                 case ComponentType::BoxCollider2D:      iconID = m_BoxCollider2DIcon->GetRendererID();      break;
                 case ComponentType::CircleCollider2D:   iconID = m_CircleCollider2DIcon->GetRendererID();   break;
+                case ComponentType::Script:             iconID = m_ScriptIcon->GetRendererID();             break;
                 case ComponentType::None: break;
             }
             

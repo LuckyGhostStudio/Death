@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Lucky/Scene/Scene.h"
+
 #include <filesystem>
 #include <string>
 
@@ -7,6 +9,7 @@ extern "C" {
     typedef struct _MonoClass MonoClass;
     typedef struct _MonoObject MonoObject;
     typedef struct _MonoMethod MonoMethod;
+    typedef struct _MonoAssembly MonoAssembly;
 }
 
 namespace Lucky
@@ -34,6 +37,31 @@ namespace Lucky
         /// </summary>
         /// <param name="filepath">程序集路径</param>
         static void LoadAssembly(const std::filesystem::path& filepath);
+
+        static void OnRuntimeStart(Scene* scene);
+        static void OnRuntimeStop();
+
+        /// <summary>
+        /// MonoBehaviour 子类脚本是否存在
+        /// </summary>
+        /// <param name="fullName">namespace.class</param>
+        /// <returns></returns>
+        static bool MonoBehaviourClassExists(const std::string& fullName);
+
+        /// <summary>
+        /// 创建 MonoBehaviour 子类脚本实例
+        /// </summary>
+        /// <param name="object"></param>
+        static void OnCreateMonoBehaviour(Object object);
+
+        /// <summary>
+        /// 更新 MonoBehaviour
+        /// </summary>
+        /// <param name="object">当前对象</param>
+        /// <param name="dt">帧间隔</param>
+        static void OnUpdateMonoBehaviour(Object object, DeltaTime dt);
+
+        static std::unordered_map<std::string, Ref<ScriptClass>> GetMonoBehaviourClasses();
     private:
         /// <summary>
         /// 初始化 Mono 运行时
@@ -51,10 +79,16 @@ namespace Lucky
         /// <param name="monoClass">类名</param>
         /// <returns>类对象</returns>
         static MonoObject* InstantiateClass(MonoClass* monoClass);
+
+        /// <summary>
+        /// 加载程序集
+        /// </summary>
+        /// <param name="assembly">程序集</param>
+        static void LoadAssemblyClasses(MonoAssembly* assembly);
     };
 
     /// <summary>
-    /// 脚本类：用于创建和实例化 C# 类，调用类方法 TODO Temp move to other
+    /// 脚本类：记录 C# 脚本类信息，实例化 和 调用类方法 TODO Temp move to other
     /// </summary>
     class ScriptClass
     {
@@ -67,8 +101,54 @@ namespace Lucky
         ScriptClass() = default;
         ScriptClass(const std::string& classNamespace, const std::string& className);
 
+        /// <summary>
+        /// 创建 Mono 类实例
+        /// </summary>
+        /// <returns>实例</returns>
         MonoObject* Instantiate();
+
+        /// <summary>
+        /// 获取方法
+        /// </summary>
+        /// <param name="name">方法名</param>
+        /// <param name="parameterCount">参数个数</param>
+        /// <returns></returns>
         MonoMethod* GetMethod(const std::string& name, int parameterCount);
+
+        /// <summary>
+        /// 调用方法
+        /// </summary>
+        /// <param name="instance">对象实例</param>
+        /// <param name="method">方法</param>
+        /// <param name="params">参数列表</param>
+        /// <returns></returns>
         MonoObject* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params = nullptr);
+    };
+
+    /// <summary>
+    /// 脚本实例：记录 C# 脚本实例的信息，调用实例方法
+    /// </summary>
+    class ScriptInstance
+    {
+    private:
+        Ref<ScriptClass> m_ScriptClass;     // 脚本类
+
+        MonoObject* m_Instance = nullptr;   // 对应的 Mono 实例
+
+        MonoMethod* m_AwakeMethod = nullptr;    // Awake 方法
+        MonoMethod* m_UpdateMethod = nullptr;   // Update 方法
+    public:
+        ScriptInstance(Ref<ScriptClass> scriptClass);
+
+        /// <summary>
+        /// 调用 Awake 方法
+        /// </summary>
+        void InvokeAwake();
+
+        /// <summary>
+        /// 调用 Update 方法
+        /// </summary>
+        /// <param name="dt"></param>
+        void InvokeUpdate(float dt);
     };
 }

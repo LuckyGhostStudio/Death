@@ -33,6 +33,19 @@ namespace LuckyEngine
         internal extern static float NativeLog_VectorRet(ref Vector3 parameter);
     }
 
+    public class MonoBehaviour
+    {
+        void Awake()
+        {
+
+        }
+
+        void Update(float dt)
+        {
+
+        }
+    }
+
     public class GameObject
     {
         public float FloatVar { get; set; }

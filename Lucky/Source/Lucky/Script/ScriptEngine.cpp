@@ -2,6 +2,8 @@
 #include "ScriptEngine.h"
 
 #include "ScriptGlue.h"
+#include "Lucky/Scene/Object.h"
+#include "Lucky/Scene/Components/ScriptComponent.h"
 
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
@@ -114,7 +116,13 @@ namespace Lucky
         MonoAssembly* CoreAssembly = nullptr;   // 核心程序集
         MonoImage* CoreAssemblyImage = nullptr; // 核心程序集 Image
 
-        ScriptClass GameObjectClass;    // GameObject 类 (C#)
+        ScriptClass MonoBehaviourClass;         // MonoBehaviour 类 (C#)
+
+        std::unordered_map<std::string, Ref<ScriptClass>> MonoBehaviourClasses; // namespace.class - MonoBehaviour 子类
+        std::unordered_map<UUID, Ref<ScriptInstance>> MonoBehaviourInstances;   // ObjectUUID - MonoBehaviour 子类实例
+
+        // Runtime TODO Ref
+        Scene* SceneContext = nullptr;  // 场景上下文
     };
 
     static ScriptEngineData* s_Data = nullptr;
@@ -125,36 +133,41 @@ namespace Lucky
 
         InitMono();
         LoadAssembly("Resources/Scripts/Lucky-ScriptCore.dll"); // 加载核心程序集
+        LoadAssemblyClasses(s_Data->CoreAssembly);              // 加载核心程序集类
+
+        auto& classes = s_Data->MonoBehaviourClasses;
 
         ScriptGlue::RegisterFunctions();    // 注册内部调用函数
 
+#if 0
         // - 测试从 Mono 调用 C# 类和方法 -
-        // 创建 LuckyEngine.GameObject 类
-        s_Data->GameObjectClass = ScriptClass("LuckyEngine", "GameObject");
+        // 创建 LuckyEngine.MonoBehaviour 类
+        s_Data->MonoBehaviourClass = ScriptClass("LuckyEngine", "MonoBehaviour");
         
-        MonoObject* instance = s_Data->GameObjectClass.Instantiate();   // 实例化类
+        MonoObject* instance = s_Data->MonoBehaviourClass.Instantiate();   // 实例化类
 
         // 获取 调用 printMessageFunc 函数
-        MonoMethod* printMessageFunc = s_Data->GameObjectClass.GetMethod("PrintMessage", 0);
-        s_Data->GameObjectClass.InvokeMethod(instance, printMessageFunc, nullptr);
+        MonoMethod* printMessageFunc = s_Data->MonoBehaviourClass.GetMethod("PrintMessage", 0);
+        s_Data->MonoBehaviourClass.InvokeMethod(instance, printMessageFunc, nullptr);
 
         // Main.PrintInt(int value)
-        MonoMethod* printIntFunc = s_Data->GameObjectClass.GetMethod("PrintInt", 1);
+        MonoMethod* printIntFunc = s_Data->MonoBehaviourClass.GetMethod("PrintInt", 1);
         int value = 5;
         void* param = &value;
-        s_Data->GameObjectClass.InvokeMethod(instance, printIntFunc, &param);
+        s_Data->MonoBehaviourClass.InvokeMethod(instance, printIntFunc, &param);
 
         // Main.PrintInts(int value1, int value2)
-        MonoMethod* printIntsFunc = s_Data->GameObjectClass.GetMethod( "PrintInts", 2);
+        MonoMethod* printIntsFunc = s_Data->MonoBehaviourClass.GetMethod( "PrintInts", 2);
         int value2 = 508;
         void* params[2] = { &value, &value2 };
-        s_Data->GameObjectClass.InvokeMethod(instance, printIntsFunc, params);
+        s_Data->MonoBehaviourClass.InvokeMethod(instance, printIntsFunc, params);
 
         // Main.PrintCustomMessage(string message)
         MonoString* monoString = mono_string_new(s_Data->AppDomain, "Hello LuckyEngine from C++.");   // String 类型数据
-        MonoMethod* printCustomMessageFunc = s_Data->GameObjectClass.GetMethod( "PrintCustomMessage", 1);
+        MonoMethod* printCustomMessageFunc = s_Data->MonoBehaviourClass.GetMethod( "PrintCustomMessage", 1);
         void* stringParam = monoString;
-        s_Data->GameObjectClass.InvokeMethod(instance, printCustomMessageFunc, &stringParam);
+        s_Data->MonoBehaviourClass.InvokeMethod(instance, printCustomMessageFunc, &stringParam);
+#endif
     }
 
     void ScriptEngine::Shutdown()
@@ -200,6 +213,107 @@ namespace Lucky
         // Utils::PrintAssemblyTypes(s_Data->CoreAssembly);
     }
 
+    void ScriptEngine::OnRuntimeStart(Scene* scene)
+    {
+        s_Data->SceneContext = scene;
+    }
+
+    void ScriptEngine::OnRuntimeStop()
+    {
+        s_Data->SceneContext = nullptr;
+
+        s_Data->MonoBehaviourInstances.clear(); // 清空 MonoBehaviour 实例
+    }
+
+    bool ScriptEngine::MonoBehaviourClassExists(const std::string& fullName)
+    {
+        return s_Data->MonoBehaviourClasses.find(fullName) != s_Data->MonoBehaviourClasses.end();
+    }
+
+    void ScriptEngine::OnCreateMonoBehaviour(Object object)
+    {
+        const ScriptComponent& scriptComponent = object.GetComponent<ScriptComponent>();    // Script 组件
+        std::string fullName = scriptComponent.ClassNamespace + "." + scriptComponent.ClassName;
+        // 脚本类全名存在
+        if (ScriptEngine::MonoBehaviourClassExists(fullName))
+        {
+            // 创建脚本实例
+            Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->MonoBehaviourClasses[fullName]);
+            // 添加脚本实例到 UUID - MonoBehaviour Map
+            s_Data->MonoBehaviourInstances[object.GetUUID()] = instance;
+
+            instance->InvokeAwake();    // 调用 Awake 方法
+        }
+    }
+
+    void ScriptEngine::OnUpdateMonoBehaviour(Object object, DeltaTime dt)
+    {
+        UUID objectUUID = object.GetUUID();
+        LC_CORE_ASSERT(s_Data->MonoBehaviourInstances.find(objectUUID) != s_Data->MonoBehaviourInstances.end(), "MonoBehaviour Instance not found.");
+
+        // 获取脚本实例
+        Ref<ScriptInstance> instance = s_Data->MonoBehaviourInstances[objectUUID];
+
+        instance->InvokeUpdate((float)dt);  // 调用 Update 方法
+    }
+
+    std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetMonoBehaviourClasses()
+    {
+        return s_Data->MonoBehaviourClasses;
+    }
+
+    void ScriptEngine::LoadAssemblyClasses(MonoAssembly* assembly)
+    {
+        s_Data->MonoBehaviourClasses.clear();  // 清空 MonoBehaviour 脚本类列表
+
+        MonoImage* image = mono_assembly_get_image(assembly);   // Mono 程序集的 Image
+        const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);   // Mono 定义表 的元数据
+        int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);                                  // 表中的类型数量
+
+        // MonoBehaviour 类
+        MonoClass* monoBehaviourClass = mono_class_from_name(s_Data->CoreAssemblyImage, "LuckyEngine", "MonoBehaviour");
+
+        // 遍历所有类型
+        for (int32_t i = 0; i < numTypes; i++)
+        {
+            uint32_t cols[MONO_TYPEDEF_SIZE];   // 单行数据
+
+            mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE); // 解码 定义表 的每行
+
+            const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]); // 类型的命名空间名
+            const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);           // 类型名
+
+            // 类全名
+            std::string fullName;
+            if (strlen(nameSpace) != 0)
+            {
+                fullName = std::format("{}.{}", nameSpace, name);   // nameSpace.name
+            }
+            else
+            {
+                fullName = name;
+            }
+
+            // Mono 类
+            MonoClass* monoClass = mono_class_from_name(s_Data->CoreAssemblyImage, nameSpace, name);
+
+            // 跳过父类自身
+            if (monoClass == monoBehaviourClass)
+            {
+                continue;
+            }
+
+            // 检查 monoClass 是否为 MonoBehaviour 的子类
+            bool isMonoBehaviour = mono_class_is_subclass_of(monoClass, monoBehaviourClass, false);
+            if (isMonoBehaviour)
+            {
+                s_Data->MonoBehaviourClasses[fullName] = CreateRef<ScriptClass>(nameSpace, name);  // 添加到映射表
+            }
+
+            LC_CORE_TRACE("{}.{}", nameSpace, name);
+        }
+    }
+
     MonoObject* ScriptEngine::InstantiateClass(MonoClass* monoClass)
     {
         // 创建 Mono 类对象
@@ -232,5 +346,26 @@ namespace Lucky
     {
         // 调用 MonoClass 的 instance 的方法
         return mono_runtime_invoke(method, instance, params, nullptr);
+    }
+
+    ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass)
+        : m_ScriptClass(scriptClass)
+    {
+        m_Instance = scriptClass->Instantiate();    // 创建 Mono 类实例
+
+        // 获取类方法
+        m_AwakeMethod = scriptClass->GetMethod("Awake", 0);
+        m_UpdateMethod = scriptClass->GetMethod("Update", 1);
+    }
+
+    void ScriptInstance::InvokeAwake()
+    {
+        m_ScriptClass->InvokeMethod(m_Instance, m_AwakeMethod); // 调用 Awake 方法
+    }
+
+    void ScriptInstance::InvokeUpdate(float dt)
+    {
+        void* param = &dt;
+        m_ScriptClass->InvokeMethod(m_Instance, m_UpdateMethod, &param);    // 调用 Update 方法
     }
 }

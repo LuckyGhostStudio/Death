@@ -11,13 +11,57 @@
 #include "Lucky/Scene/Components/Rigidbody2DComponent.h"
 #include "Lucky/Scene/Components/BoxCollider2DComponent.h"
 #include "Lucky/Scene/Components/CircleCollider2DComponent.h"
+#include "Lucky/Scene/Components/ScriptComponent.h"
 
 #include "Lucky/ImGui/GUI.h"
 
 #include "Lucky/Utils/PlatformUtils.h"
 
+#include <filesystem>
+#include <regex>
+
 namespace Lucky
 {
+    namespace Utils
+    {
+        /// <summary>
+        /// 从 C# 脚本中获取 namespace 名称
+        /// </summary>
+        /// <param name="filepath">文件路径</param>
+        /// <returns></returns>
+        static std::string GetNamespaceFromScript(const std::filesystem::path& filepath)
+        {
+            std::ifstream stream(filepath, std::ios::in);
+
+            // 打开失败
+            if (!stream)
+            {
+                return "";
+            }
+
+            std::string line;
+            std::regex namespaceRegex(R"(namespace\s+([a-zA-Z_][a-zA-Z0-9_\.]*))");
+            std::smatch match;
+
+            // 按行读取文件内容
+            while (std::getline(stream, line))
+            {
+                // 使用正则表达式匹配 namespace 声明
+                if (std::regex_search(line, match, namespaceRegex))
+                {
+                    // 捕获组存在
+                    if (match.size() > 1)
+                    {
+                        return match[1].str(); // 返回匹配到的 namespace 名称
+                    }
+                }
+            }
+
+            // 没找到 namespace
+            return "";
+        }
+    }
+
     InspectorPanel::InspectorPanel()
     {
         m_SettingsButtonIcon = Texture2D::Create("Resources/Icons/SettingsButton_Icon.png");
@@ -28,6 +72,7 @@ namespace Lucky
         m_Rigidbody2DIcon = Texture2D::Create("Resources/Icons/Components/Rigidbody_Icon.png");
         m_BoxCollider2DIcon = Texture2D::Create("Resources/Icons/Components/BoxCollider2D_Icon.png");
         m_CircleCollider2DIcon = Texture2D::Create("Resources/Icons/Components/CircleCollider2D_Icon.png");
+        m_ScriptIcon = Texture2D::Create("Resources/Icons/Components/CSharp_Icon.png");
     }
 
     void InspectorPanel::OnImGuiRender(bool& isOpen)
@@ -76,6 +121,7 @@ namespace Lucky
             DrawAddComponentItemButton<Rigidbody2DComponent>("Rigidbody 2D");
             DrawAddComponentItemButton<BoxCollider2DComponent>("Box Collider 2D");
             DrawAddComponentItemButton<CircleCollider2DComponent>("Circle Collider 2D");
+            DrawAddComponentItemButton<ScriptComponent>("Script");
 
             ImGui::EndPopup();
         }
@@ -224,6 +270,33 @@ namespace Lucky
             GUI::DragFloatN("Density", &circleCollider2D.GetDensity_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
             GUI::DragFloatN("Friction", &circleCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
             // GUI::DragFloatN("Restitution", &circleCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
+        });
+
+        // 绘制 C# Script 组件
+        static std::string scriptComponentName;
+        DrawComponent<ScriptComponent>(scriptComponentName + " (Script)", object, [](ScriptComponent& scriptComponent)
+        {
+            scriptComponentName = scriptComponent.ClassName;    // 组件显示的脚本名
+
+            GUI::ObjectField("Script", scriptComponent.ClassName, [&]()
+            {
+                // 选择 C# 脚本文件
+                std::string filepath = FileDialogs::OpenFile("C# Script(*.cs)\0*.cs\0"); // TODO .Script in project
+
+                if (!filepath.empty())
+                {
+                    // Temp TODO
+                    // 获取 namespace 名称
+                    std::string classNamespace = Utils::GetNamespaceFromScript(filepath);
+                    // 获取 class 名
+                    size_t lastSlashPos = filepath.find_last_of("\\/") + 1;
+                    size_t lastDotPos = filepath.find_last_of(".");
+                    std::string className = filepath.substr(lastSlashPos, lastDotPos - lastSlashPos);
+
+                    scriptComponent.ClassNamespace = classNamespace;    // 脚本命名空间名
+                    scriptComponent.ClassName = className;              // 脚本类名
+                }
+            });
         });
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // 垂直间距为 1

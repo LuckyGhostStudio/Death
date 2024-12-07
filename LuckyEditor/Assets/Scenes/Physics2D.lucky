@@ -60,7 +60,7 @@ Objects:
     CameraComponent:
       Primary: true
       ProjectionType: 1
-      Size: 2.01999998
+      Size: 3.00999999
       FOV: 0.785398185
       Near: 0.00999999978
       Far: 1000
@@ -114,3 +114,31 @@ Objects:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
+  - Object: 16790190763056093344
+    SelfComponent:
+      Name: Player
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.5, 1]
+    SpriteRendererComponent:
+      Sprite: ""
+      Color: [0.786743522, 0.786743522, 0.786743522, 1]
+    Rigidbody2DComponent:
+      BodyType: 1
+      Mass: 1
+      LinearDrag: 0
+      AngularDrag: 0.0500000007
+      GravityScale: 1
+      CollisionDetectionMode: 0
+      FreezeRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+    ScriptComponent:
+      ClassNamespace: Game
+      ClassName: Player

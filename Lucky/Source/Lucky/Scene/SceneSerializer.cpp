@@ -10,6 +10,7 @@
 #include "Lucky/Scene/Components/Rigidbody2DComponent.h"
 #include "Lucky/Scene/Components/BoxCollider2DComponent.h"
 #include "Lucky/Scene/Components/CircleCollider2DComponent.h"
+#include "Lucky/Scene/Components/ScriptComponent.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -310,6 +311,21 @@ namespace Lucky
             out << YAML::EndMap;    // CircleCollider2DComponent
         }
 
+        // Script 组件
+        if (object.HasComponent<ScriptComponent>())
+        {
+            out << YAML::Key << "ScriptComponent";
+            out << YAML::BeginMap;  // ScriptComponent
+
+            ScriptComponent& scriptComponent = object.GetComponent<ScriptComponent>();
+            
+            out << YAML::Key << "ClassNamespace" << YAML::Value << scriptComponent.ClassNamespace;
+            out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.ClassName;
+            // TODO public 成员变量
+
+            out << YAML::EndMap;    // ScriptComponent
+        }
+
         out << YAML::EndMap;    // 结束物体 Map
     }
 
@@ -477,6 +493,17 @@ namespace Lucky
                     circleCollider2D.SetFriction(circleCollider2DNode["Friction"].as<float>());
                     circleCollider2D.SetRestitution(circleCollider2DNode["Restitution"].as<float>());
                     circleCollider2D.SetRestitutionThreshold(circleCollider2DNode["RestitutionThreshold"].as<float>());
+                }
+
+                // ScriptComponent 组件结点
+                YAML::Node scriptComponentNode = object["ScriptComponent"];
+                if (scriptComponentNode)
+                {
+                    ScriptComponent& scriptComponent = deserializedObject.AddComponent<ScriptComponent>();  // 添加 Script 组件
+
+                    scriptComponent.ClassNamespace = scriptComponentNode["ClassNamespace"].as<std::string>();
+                    scriptComponent.ClassName = scriptComponentNode["ClassName"].as<std::string>();
+                    // TODO public 成员变量
                 }
             }
         }

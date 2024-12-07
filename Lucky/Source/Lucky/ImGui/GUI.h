@@ -102,6 +102,9 @@ namespace Lucky
         inline static void DropdownList(const std::string& label, const char* currentValueStr, const char* valueStrs[], uint32_t valueStrCount, Func OnSelected, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
 
         template<typename Func>
+        inline static void ObjectField(const std::string& label, const std::string& objectName, Func OnClicked, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+
+        template<typename Func>
         inline static void ObjectSelector(const std::string& label, uint32_t textureID, const glm::vec2& size, Func OnSelected, float framePadding = 2.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
 
         template<typename Func>
@@ -150,6 +153,41 @@ namespace Lucky
             }
             ImGui::EndCombo();
         }
+
+        ImGui::PopItemWidth();
+        ImGui::Columns(1);      // 设置为一列
+
+        ImGui::PopID();
+    }
+
+    template<typename Func>
+    inline void GUI::ObjectField(const std::string& label, const std::string& objectName, Func OnClicked, float labelMinWidth, float widgetOffset)
+    {
+        ImGui::PushID(label.c_str());   // 设置控件 ID
+
+        float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
+        // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
+        float labelWidth = panelWidth * 0.4f;
+        if (labelWidth < labelMinWidth)
+        {
+            labelWidth = labelMinWidth;
+        }
+
+        ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
+        ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
+
+        ImGui::Text(label.c_str()); // 控件名（0 号列）
+
+        ImGui::NextColumn();
+        ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
+
+        // 按钮（1 号列）TODO
+        ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.1f, 0.5f });
+        if (ImGui::Button(objectName.c_str(), ImVec2(panelWidth - labelWidth - widgetOffset, 0)))
+        {
+            OnClicked();   // 点击回调函数
+        }
+        ImGui::PopStyleVar();
 
         ImGui::PopItemWidth();
         ImGui::Columns(1);      // 设置为一列

@@ -10,8 +10,11 @@
 #include "Components/Rigidbody2DComponent.h"
 #include "Components/BoxCollider2DComponent.h"
 #include "Components/CircleCollider2DComponent.h"
+#include "Components/ScriptComponent.h"
 
 #include "Object.h"
+
+#include "Lucky/Script/ScriptEngine.h"
 
 // Box2D
 #include "box2d/b2_world.h"
@@ -105,6 +108,7 @@ namespace Lucky
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<ScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         // TODO 新组件
 
         return newScene;
@@ -265,12 +269,30 @@ namespace Lucky
 
     void Scene::OnRuntimeStart()
     {
-        OnPhysics2DStart();
+        OnPhysics2DStart(); // 开始 2D 物理
+
+        // Scripting
+        {
+            ScriptEngine::OnRuntimeStart(this); // 开始运行脚本
+
+            // 实例化所有脚本
+            auto view = m_Registry.view<ScriptComponent>(); // 所有 ScriptComponent 的实体
+            for (auto e : view)
+            {
+                Object object = { e, this };
+
+                const ScriptComponent& scriptComponent = object.GetComponent<ScriptComponent>();
+
+                ScriptEngine::OnCreateMonoBehaviour(object);    // 创建 MonoBehaviour 子类实例
+            }
+        }
     }
 
     void Scene::OnRuntimeStop()
     {
-        OnPhysics2DStop();
+        OnPhysics2DStop();  // 停止 2D 物理
+
+        ScriptEngine::OnRuntimeStop();      // 脚本停止运行
     }
 
     void Scene::OnUpdateEditor(DeltaTime dt, EditorCamera& camera)
@@ -333,6 +355,17 @@ namespace Lucky
 
     void Scene::OnUpdateRuntime(DeltaTime dt)
     {
+        // C# Script Update
+        {
+            auto view = m_Registry.view<ScriptComponent>(); // 所有 ScriptComponent 的实体
+            for (auto e : view)
+            {
+                Object object = { e, this };
+
+                ScriptEngine::OnUpdateMonoBehaviour(object, dt);    // 调用 MonoBehaviour.Update
+            }
+        }
+
         // Physics 2D
         {
             const int32_t velocityIterations = 6;   // 速度迭代次数
@@ -387,6 +420,7 @@ namespace Lucky
         CopyComponentIfExists<Rigidbody2DComponent>(newObject, object);
         CopyComponentIfExists<BoxCollider2DComponent>(newObject, object);
         CopyComponentIfExists<CircleCollider2DComponent>(newObject, object);
+        CopyComponentIfExists<ScriptComponent>(newObject, object);
         // TODO 新组件
 
         LC_TRACE("Copied Object：[ENTT = {0}, UUID {1}, Name {2}] -> [ENTT = {3}, UUID {4}, Name {5}]", (uint32_t)object, object.GetUUID(), name, (uint32_t)newObject, newObject.GetUUID(), name);
@@ -464,4 +498,11 @@ namespace Lucky
     void Scene::OnComponentAdded<CircleCollider2DComponent>(Object object, CircleCollider2DComponent& component)
     {
     }
+    
+    template<>
+    void Scene::OnComponentAdded<ScriptComponent>(Object object, ScriptComponent& component)
+    {
+    }
+
+    // TODO 添加新组件
 }

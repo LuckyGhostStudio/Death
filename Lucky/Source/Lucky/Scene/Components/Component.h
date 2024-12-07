@@ -18,6 +18,8 @@ namespace Lucky
 
         Rigidbody2D,
         BoxCollider2D,
-        CircleCollider2D
+        CircleCollider2D,
+
+        Script
     };
 }
