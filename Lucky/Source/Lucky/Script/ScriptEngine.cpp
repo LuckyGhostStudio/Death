@@ -139,10 +139,10 @@ namespace Lucky
 
         ScriptGlue::RegisterFunctions();    // 注册内部调用函数
 
-#if 0
-        // - 测试从 Mono 调用 C# 类和方法 -
         // 创建 LuckyEngine.MonoBehaviour 类
         s_Data->MonoBehaviourClass = ScriptClass("LuckyEngine", "MonoBehaviour");
+#if 0
+        // - 测试从 Mono 调用 C# 类和方法 -
         
         MonoObject* instance = s_Data->MonoBehaviourClass.Instantiate();   // 实例化类
 
@@ -233,12 +233,12 @@ namespace Lucky
     void ScriptEngine::OnCreateMonoBehaviour(Object object)
     {
         const ScriptComponent& scriptComponent = object.GetComponent<ScriptComponent>();    // Script 组件
-        std::string fullName = scriptComponent.ClassNamespace + "." + scriptComponent.ClassName;
+        std::string fullName = std::format("{}.{}", scriptComponent.ClassNamespace, scriptComponent.ClassName);
         // 脚本类全名存在
         if (ScriptEngine::MonoBehaviourClassExists(fullName))
         {
             // 创建脚本实例
-            Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->MonoBehaviourClasses[fullName]);
+            Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->MonoBehaviourClasses[fullName], object);
             // 添加脚本实例到 UUID - MonoBehaviour Map
             s_Data->MonoBehaviourInstances[object.GetUUID()] = instance;
 
@@ -255,6 +255,11 @@ namespace Lucky
         Ref<ScriptInstance> instance = s_Data->MonoBehaviourInstances[objectUUID];
 
         instance->InvokeUpdate((float)dt);  // 调用 Update 方法
+    }
+
+    Scene* ScriptEngine::GetSceneContext()
+    {
+        return s_Data->SceneContext;
     }
 
     std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetMonoBehaviourClasses()
@@ -348,14 +353,22 @@ namespace Lucky
         return mono_runtime_invoke(method, instance, params, nullptr);
     }
 
-    ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass)
+    ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass, Object object)
         : m_ScriptClass(scriptClass)
     {
         m_Instance = scriptClass->Instantiate();    // 创建 Mono 类实例
 
         // 获取类方法
+        m_Constructor = s_Data->MonoBehaviourClass.GetMethod(".ctor", 1);   // MonoBehaviour 构造函数
         m_AwakeMethod = scriptClass->GetMethod("Awake", 0);
         m_UpdateMethod = scriptClass->GetMethod("Update", 1);
+
+        // 调用 GameObject 构造函数 GameObejct(uuid)
+        {
+            UUID uuid = object.GetUUID();
+            void* param = &uuid;
+            m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, &param);
+        }
     }
 
     void ScriptInstance::InvokeAwake()

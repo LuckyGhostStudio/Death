@@ -61,6 +61,7 @@ namespace Lucky
         /// <param name="dt">帧间隔</param>
         static void OnUpdateMonoBehaviour(Object object, DeltaTime dt);
 
+        static Scene* GetSceneContext();
         static std::unordered_map<std::string, Ref<ScriptClass>> GetMonoBehaviourClasses();
     private:
         /// <summary>
@@ -135,10 +136,11 @@ namespace Lucky
 
         MonoObject* m_Instance = nullptr;   // 对应的 Mono 实例
 
+        MonoMethod* m_Constructor = nullptr;    // 构造方法
         MonoMethod* m_AwakeMethod = nullptr;    // Awake 方法
         MonoMethod* m_UpdateMethod = nullptr;   // Update 方法
     public:
-        ScriptInstance(Ref<ScriptClass> scriptClass);
+        ScriptInstance(Ref<ScriptClass> scriptClass, Object object);
 
         /// <summary>
         /// 调用 Awake 方法

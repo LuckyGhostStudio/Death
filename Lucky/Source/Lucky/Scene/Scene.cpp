@@ -127,6 +127,8 @@ namespace Lucky
         object.AddComponent<SelfComponent>(name);   // 添加 Self 组件（默认组件）
         object.AddComponent<TransformComponent>();  // 添加 Transform 组件（默认组件）
 
+        m_EnttMap[uuid] = object;   // 添加到 EnttMap
+
         LC_TRACE("Created Object：[ENTT = {0}, UUID {1}, Name {2}]", (uint32_t)object, uuid, name);
 
         return object;
@@ -137,6 +139,7 @@ namespace Lucky
         LC_TRACE("Removed Object：[ENTT = {0}, UUID {1}, Name {2}]", (uint32_t)object, object.GetUUID(), object.GetName());
 
         m_Registry.destroy(object);
+        m_EnttMap.erase(object.GetUUID());  // 从 EnttMap 移除
     }
 
     void Scene::OnPhysics2DStart()
@@ -426,6 +429,17 @@ namespace Lucky
         LC_TRACE("Copied Object：[ENTT = {0}, UUID {1}, Name {2}] -> [ENTT = {3}, UUID {4}, Name {5}]", (uint32_t)object, object.GetUUID(), name, (uint32_t)newObject, newObject.GetUUID(), name);
 
         return newObject;
+    }
+
+    Object Scene::GetObjectByUUID(UUID uuid)
+    {
+        // TODO Assert
+        if (m_EnttMap.find(uuid) != m_EnttMap.end())
+        {
+            return { m_EnttMap.at(uuid), this };
+        }
+
+        return {};
     }
 
     Object Scene::GetPrimaryCameraObject()

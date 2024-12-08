@@ -5,15 +5,42 @@ namespace LuckyEngine
 {
     public struct Vector3
     {
-        public float X;
-        public float Y;
-        public float Z;
+        public float x, y, z;
+
+        public static Vector3 Zero => new Vector3(0.0f);
+
+        public Vector3(float scalar)
+        {
+            x = scalar;
+            y = scalar;
+            z = scalar;
+        }
 
         public Vector3(float x, float y, float z)
         {
-            X = x;
-            Y = y;
-            Z = z;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public static Vector3 operator +(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+        }
+
+        public static Vector3 operator -(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+        }
+
+        public static Vector3 operator *(Vector3 vector, float scalar)
+        {
+            return new Vector3(vector.x * scalar, vector.y * scalar, vector.z * scalar);
+        }
+
+        public static Vector3 operator *(float scalar, Vector3 vector)
+        {
+            return new Vector3(vector.x * scalar, vector.y * scalar, vector.z * scalar);
         }
     }
 
@@ -31,68 +58,52 @@ namespace LuckyEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static float NativeLog_VectorRet(ref Vector3 parameter);
+
+        // GameObject
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void GameObject_GetPosition(ulong objectID, out Vector3 position);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void GameObject_SetPosition(ulong objectID, ref Vector3 position);
+
+        // Input
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Input_GetKeyDown(KeyCode keyCode);
     }
 
     public class MonoBehaviour
     {
-        void Awake()
+        protected MonoBehaviour()
         {
-
+            ID = 0;
         }
 
-        void Update(float dt)
+        internal MonoBehaviour(ulong id)
         {
+            ID = id;
+        }
 
+        // TODO Transform
+
+        public readonly ulong ID;
+
+        public Vector3 Position
+        {
+            get
+            {
+                InternalCalls.GameObject_GetPosition(ID, out Vector3 position);
+                return position;
+            }
+            set
+            {
+                InternalCalls.GameObject_SetPosition(ID, ref value);
+            }
         }
     }
 
     public class GameObject
     {
-        public float FloatVar { get; set; }
-
-        public GameObject()
-        {
-            Console.WriteLine("Main Constructor.");
-            Log("LuckyGhostStudio", 123);
-
-            Vector3 pos = new Vector3(5, 2, 0);
-            Vector3 result = Log(pos);
-
-            Console.WriteLine($"{result.X}, {result.Y}, {result.Z}");
-            Console.WriteLine("{0}", InternalCalls.NativeLog_VectorRet(ref pos));
-        }
-
-        // 由 C++ 通过 Mono 调用
-
-        public void PrintMessage()
-        {
-            Console.WriteLine("Hello LuckyEngine from C#.");
-        }
-
-        public void PrintInt(int value)
-        {
-            Console.WriteLine($"C#: {value}");
-        }
-
-        public void PrintInts(int value1, int value2)
-        {
-            Console.WriteLine($"C#: {value1} and {value2}");
-        }
-
-        public void PrintCustomMessage(string message)
-        {
-            Console.WriteLine($"C#: {message}");
-        }
-
-        private void Log(string text, int parameter)
-        {
-            InternalCalls.NativeLog(text, parameter);
-        }
-
-        private Vector3 Log(Vector3 parameter)
-        {
-            InternalCalls.NativeLog_Vector(ref parameter, out Vector3 result);
-            return result;
-        }
+        
     }
 }

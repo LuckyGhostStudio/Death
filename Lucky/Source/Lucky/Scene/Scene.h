@@ -24,6 +24,8 @@ namespace Lucky
 
         b2World* m_PhysicsWorld = nullptr;
 
+        std::unordered_map<UUID, entt::entity> m_EnttMap;   // UUID - entt 映射表
+
         entt::registry m_Registry;          // 实体集合：实体 id 集合（unsigned int 集合）
         std::string m_Name;                 // 场景名
 
@@ -101,6 +103,13 @@ namespace Lucky
         /// </summary>
         /// <param name="object">待复制对象</param>
         Object DuplicateObject(Object object);
+
+        /// <summary>
+        /// 获取 Object
+        /// </summary>
+        /// <param name="uuid">UUID</param>
+        /// <returns></returns>
+        Object GetObjectByUUID(UUID uuid);
 
         /// <summary>
         /// 返回主相机
