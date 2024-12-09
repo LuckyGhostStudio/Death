@@ -137,37 +137,11 @@ namespace Lucky
 
         auto& classes = s_Data->MonoBehaviourClasses;
 
-        ScriptGlue::RegisterFunctions();    // 注册内部调用函数
+        ScriptGlue::RegisterComponents();       // 注册所有组件
+        ScriptGlue::RegisterInternalCalls();    // 注册内部调用函数
 
         // 创建 LuckyEngine.MonoBehaviour 类
         s_Data->MonoBehaviourClass = ScriptClass("LuckyEngine", "MonoBehaviour");
-#if 0
-        // - 测试从 Mono 调用 C# 类和方法 -
-        
-        MonoObject* instance = s_Data->MonoBehaviourClass.Instantiate();   // 实例化类
-
-        // 获取 调用 printMessageFunc 函数
-        MonoMethod* printMessageFunc = s_Data->MonoBehaviourClass.GetMethod("PrintMessage", 0);
-        s_Data->MonoBehaviourClass.InvokeMethod(instance, printMessageFunc, nullptr);
-
-        // Main.PrintInt(int value)
-        MonoMethod* printIntFunc = s_Data->MonoBehaviourClass.GetMethod("PrintInt", 1);
-        int value = 5;
-        void* param = &value;
-        s_Data->MonoBehaviourClass.InvokeMethod(instance, printIntFunc, &param);
-
-        // Main.PrintInts(int value1, int value2)
-        MonoMethod* printIntsFunc = s_Data->MonoBehaviourClass.GetMethod( "PrintInts", 2);
-        int value2 = 508;
-        void* params[2] = { &value, &value2 };
-        s_Data->MonoBehaviourClass.InvokeMethod(instance, printIntsFunc, params);
-
-        // Main.PrintCustomMessage(string message)
-        MonoString* monoString = mono_string_new(s_Data->AppDomain, "Hello LuckyEngine from C++.");   // String 类型数据
-        MonoMethod* printCustomMessageFunc = s_Data->MonoBehaviourClass.GetMethod( "PrintCustomMessage", 1);
-        void* stringParam = monoString;
-        s_Data->MonoBehaviourClass.InvokeMethod(instance, printCustomMessageFunc, &stringParam);
-#endif
     }
 
     void ScriptEngine::Shutdown()
@@ -267,6 +241,11 @@ namespace Lucky
         return s_Data->MonoBehaviourClasses;
     }
 
+    MonoImage* ScriptEngine::GetCoreAssemblyImage()
+    {
+        return s_Data->CoreAssemblyImage;
+    }
+
     void ScriptEngine::LoadAssemblyClasses(MonoAssembly* assembly)
     {
         s_Data->MonoBehaviourClasses.clear();  // 清空 MonoBehaviour 脚本类列表
@@ -363,7 +342,7 @@ namespace Lucky
         m_AwakeMethod = scriptClass->GetMethod("Awake", 0);
         m_UpdateMethod = scriptClass->GetMethod("Update", 1);
 
-        // 调用 GameObject 构造函数 GameObejct(uuid)
+        // 调用 MonoBehaviour 构造函数 MonoBehaviour(uuid)
         {
             UUID uuid = object.GetUUID();
             void* param = &uuid;
@@ -373,12 +352,18 @@ namespace Lucky
 
     void ScriptInstance::InvokeAwake()
     {
-        m_ScriptClass->InvokeMethod(m_Instance, m_AwakeMethod); // 调用 Awake 方法
+        if (m_AwakeMethod)
+        {
+            m_ScriptClass->InvokeMethod(m_Instance, m_AwakeMethod); // 调用 Awake 方法
+        }
     }
 
     void ScriptInstance::InvokeUpdate(float dt)
     {
-        void* param = &dt;
-        m_ScriptClass->InvokeMethod(m_Instance, m_UpdateMethod, &param);    // 调用 Update 方法
+        if (m_UpdateMethod)
+        {
+            void* param = &dt;
+            m_ScriptClass->InvokeMethod(m_Instance, m_UpdateMethod, &param);    // 调用 Update 方法
+        }
     }
 }

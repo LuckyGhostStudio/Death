@@ -9,8 +9,13 @@ namespace Lucky
     {
     public:
         /// <summary>
-        /// 注册函数
+        /// 注册所有组件
         /// </summary>
-        static void RegisterFunctions();
+        static void RegisterComponents();
+
+        /// <summary>
+        /// 注册内部调用函数
+        /// </summary>
+        static void RegisterInternalCalls();
     };
 }

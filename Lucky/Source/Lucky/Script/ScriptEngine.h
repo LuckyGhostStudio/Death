@@ -10,6 +10,7 @@ extern "C" {
     typedef struct _MonoObject MonoObject;
     typedef struct _MonoMethod MonoMethod;
     typedef struct _MonoAssembly MonoAssembly;
+    typedef struct _MonoImage MonoImage;
 }
 
 namespace Lucky
@@ -21,6 +22,7 @@ namespace Lucky
     {
     private:
         friend class ScriptClass;
+        friend class ScriptGlue;
     public:
         /// <summary>
         /// 初始化
@@ -63,6 +65,8 @@ namespace Lucky
 
         static Scene* GetSceneContext();
         static std::unordered_map<std::string, Ref<ScriptClass>> GetMonoBehaviourClasses();
+
+        static MonoImage* GetCoreAssemblyImage();
     private:
         /// <summary>
         /// 初始化 Mono 运行时

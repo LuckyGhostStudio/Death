@@ -1,26 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using LuckyEngine;
 
 namespace Game
 {
     public class Player : MonoBehaviour
     {
+        private Transform transform;
+
         float speed = 1.0f;
 
         void Awake()
         {
-            Console.WriteLine("Player.Awake - {0}", ID);
+            Console.WriteLine("Player.Awake - {0}", gameObject.ID);
+            Console.WriteLine("{0}", gameObject.HasComponent<Transform>());
+
+            transform = gameObject.GetComponent<Transform>();
         }
 
         void Update(float dt)
         {
-            Console.WriteLine("Player.Update: {0}", dt);
-
             Vector3 velocity = Vector3.Zero;
 
             if (Input.GetKeyDown(KeyCode.A))
@@ -43,9 +41,7 @@ namespace Game
 
             velocity *= speed;
 
-            Vector3 pos = Position;
-            pos += velocity * dt;
-            Position = pos;
+            transform.position += velocity * dt;
         }
     }
 }
