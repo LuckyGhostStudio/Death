@@ -3,8 +3,8 @@ project "Lucky-ScriptCore"  -- ½Å±¾ÄÚºË
     language "C#"
     dotnetframework "4.7.2"
 
-    targetdir ("%{wks.location}/LuckyEditor/Resources/Scripts")
-    objdir ("%{wks.location}/LuckyEditor/Resources/Scripts/Intermediates")
+    targetdir ("../LuckyEditor/Resources/Scripts")
+    objdir ("../LuckyEditor/Resources/Scripts/Intermediates")
 
     files 
     {

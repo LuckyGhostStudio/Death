@@ -21,3 +21,4 @@ LuckyEditor/Resources/Scripts
 **.vcxproj.filters
 **.csproj
 **.csproj.user
+.editorconfig

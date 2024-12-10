@@ -116,6 +116,9 @@ namespace Lucky
         MonoAssembly* CoreAssembly = nullptr;   // 核心程序集
         MonoImage* CoreAssemblyImage = nullptr; // 核心程序集 Image
 
+        MonoAssembly* AppAssembly = nullptr;    // App 程序集
+        MonoImage* AppAssemblyImage = nullptr;  // App 程序集 Image
+
         ScriptClass MonoBehaviourClass;         // MonoBehaviour 类 (C#)
 
         std::unordered_map<std::string, Ref<ScriptClass>> MonoBehaviourClasses; // namespace.class - MonoBehaviour 子类
@@ -132,16 +135,17 @@ namespace Lucky
         s_Data = new ScriptEngineData();
 
         InitMono();
-        LoadAssembly("Resources/Scripts/Lucky-ScriptCore.dll"); // 加载核心程序集
-        LoadAssemblyClasses(s_Data->CoreAssembly);              // 加载核心程序集类
+        LoadAssembly("Resources/Scripts/Lucky-ScriptCore.dll");     // 加载核心程序集：脚本内核
+        LoadAppAssembly("Project/Binaries/Assembly-CSharp.dll");    // 加载 App 程序集：游戏脚本
+        LoadAssemblyClasses();                                      // 加载程序集中的类
 
         auto& classes = s_Data->MonoBehaviourClasses;
 
         ScriptGlue::RegisterComponents();       // 注册所有组件
         ScriptGlue::RegisterInternalCalls();    // 注册内部调用函数
 
-        // 创建 LuckyEngine.MonoBehaviour 类
-        s_Data->MonoBehaviourClass = ScriptClass("LuckyEngine", "MonoBehaviour");
+        // 从核心程序集创建 LuckyEngine.MonoBehaviour 类
+        s_Data->MonoBehaviourClass = ScriptClass("LuckyEngine", "MonoBehaviour", true);
     }
 
     void ScriptEngine::Shutdown()
@@ -185,6 +189,16 @@ namespace Lucky
         s_Data->CoreAssemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
 
         // Utils::PrintAssemblyTypes(s_Data->CoreAssembly);
+    }
+
+    void ScriptEngine::LoadAppAssembly(const std::filesystem::path& filepath)
+    {
+        // 加载 C# App 程序集
+        s_Data->AppAssembly = Utils::LoadMonoAssembly(filepath);
+        // 获取 程序集的 Mono Image
+        s_Data->AppAssemblyImage = mono_assembly_get_image(s_Data->AppAssembly);
+
+        // Utils::PrintAssemblyTypes(s_Data->AppAssembly);
     }
 
     void ScriptEngine::OnRuntimeStart(Scene* scene)
@@ -246,15 +260,14 @@ namespace Lucky
         return s_Data->CoreAssemblyImage;
     }
 
-    void ScriptEngine::LoadAssemblyClasses(MonoAssembly* assembly)
+    void ScriptEngine::LoadAssemblyClasses()
     {
         s_Data->MonoBehaviourClasses.clear();  // 清空 MonoBehaviour 脚本类列表
+        // 获取 Mono 定义表 的元数据
+        const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(s_Data->AppAssemblyImage, MONO_TABLE_TYPEDEF);
+        int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);  // 表中的类型数量
 
-        MonoImage* image = mono_assembly_get_image(assembly);   // Mono 程序集的 Image
-        const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);   // Mono 定义表 的元数据
-        int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);                                  // 表中的类型数量
-
-        // MonoBehaviour 类
+        // 从核心程序集 Lucky-ScriptCore 中加载 MonoBehaviour 类
         MonoClass* monoBehaviourClass = mono_class_from_name(s_Data->CoreAssemblyImage, "LuckyEngine", "MonoBehaviour");
 
         // 遍历所有类型
@@ -264,8 +277,8 @@ namespace Lucky
 
             mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE); // 解码 定义表 的每行
 
-            const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]); // 类型的命名空间名
-            const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);           // 类型名
+            const char* nameSpace = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAMESPACE]); // 类型的命名空间名
+            const char* name = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAME]);           // 类型名
 
             // 类全名
             std::string fullName;
@@ -278,8 +291,8 @@ namespace Lucky
                 fullName = name;
             }
 
-            // Mono 类
-            MonoClass* monoClass = mono_class_from_name(s_Data->CoreAssemblyImage, nameSpace, name);
+            // 当前的 Mono 类
+            MonoClass* monoClass = mono_class_from_name(s_Data->AppAssemblyImage, nameSpace, name);
 
             // 跳过父类自身
             if (monoClass == monoBehaviourClass)
@@ -308,11 +321,11 @@ namespace Lucky
         return instance;
     }
 
-    ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className)
+    ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className, bool isCore)
         : m_ClassNamespace(classNamespace), m_ClassName(className)
     {
-        // 从 Mono 程序集的 Image 获取 classNamespace.className 类
-        m_MonoClass = mono_class_from_name(s_Data->CoreAssemblyImage, classNamespace.c_str(), className.c_str());
+        // 从 Mono 程序集的 Image 获取 classNamespace.className 类：区分核心 或 App 程序集 Image
+        m_MonoClass = mono_class_from_name(isCore ? s_Data->CoreAssemblyImage : s_Data->AppAssemblyImage, classNamespace.c_str(), className.c_str());
     }
 
     MonoObject* ScriptClass::Instantiate()

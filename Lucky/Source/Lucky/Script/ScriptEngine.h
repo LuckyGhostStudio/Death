@@ -40,6 +40,8 @@ namespace Lucky
         /// <param name="filepath">程序集路径</param>
         static void LoadAssembly(const std::filesystem::path& filepath);
 
+        static void LoadAppAssembly(const std::filesystem::path& filepath);
+
         static void OnRuntimeStart(Scene* scene);
         static void OnRuntimeStop();
 
@@ -86,10 +88,9 @@ namespace Lucky
         static MonoObject* InstantiateClass(MonoClass* monoClass);
 
         /// <summary>
-        /// 加载程序集
+        /// 加载程序集中的类
         /// </summary>
-        /// <param name="assembly">程序集</param>
-        static void LoadAssemblyClasses(MonoAssembly* assembly);
+        static void LoadAssemblyClasses();
     };
 
     /// <summary>
@@ -104,7 +105,7 @@ namespace Lucky
         MonoClass* m_MonoClass = nullptr;   // 对应的 Mono 类
     public:
         ScriptClass() = default;
-        ScriptClass(const std::string& classNamespace, const std::string& className);
+        ScriptClass(const std::string& classNamespace, const std::string& className, bool isCore = false);
 
         /// <summary>
         /// 创建 Mono 类实例
