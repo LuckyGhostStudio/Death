@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <string>
+#include <map>
 
 extern "C" {
     typedef struct _MonoClass MonoClass;
@@ -11,10 +12,41 @@ extern "C" {
     typedef struct _MonoMethod MonoMethod;
     typedef struct _MonoAssembly MonoAssembly;
     typedef struct _MonoImage MonoImage;
+    typedef struct _MonoClassField MonoClassField;
 }
 
 namespace Lucky
 {
+    enum class ScriptFieldType
+    {
+        None = 0,
+
+        Float,
+        Double,
+
+        Bool,
+        SByte,
+        Short,
+        Int,
+        Long,
+
+        Byte,
+        UShort,
+        UInt,
+        ULong, 
+
+        Char,
+        String,
+
+        Vector2,
+        Vector3,
+        Vector4,
+
+        GameObject
+    };
+
+    class ScriptInstance;
+
     /// <summary>
     /// 脚本引擎：处理 CSharp Mono 
     /// </summary>
@@ -66,6 +98,7 @@ namespace Lucky
         static void OnUpdateMonoBehaviour(Object object, DeltaTime dt);
 
         static Scene* GetSceneContext();
+        static Ref<ScriptInstance> GetMonoBehaviourScriptInstance(UUID objectID);
         static std::unordered_map<std::string, Ref<ScriptClass>> GetMonoBehaviourClasses();
 
         static MonoImage* GetCoreAssemblyImage();
@@ -94,13 +127,28 @@ namespace Lucky
     };
 
     /// <summary>
+    /// 脚本字段
+    /// </summary>
+    struct ScriptField
+    {
+        ScriptFieldType Type;   // 类型
+        std::string Name;       // 名称
+
+        MonoClassField* ClassField;
+    };
+
+    /// <summary>
     /// 脚本类：记录 C# 脚本类信息，实例化 和 调用类方法 TODO Temp move to other
     /// </summary>
     class ScriptClass
     {
     private:
+        friend class ScriptEngine;
+    private:
         std::string m_ClassNamespace;   // 命名空间名
         std::string m_ClassName;        // 类名
+
+        std::map<std::string, ScriptField> m_Fields;  // 所有字段 Map
 
         MonoClass* m_MonoClass = nullptr;   // 对应的 Mono 类
     public:
@@ -129,6 +177,8 @@ namespace Lucky
         /// <param name="params">参数列表</param>
         /// <returns></returns>
         MonoObject* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params = nullptr);
+
+        const std::map<std::string, ScriptField>& GetFields() const { return m_Fields; }
     };
 
     /// <summary>
@@ -144,6 +194,8 @@ namespace Lucky
         MonoMethod* m_Constructor = nullptr;    // 构造方法
         MonoMethod* m_AwakeMethod = nullptr;    // Awake 方法
         MonoMethod* m_UpdateMethod = nullptr;   // Update 方法
+
+        inline static char s_FieldValueBuffer[8];
     public:
         ScriptInstance(Ref<ScriptClass> scriptClass, Object object);
 
@@ -157,5 +209,33 @@ namespace Lucky
         /// </summary>
         /// <param name="dt"></param>
         void InvokeUpdate(float dt);
+
+        Ref<ScriptClass> GetScriptClass() { return m_ScriptClass; }
+
+        template<typename T>
+        T GetFieldValue(const std::string& name)
+        {
+            bool success = GetFieldValueInternal(name, s_FieldValueBuffer);
+            if (!success)
+            {
+                return T();
+            }
+            return *(T*)s_FieldValueBuffer;
+        }
+
+        template<typename T>
+        void SetFieldValue(const std::string& name, const T& value)
+        {
+            SetFieldValueInternal(name, &value);
+        }
+    private:
+        /// <summary>
+        /// 获取字段内部 (Mono) 值
+        /// </summary>
+        /// <param name="name">字段名</param>
+        /// <param name="buffer">字段值缓冲区</param>
+        /// <returns></returns>
+        bool GetFieldValueInternal(const std::string& name, void* buffer);
+        bool SetFieldValueInternal(const std::string& name, const void* value);
     };
 }

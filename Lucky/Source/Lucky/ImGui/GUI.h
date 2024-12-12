@@ -55,7 +55,7 @@ namespace Lucky
         /// <param name="maxValue">最大值</param>
         /// <param name="labelMinWidth">标签最小列宽</param>
         /// <param name="widgetOffset">小部件右边界向左偏移量</param>
-        static void DragFloatN(const std::string& label, float* value, float valueSpeed = 0.01f, ValueType valueType = ValueType::Float, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+        static bool DragFloatN(const std::string& label, float* value, float valueSpeed = 0.01f, ValueType valueType = ValueType::Float, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
     
         /// <summary>
         /// Drag Slider

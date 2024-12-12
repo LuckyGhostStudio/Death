@@ -71,7 +71,7 @@ namespace Lucky
         ImGui::PopID();
     }
 
-    void GUI::DragFloatN(const std::string& label, float* value, float valueSpeed, ValueType valueType, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
+    bool GUI::DragFloatN(const std::string& label, float* value, float valueSpeed, ValueType valueType, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
     {
         ImGui::PushID(label.c_str());   // 设置控件 ID
 
@@ -91,23 +91,27 @@ namespace Lucky
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
 
+        bool changed = false;
+
         // 拖动条（1 号列）
         switch (valueType)
         {
             case ValueType::Float:
-                ImGui::DragFloat("##Float", value, valueSpeed, minValue, maxValue);
+                changed = ImGui::DragFloat("##Float", value, valueSpeed, minValue, maxValue);
                 break;
             case ValueType::Float2:
-                ImGui::DragFloat2("##Float2", value, valueSpeed, minValue, maxValue);
+                changed = ImGui::DragFloat2("##Float2", value, valueSpeed, minValue, maxValue);
                 break;
             case ValueType::Float3:
-                ImGui::DragFloat3("##Float3", value, valueSpeed, minValue, maxValue);
+                changed = ImGui::DragFloat3("##Float3", value, valueSpeed, minValue, maxValue);
         }
 
         ImGui::PopItemWidth();
         ImGui::Columns(1);  // 设置为一列
 
         ImGui::PopID();
+
+        return changed;
     }
 
     void GUI::DragSlider(const std::string& label, float* value, float minValue, float maxValue, ValueType valueType, float labelMinWidth, float widgetOffset)

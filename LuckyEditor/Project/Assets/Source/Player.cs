@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using LuckyEngine;
 
 namespace Game
@@ -7,7 +8,10 @@ namespace Game
     {
         private Transform transform;
 
-        float speed = 1.0f;
+        public float speed = 1.0f;
+        public float damage = 1.2f;
+
+        public float time;
 
         void Awake()
         {
@@ -15,10 +19,14 @@ namespace Game
             Console.WriteLine("{0}", gameObject.HasComponent<Transform>());
 
             transform = gameObject.GetComponent<Transform>();
+
+            speed = 2.22f;
         }
 
         void Update(float dt)
         {
+            time += dt;
+
             Vector3 velocity = Vector3.Zero;
 
             if (Input.GetKeyDown(KeyCode.A))

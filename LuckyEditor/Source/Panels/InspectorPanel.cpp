@@ -13,6 +13,8 @@
 #include "Lucky/Scene/Components/CircleCollider2DComponent.h"
 #include "Lucky/Scene/Components/ScriptComponent.h"
 
+#include "Lucky/Script/ScriptEngine.h"
+
 #include "Lucky/ImGui/GUI.h"
 
 #include "Lucky/Utils/PlatformUtils.h"
@@ -274,7 +276,7 @@ namespace Lucky
 
         // 绘制 C# Script 组件
         static std::string scriptComponentName;
-        DrawComponent<ScriptComponent>(scriptComponentName + " (Script)", object, [](ScriptComponent& scriptComponent)
+        DrawComponent<ScriptComponent>(scriptComponentName + " (Script)", object, [&](ScriptComponent& scriptComponent)
         {
             scriptComponentName = scriptComponent.ClassName;    // 组件显示的脚本名
 
@@ -297,6 +299,25 @@ namespace Lucky
                     scriptComponent.ClassName = className;              // 脚本类名
                 }
             });
+
+            Ref<ScriptInstance> scriptInstance = ScriptEngine::GetMonoBehaviourScriptInstance(object.GetUUID());
+            if (scriptInstance)
+            {
+                // 所有 public 字段
+                const auto& fields = scriptInstance->GetScriptClass()->GetFields();
+                for (const auto& [name, field] : fields)
+                {
+                    // Float
+                    if (field.Type == ScriptFieldType::Float)
+                    {
+                        float value = scriptInstance->GetFieldValue<float>(name);
+                        if (GUI::DragFloatN(name, &value))
+                        {
+                            scriptInstance->SetFieldValue<float>(name, value);
+                        }
+                    }
+                }
+            }
         });
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 1));   // 垂直间距为 1

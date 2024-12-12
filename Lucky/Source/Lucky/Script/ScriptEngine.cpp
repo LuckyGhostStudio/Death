@@ -7,9 +7,33 @@
 
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
+#include "mono/metadata/object.h"
+#include "mono/metadata/tabledefs.h"
 
 namespace Lucky
 {
+    // MonoTypeName - ScriptFieldType
+    static std::unordered_map<std::string, ScriptFieldType> s_ScriptFieldTypeMap =
+    {
+        { "System.Single",          ScriptFieldType::Float      },
+        { "System.Double",          ScriptFieldType::Double     },
+        { "System.Boolean",         ScriptFieldType::Bool       },
+        { "System.SByte",           ScriptFieldType::SByte      },
+        { "System.Int16",           ScriptFieldType::Short      },
+        { "System.Int32",           ScriptFieldType::Int        },
+        { "System.Int64",           ScriptFieldType::Long       },
+        { "System.Byte",            ScriptFieldType::Byte       },
+        { "System.UInt16",          ScriptFieldType::UShort     },
+        { "System.UInt32",          ScriptFieldType::UInt       },
+        { "System.UInt64",          ScriptFieldType::ULong      },
+        { "System.Char",            ScriptFieldType::Char       },
+        { "System.String",          ScriptFieldType::String     },
+        { "LuckyEngine.Vector2",    ScriptFieldType::Vector2    },
+        { "LuckyEngine.Vector3",    ScriptFieldType::Vector3    },
+        { "LuckyEngine.Vector4",    ScriptFieldType::Vector4    },
+        { "LuckyEngine.GameObject", ScriptFieldType::GameObject }
+    };
+
     namespace Utils
     {
         /// <summary>
@@ -102,6 +126,42 @@ namespace Lucky
 
                 LC_CORE_TRACE("{}.{}", nameSpace, name);
             }
+        }
+
+        static ScriptFieldType MonoTypeToScriptFieldType(MonoType* monoType)
+        {
+            std::string typeName = mono_type_get_name(monoType);    // 类型名
+
+            if (s_ScriptFieldTypeMap.find(typeName) == s_ScriptFieldTypeMap.end())
+            {
+                return ScriptFieldType::None;
+            }
+            return s_ScriptFieldTypeMap.at(typeName);
+        }
+
+        static const char* ScriptFieldTypeToString(ScriptFieldType fieldType)
+        {
+            switch (fieldType)
+            {
+                case ScriptFieldType::Float:        return "Float";
+                case ScriptFieldType::Double:       return "Double";
+                case ScriptFieldType::Bool:         return "Bool";
+                case ScriptFieldType::SByte:        return "SByte";
+                case ScriptFieldType::Short:        return "Short";
+                case ScriptFieldType::Int:          return "Int";
+                case ScriptFieldType::Long:         return "Long";
+                case ScriptFieldType::Byte:         return "Byte";
+                case ScriptFieldType::UShort:       return "UShort";
+                case ScriptFieldType::UInt:         return "UInt";
+                case ScriptFieldType::ULong:        return "ULong";
+                case ScriptFieldType::Char:         return "Char";
+                case ScriptFieldType::String:       return "String";
+                case ScriptFieldType::Vector2:      return "Vector2";
+                case ScriptFieldType::Vector3:      return "Vector3";
+                case ScriptFieldType::Vector4:      return "Vector4";
+                case ScriptFieldType::GameObject:   return "GameObject";
+            }
+            return "<Invalid>";
         }
     }
 
@@ -250,6 +310,15 @@ namespace Lucky
         return s_Data->SceneContext;
     }
 
+    Ref<ScriptInstance> ScriptEngine::GetMonoBehaviourScriptInstance(UUID objectID)
+    {
+        if (s_Data->MonoBehaviourInstances.find(objectID) == s_Data->MonoBehaviourInstances.end())
+        {
+            return nullptr;
+        }
+        return s_Data->MonoBehaviourInstances.at(objectID);
+    }
+
     std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetMonoBehaviourClasses()
     {
         return s_Data->MonoBehaviourClasses;
@@ -277,22 +346,22 @@ namespace Lucky
 
             mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE); // 解码 定义表 的每行
 
-            const char* nameSpace = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAMESPACE]); // 类型的命名空间名
-            const char* name = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAME]);           // 类型名
+            const char* nameSpace = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAMESPACE]);  // 类的命名空间名
+            const char* className = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAME]);       // 类名
 
             // 类全名
             std::string fullName;
             if (strlen(nameSpace) != 0)
             {
-                fullName = std::format("{}.{}", nameSpace, name);   // nameSpace.name
+                fullName = std::format("{}.{}", nameSpace, className);   // nameSpace.className
             }
             else
             {
-                fullName = name;
+                fullName = className;
             }
 
             // 当前的 Mono 类
-            MonoClass* monoClass = mono_class_from_name(s_Data->AppAssemblyImage, nameSpace, name);
+            MonoClass* monoClass = mono_class_from_name(s_Data->AppAssemblyImage, nameSpace, className);
 
             // 跳过父类自身
             if (monoClass == monoBehaviourClass)
@@ -302,12 +371,39 @@ namespace Lucky
 
             // 检查 monoClass 是否为 MonoBehaviour 的子类
             bool isMonoBehaviour = mono_class_is_subclass_of(monoClass, monoBehaviourClass, false);
-            if (isMonoBehaviour)
+            if (!isMonoBehaviour)
             {
-                s_Data->MonoBehaviourClasses[fullName] = CreateRef<ScriptClass>(nameSpace, name);  // 添加到映射表
+                continue;
             }
 
-            LC_CORE_TRACE("{}.{}", nameSpace, name);
+            // 添加子类到映射表
+            Ref<ScriptClass> scriptClass = CreateRef<ScriptClass>(nameSpace, className);
+            s_Data->MonoBehaviourClasses[fullName] = scriptClass;
+
+            LC_CORE_TRACE("{}.{}", nameSpace, className);
+
+            // 字段数量
+            int fieldCount = mono_class_num_fields(monoClass);
+            LC_CORE_WARN("{} Fields {}:", className, fieldCount);
+
+            // 迭代所有字段
+            void* iterator = nullptr;
+            while (MonoClassField* field = mono_class_get_fields(monoClass, &iterator))
+            {
+                const char* fieldName = mono_field_get_name(field); // 字段名
+                uint32_t flags = mono_field_get_flags(field);       // 字段的标志
+
+                // public 字段
+                if (flags & FIELD_ATTRIBUTE_PUBLIC)
+                {
+                    MonoType* type = mono_field_get_type(field);       // 字段类型
+                    ScriptFieldType fieldType = Utils::MonoTypeToScriptFieldType(type);
+
+                    LC_CORE_WARN("    public {0} {1}", Utils::ScriptFieldTypeToString(fieldType), fieldName);
+
+                    scriptClass->m_Fields[fieldName] = { fieldType, fieldName, field }; // 添加字段到 map
+                }
+            }
         }
     }
 
@@ -378,5 +474,37 @@ namespace Lucky
             void* param = &dt;
             m_ScriptClass->InvokeMethod(m_Instance, m_UpdateMethod, &param);    // 调用 Update 方法
         }
+    }
+
+    bool ScriptInstance::GetFieldValueInternal(const std::string& name, void* buffer)
+    {
+        const auto& fields = m_ScriptClass->GetFields();
+
+        if (fields.find(name) == fields.end())
+        {
+            return false;
+        }
+
+        const ScriptField& field = fields.at(name); // 当前字段
+
+        mono_field_get_value(m_Instance, field.ClassField, buffer); // 获取字段值
+
+        return true;
+    }
+
+    bool ScriptInstance::SetFieldValueInternal(const std::string& name, const void* value)
+    {
+        const auto& fields = m_ScriptClass->GetFields();
+
+        if (fields.find(name) == fields.end())
+        {
+            return false;
+        }
+
+        const ScriptField& field = fields.at(name); // 当前字段
+
+        mono_field_set_value(m_Instance, field.ClassField, (void*)value);  // 设置字段值
+
+        return true;
     }
 }
