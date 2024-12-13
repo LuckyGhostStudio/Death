@@ -11,6 +11,7 @@ namespace Lucky
         ImGui::PushID(label.c_str());   // 设置控件 ID
 
         ImFont* boldFont = ImGui::GetIO().Fonts->Fonts[0];  // 粗体
+        float framePaddingY = ImGui::GetStyle().FramePadding.y;
 
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
         // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
@@ -23,29 +24,29 @@ namespace Lucky
         ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + framePaddingY);
         ImGui::Text(label.c_str()); // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushMultiItemsWidths(3, panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
 
-        ImGui::PushFont(boldFont);
         // 拖动条（1 号列）
+        ImGui::PushFont(boldFont);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + framePaddingY);
         ImGui::Text("X");
-
         ImGui::PopFont();
 
         ImGui::SameLine();
-
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - framePaddingY);
         ImGui::DragFloat("##X", &values.x, valueSpeed, minValue, maxValue);
 
         ImGui::PopItemWidth();
 
         ImGui::SameLine();
 
-        ImGui::PushFont(boldFont);
         // 拖动条（2 号列）
+        ImGui::PushFont(boldFont);
         ImGui::Text("Y");
-
         ImGui::PopFont();
 
         ImGui::SameLine();
@@ -55,10 +56,9 @@ namespace Lucky
 
         ImGui::SameLine();
 
-        ImGui::PushFont(boldFont);
         // 拖动条（3 号列）
+        ImGui::PushFont(boldFont);
         ImGui::Text("Z");
-
         ImGui::PopFont();
 
         ImGui::SameLine();
@@ -75,6 +75,8 @@ namespace Lucky
     {
         ImGui::PushID(label.c_str());   // 设置控件 ID
 
+        float framePaddingY = ImGui::GetStyle().FramePadding.y;
+
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
         // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
         float labelWidth = panelWidth * 0.4f;
@@ -86,6 +88,7 @@ namespace Lucky
         ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + framePaddingY);
         ImGui::Text(label.c_str()); // 控件名（0 号列）
 
         ImGui::NextColumn();
@@ -118,6 +121,8 @@ namespace Lucky
     {
         ImGui::PushID(label.c_str());   // 设置控件 ID
 
+        float framePaddingY = ImGui::GetStyle().FramePadding.y;
+
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
         // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
         float labelWidth = panelWidth * 0.4f;
@@ -129,6 +134,7 @@ namespace Lucky
         ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + framePaddingY);
         ImGui::Text(label.c_str()); // 控件名（0 号列）
 
         ImGui::NextColumn();
@@ -155,6 +161,8 @@ namespace Lucky
     {
         ImGui::PushID(label.c_str());   // 设置控件ID
 
+        float framePaddingY = ImGui::GetStyle().FramePadding.y;
+
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
         // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
         float labelWidth = panelWidth * 0.4f;
@@ -166,6 +174,7 @@ namespace Lucky
         ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + framePaddingY);
         ImGui::Text(label.c_str()); // 控件名（0 号列）
 
         ImGui::NextColumn();
@@ -183,6 +192,8 @@ namespace Lucky
     {
         ImGui::PushID(label.c_str());   // 设置控件ID
 #if 1   // TODO 移动到通用
+        float framePaddingY = ImGui::GetStyle().FramePadding.y;
+
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
         // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
         float labelWidth = panelWidth * 0.4f;
@@ -194,6 +205,7 @@ namespace Lucky
         ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + framePaddingY);
         ImGui::Text(label.c_str()); // 控件名（0 号列）
 
         ImGui::NextColumn();

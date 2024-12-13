@@ -42,7 +42,7 @@ namespace Lucky
         uint32_t m_RendererID;      // 纹理 ID
         uint32_t m_Width;           // 宽
         uint32_t m_Height;          // 高
-        std::string m_Path;         // 路径
+        std::string m_Path;         // 路径 TODO 使用相对路径 Assets/...
 
         GLenum m_InternalFormat;    // 内部格式（存储格式）
         GLenum m_DataFormat;        // 数据格式（采样格式）

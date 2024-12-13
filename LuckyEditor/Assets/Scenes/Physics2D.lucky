@@ -46,7 +46,7 @@ Objects:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
-      Sprite: D:\Projects\C++\Lucky\LuckyEditor\Assets\Textures\LuckyLogoBlue_400x400.png
+      Sprite: Assets\Textures\LuckyLogoBlue_400x400.png
       Color: [1, 1, 1, 1]
     Rigidbody2DComponent:
       BodyType: 1
@@ -85,7 +85,7 @@ Objects:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
-      Sprite: D:\Projects\C++\Lucky\LuckyEditor\Assets\Textures\LuckyLogoBlue_400x400.png
+      Sprite: Assets\Textures\LuckyLogoBlue_400x400.png
       Color: [1, 1, 0, 1]
     Rigidbody2DComponent:
       BodyType: 1

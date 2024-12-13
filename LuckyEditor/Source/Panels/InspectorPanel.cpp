@@ -204,7 +204,7 @@ namespace Lucky
         {
             uint32_t spriteID = spriteRendererComponent.Sprite->GetRendererID();    // Sprite ID
             // 选择图片
-            GUI::ObjectSelector("Sprite", spriteID, { 50, 50 }, [&]()
+            GUI::ImageButton("Sprite", spriteID, { 50, 50 }, [&]()
             {
                 std::string filepath = FileDialogs::OpenFile("Sprite(*.png)\0*.png\0"); // TODO .sprite in project
                 
@@ -280,7 +280,9 @@ namespace Lucky
         {
             scriptComponentName = scriptComponent.ClassName;    // 组件显示的脚本名
 
-            GUI::ObjectField("Script", scriptComponent.ClassName, [&]()
+            uint32_t iconID = m_ScriptIcon->GetRendererID();
+
+            GUI::ObjectField("Script", iconID, scriptComponent.ClassName, [&]()
             {
                 // 选择 C# 脚本文件
                 std::string filepath = FileDialogs::OpenFile("C# Script(*.cs)\0*.cs\0"); // TODO .Script in project
