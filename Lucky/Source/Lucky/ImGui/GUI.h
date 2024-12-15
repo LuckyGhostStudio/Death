@@ -116,7 +116,7 @@ namespace Lucky
     {
         ImGui::PushID(label.c_str());   // 设置控件 ID
 
-        float framePaddingY = ImGui::GetStyle().FramePadding.y;
+        float padding = ImGui::GetStyle().FramePadding.y;
 
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
         // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
@@ -129,7 +129,7 @@ namespace Lucky
         ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + framePaddingY);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
         ImGui::Text(label.c_str()); // 控件名（0 号列）
 
         ImGui::NextColumn();
@@ -168,7 +168,7 @@ namespace Lucky
     {
         ImGui::PushID(label.c_str());   // 设置控件 ID
 
-        float framePaddingY = ImGui::GetStyle().FramePadding.y;
+        float padding = ImGui::GetStyle().FramePadding.y;
 
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
         // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
@@ -181,7 +181,7 @@ namespace Lucky
         ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + framePaddingY);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
         ImGui::Text(label.c_str()); // 控件名（0 号列）
 
         ImGui::NextColumn();
@@ -206,7 +206,8 @@ namespace Lucky
     {
         ImGui::PushID(label.c_str());   // 设置控件 ID
 
-        float framePaddingY = ImGui::GetStyle().FramePadding.y;
+        float lineHeight = ImGui::GetIO().Fonts->Fonts[1]->FontSize;
+        float padding = ImGui::GetStyle().FramePadding.y;
 
         float panelWidth = ImGui::GetWindowContentRegionWidth();    // 面板宽度
         // 计算 label 宽度 [labelMinWidth, panelWidth * 0.4f]
@@ -219,22 +220,29 @@ namespace Lucky
         ImGui::Columns(2, 0, false);            // 设置为 两列 id 边界取消显示
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + framePaddingY);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
         ImGui::Text(label.c_str()); // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
 
-        // TODO
-        //ImGui::Image((ImTextureID)textureID, ImVec2(20, 20), ImVec2(0, 1), ImVec2(1, 0));
 
-        // 按钮（1 号列）TODO
-        ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.1f, 0.5f });
-        if (ImGui::Button(objectName.c_str(), ImVec2(panelWidth - labelWidth - widgetOffset, 0)))
+        // 按钮（1 号列）
+        float posX = ImGui::GetCursorPosX();
+        if (ImGui::Button("##Name", ImVec2(panelWidth - labelWidth - widgetOffset, 0)))
         {
             OnClicked();   // 点击回调函数
         }
-        ImGui::PopStyleVar();
+
+        // 对象图标
+        ImGui::SameLine();
+        ImGui::SetCursorPos({ posX + padding * 1.5f, ImGui::GetCursorPosY() + padding * 1.6f });
+        ImGui::Image((ImTextureID)textureID, ImVec2(lineHeight - padding, lineHeight - padding), ImVec2(0, 1), ImVec2(1, 0));
+
+        // 对象名 TODO None (ObjectType 模板参数)
+        ImGui::SameLine();
+        ImGui::SetCursorPos({ ImGui::GetCursorPosX() - padding, ImGui::GetCursorPosY() - padding * 1.6f });
+        ImGui::Text(objectName.empty() ? "(None)" : objectName.c_str());
 
         ImGui::PopItemWidth();
         ImGui::Columns(1);      // 设置为一列

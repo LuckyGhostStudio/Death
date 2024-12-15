@@ -146,8 +146,8 @@ namespace Lucky
             samplers[i] = i;
         }
 
-        s_Data.TextureShader = Shader::Create("Assets/Shaders/TextureShader");  // 创建 Texture 着色器
-        s_Data.LineShader = Shader::Create("Assets/Shaders/LineShader");        // 创建 Line 着色器
+        s_Data.TextureShader = Shader::Create("Project/Assets/Shaders/TextureShader");  // 创建 Texture 着色器
+        s_Data.LineShader = Shader::Create("Project/Assets/Shaders/LineShader");        // 创建 Line 着色器
 
         s_Data.TextureSlots[0] = s_Data.WhiteTexture;   // 0 号纹理槽为白色纹理（默认）
 

@@ -110,8 +110,9 @@ namespace Lucky
     {
         ImGuiStyle& style = ImGui::GetStyle();
         // TODO 设置 ImGuiStyle 的所有参数
-        style.WindowBorderSize = 0;
-        style.ChildBorderSize = 0;
+        style.WindowBorderSize = 1.0f;
+        style.ChildBorderSize = 1.0f;
+        style.TabBorderSize = 1.0f;
 
         style.WindowMinSize.x = 50.0f;          // 窗口最小尺寸
 

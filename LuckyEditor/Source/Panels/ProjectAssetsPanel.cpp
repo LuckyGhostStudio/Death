@@ -7,7 +7,7 @@
 
 namespace Lucky
 {
-    static const std::filesystem::path g_AssetPath = "Assets";  // 资产根目录名
+    static const std::filesystem::path g_AssetPath = "Project/Assets";  // 资产根目录名
 
     ProjectAssetsPanel::ProjectAssetsPanel()
         : m_CurrentFile("")
