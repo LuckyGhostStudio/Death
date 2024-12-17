@@ -77,6 +77,27 @@ namespace Lucky
         m_ScriptIcon = Texture2D::Create("Resources/Icons/Components/CSharp_Icon.png");
     }
 
+    InspectorPanel::InspectorPanel(const Ref<Scene>& scene)
+        : m_Scene(scene)
+    {
+        m_SettingsButtonIcon = Texture2D::Create("Resources/Icons/SettingsButton_Icon.png");
+
+        m_TransformIcon = Texture2D::Create("Resources/Icons/Components/Transform_Icon.png");
+        m_CameraIcon = Texture2D::Create("Resources/Icons/Components/Camera_Icon.png");
+        m_SpriteRendererIcon = Texture2D::Create("Resources/Icons/Components/SpriteRenderer_Icon.png");
+        m_Rigidbody2DIcon = Texture2D::Create("Resources/Icons/Components/Rigidbody_Icon.png");
+        m_BoxCollider2DIcon = Texture2D::Create("Resources/Icons/Components/BoxCollider2D_Icon.png");
+        m_CircleCollider2DIcon = Texture2D::Create("Resources/Icons/Components/CircleCollider2D_Icon.png");
+        m_ScriptIcon = Texture2D::Create("Resources/Icons/Components/CSharp_Icon.png");
+    }
+
+    void InspectorPanel::SetSceneContext(const Ref<Scene>& scene)
+    {
+        // 重新设置场景信息
+        m_Scene = scene;
+        Selection::Object = {};
+    }
+
     void InspectorPanel::OnImGuiRender(bool& isOpen)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 10));    // 窗口 Padding（控件边界到窗口边界的距离）
@@ -279,6 +300,7 @@ namespace Lucky
         DrawComponent<ScriptComponent>(scriptComponentName + " (Script)", object, [&](ScriptComponent& scriptComponent)
         {
             scriptComponentName = scriptComponent.ClassName;    // 组件显示的脚本名
+            std::string fullName = std::format("{}.{}", scriptComponent.ClassNamespace, scriptComponent.ClassName);
 
             uint32_t iconID = m_ScriptIcon->GetRendererID();
 
@@ -302,20 +324,72 @@ namespace Lucky
                 }
             });
 
-            Ref<ScriptInstance> scriptInstance = ScriptEngine::GetMonoBehaviourScriptInstance(object.GetUUID());
-            if (scriptInstance)
+            if (m_Scene->IsRunning())
             {
-                // 所有 public 字段
-                const auto& fields = scriptInstance->GetScriptClass()->GetFields();
-                for (const auto& [name, field] : fields)
+                Ref<ScriptInstance> scriptInstance = ScriptEngine::GetMonoBehaviourScriptInstance(object.GetUUID());
+                if (scriptInstance)
                 {
-                    // Float
-                    if (field.Type == ScriptFieldType::Float)
+                    // 所有 public 字段
+                    const auto& fields = scriptInstance->GetScriptClass()->GetFields();
+                    for (const auto& [name, field] : fields)
                     {
-                        float value = scriptInstance->GetFieldValue<float>(name);
-                        if (GUI::DragFloatN(name, &value))
+                        // Float
+                        if (field.Type == ScriptFieldType::Float)
                         {
-                            scriptInstance->SetFieldValue<float>(name, value);
+                            float value = scriptInstance->GetFieldValue<float>(name);
+                            if (GUI::DragFloatN(name, &value))
+                            {
+                                scriptInstance->SetFieldValue<float>(name, value);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Mono 脚本子类存在
+                if (ScriptEngine::MonoBehaviourClassExists(fullName))
+                {
+                    Ref<ScriptClass> monoBehaviourClass = ScriptEngine::GetMonoBehaviourClass(fullName);
+
+                    const auto& fields = monoBehaviourClass->GetFields();   // C# 脚本中的 public 字段
+
+                    ScriptFieldMap& fieldMap = ScriptEngine::GetScriptFieldMap(object.GetUUID());
+
+                    for (const auto& [name, field] : fields)
+                    {
+                        // 将 FieldMap 中的 字段值设置到 UI
+                        if (fieldMap.find(name) != fieldMap.end())
+                        {
+                            ScriptFieldInstance& fieldInstance = fieldMap.at(name);
+
+                            // Float
+                            if (field.Type == ScriptFieldType::Float)
+                            {
+                                float value = fieldInstance.GetValue<float>();
+                                if (GUI::DragFloatN(name, &value))
+                                {
+                                    fieldInstance.SetValue(value);
+                                }
+                            }
+                        }
+                        // 从 UI 读取值 设置到 FieldMap
+                        else
+                        {
+                            ScriptFieldInstance& fieldInstance = fieldMap[name];
+
+                            // TODO 初始显示脚本 public 字段的默认值
+
+                            // Float
+                            if (field.Type == ScriptFieldType::Float)
+                            {
+                                float value = 0.0f;
+                                if (GUI::DragFloatN(name, &value))
+                                {
+                                    fieldInstance.Field = field;
+                                    fieldInstance.SetValue(value);
+                                }
+                            }
                         }
                     }
                 }

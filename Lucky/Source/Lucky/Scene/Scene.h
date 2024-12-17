@@ -31,6 +31,8 @@ namespace Lucky
 
         uint32_t m_ViewportWidth = 1280;    // 场景视口宽
         uint32_t m_ViewportHeight = 720;    // 场景视口高
+
+        bool m_IsRunning = false;
     private:
         /// <summary>
         /// object 添加 TComponent 组件时调用
@@ -50,6 +52,8 @@ namespace Lucky
 
         inline const std::string& GetName() const { return m_Name; }
         inline void SetName(const std::string& name) { m_Name = name; }
+
+        bool IsRunning() const { return m_IsRunning; }
 
         /// <summary>
         /// 复制场景：引用

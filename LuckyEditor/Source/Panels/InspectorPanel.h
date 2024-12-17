@@ -19,6 +19,8 @@ namespace Lucky
     class InspectorPanel : public EditorPanel
     {
     private:
+        Ref<Scene> m_Scene;
+
         Object& m_SelectionObject = Selection::Object;  // 当前选中项
 
         Ref<Texture2D> m_SettingsButtonIcon;    // 组件设置按钮 Icon
@@ -44,6 +46,10 @@ namespace Lucky
         void DrawComponents(Object object);
     public:
         InspectorPanel();
+        InspectorPanel(const Ref<Scene>& scene);
+
+        virtual void SetSceneContext(const Ref<Scene>& scene) override;
+        Ref<Scene> GetSceneContext() const { return m_Scene; }
 
         virtual void OnImGuiRender(bool& isOpen) override;
     private:

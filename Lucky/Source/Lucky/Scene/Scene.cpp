@@ -272,6 +272,8 @@ namespace Lucky
 
     void Scene::OnRuntimeStart()
     {
+        m_IsRunning = true;
+
         OnPhysics2DStart(); // 开始 2D 物理
 
         // Scripting
@@ -293,6 +295,8 @@ namespace Lucky
 
     void Scene::OnRuntimeStop()
     {
+        m_IsRunning = false;
+
         OnPhysics2DStop();  // 停止 2D 物理
 
         ScriptEngine::OnRuntimeStop();      // 脚本停止运行

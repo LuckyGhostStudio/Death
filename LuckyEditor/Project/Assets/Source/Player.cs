@@ -20,7 +20,7 @@ namespace Game
 
             transform = gameObject.GetComponent<Transform>();
 
-            speed = 2.22f;
+            //speed = 2.22f;
         }
 
         void Update(float dt)

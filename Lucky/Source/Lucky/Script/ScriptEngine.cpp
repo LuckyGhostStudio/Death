@@ -184,6 +184,8 @@ namespace Lucky
         std::unordered_map<std::string, Ref<ScriptClass>> MonoBehaviourClasses; // namespace.class - MonoBehaviour 子类
         std::unordered_map<UUID, Ref<ScriptInstance>> MonoBehaviourInstances;   // ObjectUUID - MonoBehaviour 子类实例
 
+        std::unordered_map<UUID, ScriptFieldMap> MonoBehaviourScriptFields;     // ObjectUUID - MonoBehaviour 脚本字段
+
         // Runtime TODO Ref
         Scene* SceneContext = nullptr;  // 场景上下文
     };
@@ -285,10 +287,22 @@ namespace Lucky
         // 脚本类全名存在
         if (ScriptEngine::MonoBehaviourClassExists(fullName))
         {
+            UUID objectID = object.GetUUID();
+
             // 创建脚本实例
             Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->MonoBehaviourClasses[fullName], object);
             // 添加脚本实例到 UUID - MonoBehaviour Map
-            s_Data->MonoBehaviourInstances[object.GetUUID()] = instance;
+            s_Data->MonoBehaviourInstances[objectID] = instance;
+
+            // 复制 ScriptFieldMap 中的字段值到脚本实例
+            if (s_Data->MonoBehaviourScriptFields.find(objectID) != s_Data->MonoBehaviourScriptFields.end())
+            {
+                const ScriptFieldMap& fieldMap = s_Data->MonoBehaviourScriptFields.at(objectID);
+                for (const auto& [name, fieldInstance] : fieldMap)
+                {
+                    instance->SetFieldValueInternal(name, fieldInstance.m_ValueBuffer);
+                }
+            }
 
             instance->InvokeAwake();    // 调用 Awake 方法
         }
@@ -319,9 +333,23 @@ namespace Lucky
         return s_Data->MonoBehaviourInstances.at(objectID);
     }
 
+    Ref<ScriptClass> ScriptEngine::GetMonoBehaviourClass(const std::string& name)
+    {
+        if (s_Data->MonoBehaviourClasses.find(name) == s_Data->MonoBehaviourClasses.end())
+        {
+            return nullptr;
+        }
+        return s_Data->MonoBehaviourClasses.at(name);
+    }
+
     std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetMonoBehaviourClasses()
     {
         return s_Data->MonoBehaviourClasses;
+    }
+
+    ScriptFieldMap& ScriptEngine::GetScriptFieldMap(UUID objectID)
+    {
+        return s_Data->MonoBehaviourScriptFields[objectID];
     }
 
     MonoImage* ScriptEngine::GetCoreAssemblyImage()
@@ -402,6 +430,7 @@ namespace Lucky
                     LC_CORE_WARN("    public {0} {1}", Utils::ScriptFieldTypeToString(fieldType), fieldName);
 
                     scriptClass->m_Fields[fieldName] = { fieldType, fieldName, field }; // 添加字段到 map
+                    // TODO 添加字段值
                 }
             }
         }

@@ -45,6 +45,52 @@ namespace Lucky
         GameObject
     };
 
+    /// <summary>
+    /// 脚本字段
+    /// </summary>
+    struct ScriptField
+    {
+        ScriptFieldType Type;   // 类型
+        std::string Name;       // 名称
+
+        MonoClassField* ClassField;
+    };
+
+    /// <summary>
+    /// 脚本字段实例 ScriptField + Data
+    /// </summary>
+    struct ScriptFieldInstance
+    {
+    private:
+        friend class ScriptEngine;
+        friend class ScriptInstance;
+    public:
+        ScriptField Field;
+
+        ScriptFieldInstance()
+        {
+            memset(m_ValueBuffer, 0, sizeof(m_ValueBuffer));
+        }
+    private:
+        uint8_t m_ValueBuffer[16];  // 字段值 Buffer
+    public:
+        template<typename T>
+        T GetValue()
+        {
+            static_assert(sizeof(T) <= 16, "Type too large.");
+            return *(T*)m_ValueBuffer;
+        }
+
+        template<typename T>
+        void SetValue(T value)
+        {
+            static_assert(sizeof(T) <= 16, "Type too large.");
+            memcpy(m_ValueBuffer, &value, sizeof(T));
+        }
+    };
+
+    using ScriptFieldMap = std::unordered_map<std::string, ScriptFieldInstance>;    // 字段名 - 字段实例
+
     class ScriptInstance;
 
     /// <summary>
@@ -99,7 +145,9 @@ namespace Lucky
 
         static Scene* GetSceneContext();
         static Ref<ScriptInstance> GetMonoBehaviourScriptInstance(UUID objectID);
+        static Ref<ScriptClass> GetMonoBehaviourClass(const std::string& name);
         static std::unordered_map<std::string, Ref<ScriptClass>> GetMonoBehaviourClasses();
+        static ScriptFieldMap& GetScriptFieldMap(UUID objectID);
 
         static MonoImage* GetCoreAssemblyImage();
     private:
@@ -124,17 +172,6 @@ namespace Lucky
         /// 加载程序集中的类
         /// </summary>
         static void LoadAssemblyClasses();
-    };
-
-    /// <summary>
-    /// 脚本字段
-    /// </summary>
-    struct ScriptField
-    {
-        ScriptFieldType Type;   // 类型
-        std::string Name;       // 名称
-
-        MonoClassField* ClassField;
     };
 
     /// <summary>
@@ -187,6 +224,9 @@ namespace Lucky
     class ScriptInstance
     {
     private:
+        friend class ScriptEngine;
+        friend struct ScriptFieldInstance;
+    private:
         Ref<ScriptClass> m_ScriptClass;     // 脚本类
 
         MonoObject* m_Instance = nullptr;   // 对应的 Mono 实例
@@ -195,7 +235,7 @@ namespace Lucky
         MonoMethod* m_AwakeMethod = nullptr;    // Awake 方法
         MonoMethod* m_UpdateMethod = nullptr;   // Update 方法
 
-        inline static char s_FieldValueBuffer[8];
+        inline static char s_FieldValueBuffer[16];
     public:
         ScriptInstance(Ref<ScriptClass> scriptClass, Object object);
 
@@ -215,6 +255,8 @@ namespace Lucky
         template<typename T>
         T GetFieldValue(const std::string& name)
         {
+            static_assert(sizeof(T) <= 16, "Type too large.");
+
             bool success = GetFieldValueInternal(name, s_FieldValueBuffer);
             if (!success)
             {
@@ -224,8 +266,10 @@ namespace Lucky
         }
 
         template<typename T>
-        void SetFieldValue(const std::string& name, const T& value)
+        void SetFieldValue(const std::string& name, T value)
         {
+            static_assert(sizeof(T) <= 16, "Type too large.");
+
             SetFieldValueInternal(name, &value);
         }
     private:

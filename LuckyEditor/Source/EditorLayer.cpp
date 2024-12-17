@@ -56,7 +56,7 @@ namespace Lucky
         m_CameraObject.GetComponent<TransformComponent>().Transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
         m_SceneHierarchyPanel = CreateRef<SceneHierarchyPanel>(m_CurrentScene);
-        m_InspectorPanel = CreateRef<InspectorPanel>();
+        m_InspectorPanel = CreateRef<InspectorPanel>(m_CurrentScene);
         m_SceneViewportPanel = CreateRef<SceneViewportPanel>(m_SceneViewportFramebuffer, m_CurrentScene);
         m_GameViewportPanel = CreateRef<GameViewportPanel>(m_GameViewportFramebuffer, m_CurrentScene);
         m_RendererStatsPanel = CreateRef<RendererStatsPanel>();
@@ -199,6 +199,7 @@ namespace Lucky
         m_SceneViewportPanel->SetSceneContext(m_RuntimeScene);
         m_GameViewportPanel->SetSceneContext(m_RuntimeScene);
         m_SceneHierarchyPanel->SetSceneContext(m_RuntimeScene);
+        m_InspectorPanel->SetSceneContext(m_RuntimeScene);
 
         m_RuntimeScene->OnRuntimeStart();   // 开始运行
 
@@ -219,6 +220,7 @@ namespace Lucky
         m_SceneViewportPanel->SetSceneContext(m_EditorScene);
         m_GameViewportPanel->SetSceneContext(m_EditorScene);
         m_SceneHierarchyPanel->SetSceneContext(m_EditorScene);
+        m_InspectorPanel->SetSceneContext(m_EditorScene);
 
         ImGui::SetWindowFocus("Scene"); // Temp TODO 聚焦运行前的焦点窗口（恢复编辑器数据）
 
@@ -234,6 +236,7 @@ namespace Lucky
         m_SceneViewportPanel->SetSceneContext(m_EditorScene);
         m_GameViewportPanel->SetSceneContext(m_EditorScene);
         m_SceneHierarchyPanel->SetSceneContext(m_EditorScene);
+        m_InspectorPanel->SetSceneContext(m_EditorScene);
 
         m_CurrentScene = m_EditorScene;
     }
@@ -276,6 +279,7 @@ namespace Lucky
             m_SceneViewportPanel->SetSceneContext(m_EditorScene);
             m_GameViewportPanel->SetSceneContext(m_EditorScene);
             m_SceneHierarchyPanel->SetSceneContext(m_EditorScene);
+            m_InspectorPanel->SetSceneContext(m_EditorScene);
 
             m_CurrentScene = m_EditorScene; // 当前场景
             m_SceneFilePath = filepath;     // 当前场景路径
