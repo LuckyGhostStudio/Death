@@ -39,18 +39,6 @@ namespace Lucky
         m_CurrentScene = CreateRef<Scene>();    // 创建场景
         m_EditorScene = m_CurrentScene;
 
-        auto commandLineArgs = Application::GetInstance().GetSpecification().CommandLineArgs;
-        // 从命令行加载场景
-        if (commandLineArgs.Count > 1)
-        {
-            const char* sceneFilePath = commandLineArgs[1];
-
-            SceneSerializer serializer(m_CurrentScene);
-            serializer.Deserialize(sceneFilePath);
-        }
-
-        // m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f); // 创建编辑器相机
-
         m_CameraObject = m_CurrentScene->CreateObject("Main Camera");    // 创建相机对象
         m_CameraObject.AddComponent<CameraComponent>();                 // 添加 Camera 组件
         m_CameraObject.GetComponent<TransformComponent>().Transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -61,6 +49,15 @@ namespace Lucky
         m_GameViewportPanel = CreateRef<GameViewportPanel>(m_GameViewportFramebuffer, m_CurrentScene);
         m_RendererStatsPanel = CreateRef<RendererStatsPanel>();
         m_ProjectAssetsPanel = CreateRef<ProjectAssetsPanel>();
+
+        auto commandLineArgs = Application::GetInstance().GetSpecification().CommandLineArgs;
+        // 从命令行加载场景
+        if (commandLineArgs.Count > 1)
+        {
+            const char* sceneFilePath = commandLineArgs[1];
+
+            OpenScene(sceneFilePath);
+        }
     }
 
     void EditorLayer::OnDetach()
@@ -175,7 +172,7 @@ namespace Lucky
         // 设置按钮的位置
         ImGui::SetCursorPos({ (panelWidth - lineHeight) * 0.5f, ImGui::GetCursorPosY() });
 
-        GUI::SelectableImageButton(m_PlayButtonIcon->GetRendererID(), { lineHeight * 0.8f, lineHeight * 0.8f }, playButtonColors, [&]
+        if (GUI::SelectableImageButton(m_PlayButtonIcon->GetRendererID(), { lineHeight * 0.8f, lineHeight * 0.8f }, playButtonColors))
         {
             switch (m_SceneState)
             {
@@ -186,7 +183,7 @@ namespace Lucky
                     OnSceneStop();
                     break;
             }
-        });
+        }
     }
 
     void EditorLayer::OnScenePlay()

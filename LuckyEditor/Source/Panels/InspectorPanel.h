@@ -76,12 +76,12 @@ namespace Lucky
     template<typename TComponent, typename UIFunction>
     inline void InspectorPanel::DrawComponent(const std::string& name, Object object, UIFunction OnOpened)
     {
-        // 树节点标志：打开|框架|延伸到右边|允许重叠|框架边框
-        const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
-
         // TComponent 组件存在
         if (object.HasComponent<TComponent>())
         {
+            // 树节点标志：打开|框架|延伸到右边|允许重叠|框架边框
+            const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
+            
             auto& component = object.GetComponent<TComponent>();            // 获得组件
 
             ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();     // 可用区域大小
@@ -94,10 +94,10 @@ namespace Lucky
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
             ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);          // 边框线宽 0
 
-            float lineHeight = GImGui->Font->FontSize; // +GImGui->Style.FramePadding.y * 2.0f;    // 行高 = 字体大小 + 边框 y * 2
-            float padding = GImGui->Style.FramePadding.y;
-
             ImFont* boldFont = ImGui::GetIO().Fonts->Fonts[0];  // 粗体
+
+            float lineHeight = GImGui->Font->FontSize;
+            float padding = GImGui->Style.FramePadding.y;
 
             ImVec2 nodePos = ImGui::GetCursorPos();
 

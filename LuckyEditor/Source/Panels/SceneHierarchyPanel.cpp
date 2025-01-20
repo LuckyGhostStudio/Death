@@ -12,6 +12,8 @@
 
 #include <imgui/imgui.h>
 
+#include "Lucky/ImGui/GUI.h"
+
 namespace Lucky
 {
     SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene)
@@ -25,6 +27,8 @@ namespace Lucky
         // 重新设置场景信息
         m_Scene = scene;
         Selection::Object = {};
+
+        m_SceneIcon = Texture2D::Create("Resources/Icons/Scene_Icon.png");
     }
 
     void SceneHierarchyPanel::OnImGuiRender(bool& isOpen)
@@ -40,15 +44,18 @@ namespace Lucky
 
             if (m_Scene)
             {
-                // TODO 添加场景名节点 场景保存状态显示 Name *
-                // 遍历场景所有实体，并调用 each 内的函数
-                m_Scene->m_Registry.each([&](auto ObjectID)
+                uint32_t sceneIcon = m_SceneIcon->GetRendererID();
+                // Scene 场景根节点 TODO 场景保存状态显示 Name *
+                GUI::Foldout<Scene>(m_Scene->GetName(), sceneIcon, [&]()
                 {
-                    Object object{ ObjectID, m_Scene.get() };
+                    // 遍历场景所有实体，并调用 each 内的函数
+                    m_Scene->m_Registry.each([&](auto ObjectID)
+                    {
+                        Object object{ ObjectID, m_Scene.get() };
 
-                    DrawObjectNode(object); // 绘制物体结点
+                        DrawObjectNode(object); // 绘制物体结点
+                    });
                 });
-
 
                 ImGui::PopStyleVar();
 
@@ -101,8 +108,8 @@ namespace Lucky
         std::string& name = object.GetComponent<SelfComponent>().Name;  // 物体名
 
         // 树结点标志
-        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-        
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_SpanAvailWidth;
+
         static ImVec4 headerColor = { 0.38f, 0.3805f, 0.381f, 1.0f }; // 树节点颜色
 
         if (Selection::Object == object)

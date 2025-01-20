@@ -112,8 +112,8 @@ namespace Lucky
                     BoxCollider2D& boxCollider2D = boxCollider2DComponent.BoxCollider2d;
 
                     // BoxCollider2D 相对于 obj 的 Transform TODO bug: Offset 和 Scale 同时改变，刚体位置会不正确
-                    glm::mat4 boxLocalTransform = glm::translate(glm::mat4(1.0f), glm::vec3(boxCollider2D.GetOffset(), 0.001f))
-                        * glm::scale(glm::mat4(1.0f), glm::vec3(boxCollider2D.GetSize(), 1.0f));
+                    glm::mat4 boxLocalTransform = glm::translate(glm::mat4(1.0f), glm::vec3(boxCollider2D.Offset, 0.001f))
+                        * glm::scale(glm::mat4(1.0f), glm::vec3(boxCollider2D.Size, 1.0f));
 
                     glm::mat4 trans = transform.GetTransform() * boxLocalTransform; // 最终 Transform
 
@@ -141,8 +141,8 @@ namespace Lucky
                         * glm::toMat4(glm::quat(glm::radians(transform.GetRotation())))
                         * glm::scale(glm::mat4(1.0f), glm::vec3(glm::max(glm::abs(transform.GetScale().x), glm::abs(transform.GetScale().y))));
                     // CircleCollider2D 相对于 obj 的Transform
-                    glm::mat4 circLocalTransform = glm::translate(glm::mat4(1.0f), glm::vec3(circleCollider2D.GetOffset(), 0.001f))
-                        * glm::scale(glm::mat4(1.0f), glm::vec3(circleCollider2D.GetRadius()));
+                    glm::mat4 circLocalTransform = glm::translate(glm::mat4(1.0f), glm::vec3(circleCollider2D.Offset, 0.001f))
+                        * glm::scale(glm::mat4(1.0f), glm::vec3(circleCollider2D.Radius));
 
                     glm::mat4 trans = parentTransform * circLocalTransform; // 最终 Transform
 

@@ -2,10 +2,12 @@
 
 #include "EditorPanel.h"
 
+#include "Lucky/Core/Events/KeyEvent.h"
+
+#include "Lucky/Renderer/Texture.h"
+
 #include "Lucky/Scene/Scene.h"
 #include "Lucky/Scene/Object.h"
-
-#include "Lucky/Core/Events/KeyEvent.h"
 
 namespace Lucky
 {
@@ -16,6 +18,8 @@ namespace Lucky
     {
     private:
         Ref<Scene> m_Scene;         // 面板显示的场景
+
+        Ref<Texture2D> m_SceneIcon;
     public:
         SceneHierarchyPanel() = default;
         SceneHierarchyPanel(const Ref<Scene>& scene);

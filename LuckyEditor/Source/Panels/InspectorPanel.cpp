@@ -193,31 +193,52 @@ namespace Lucky
         {
             auto& camera = cameraComponent.Camera;
 
-            GUI::CheckBox("Main Camera", &cameraComponent.Primary); // 主相机设置框
+            GUI::Toggle("Main Camera", &cameraComponent.Primary); // 主相机设置框
 
-            const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };                            // 投影类型：透视 正交 
-            const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];   // 当前投影类型
+            const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };    // 投影类型：透视 正交 
+            int currentProjectionType = (int)camera.GetProjectionType();                // 当前投影类型
 
             // 下拉框 选择投影类型
-            GUI::DropdownList("Projection", currentProjectionTypeString, projectionTypeStrings, 2, [&](int index, const char* value)
+            if (GUI::DropdownList("Projection", projectionTypeStrings, 2, &currentProjectionType))
             {
-                camera.SetProjectionType((SceneCamera::ProjectionType)index);   // 设置相机投影类型
-            });
+                camera.SetProjectionType((SceneCamera::ProjectionType)currentProjectionType);   // 设置相机投影类型
+            }
 
             // 透视投影
             if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
             {
-                GUI::DragSlider("Vertical FOV", &camera.GetFOV_Ref(), 1.0f, 179.0f, GUI::ValueType::Angle); // FOV 垂直张角 滑动条
+                // FOV 垂直张角
+                float fov = camera.GetFOV();
+                if (GUI::SliderAngle("Vertical FOV", &fov, 1.0f, 179.0f))
+                {
+                    camera.SetFOV(fov);
+                }
             }
 
             // 正交投影
             if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
             {
-                GUI::DragFloatN("Size", &camera.GetSize_Ref());  // 尺寸 拖动条
+                // 尺寸
+                float size = camera.GetSize();
+                if (GUI::DragFloat("Size", &size))
+                {
+                    camera.SetSize(size);
+                }
             }
 
-            GUI::DragFloatN("Near", &camera.GetNearClip_Ref(), 0.01f, GUI::ValueType::Float, 0.01f, camera.GetFarClip() - 0.01f);    // 近裁剪平面
-            GUI::DragFloatN("Far", &camera.GetFarClip_Ref(), 0.01f, GUI::ValueType::Float, camera.GetNearClip() + 0.01f, 1000.0f);   // 远裁剪平面
+            // 近裁剪平面
+            float nearClip = camera.GetNearClip();
+            if (GUI::DragFloat("Near", &nearClip, 0.01f, 0.01f, camera.GetFarClip() - 0.01f))
+            {
+                camera.SetNearClip(nearClip);
+            }
+
+            // 远裁剪平面
+            float farClip = camera.GetFarClip();
+            if (GUI::DragFloat("Far", &farClip, 0.01f, camera.GetNearClip() + 0.01f, 1000.0f))
+            {
+                camera.SetFarClip(farClip);
+            }
         });
 
         // SpriteRenderer 组件
@@ -225,7 +246,7 @@ namespace Lucky
         {
             uint32_t spriteID = spriteRendererComponent.Sprite->GetRendererID();    // Sprite ID
             // 选择图片
-            GUI::ImageButton("Sprite", spriteID, { 50, 50 }, [&]()
+            if (GUI::ImageButton("Sprite", spriteID, { 50, 50 }))
             {
                 std::string filepath = FileDialogs::OpenFile("Sprite(*.png)\0*.png\0"); // TODO .sprite in project
                 
@@ -233,7 +254,7 @@ namespace Lucky
                 {
                     spriteRendererComponent.Sprite = Texture2D::Create(filepath);   // 创建 Texture
                 }
-            });
+            }
 
             GUI::ColorEditor4("Color", spriteRendererComponent.Color);   // 颜色编辑器
         });
@@ -244,29 +265,29 @@ namespace Lucky
             Rigidbody2D& rigidbody2D = rigidbody2DComponent.Rigidbody2d;
 
             // 刚体类型
-            const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };                   // 刚体类型：动态 静态 动力学 
-            const char* currentBodyTypeString = bodyTypeStrings[(int)rigidbody2D.GetBodyType()];    // 当前刚体类型
-            
-            GUI::DropdownList("Body Type", currentBodyTypeString, bodyTypeStrings, 3, [&](int index, const char* value)
+            const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };   // 刚体类型：动态 静态 动力学 
+            int currentBodyType = (int)rigidbody2D.Type;                            // 当前刚体类型
+           
+            if (GUI::DropdownList("Body Type", bodyTypeStrings, 3, &currentBodyType))
             {
-                rigidbody2D.SetBodyType((Rigidbody2D::BodyType)index);  // 设置刚体类型
-            });
+                rigidbody2D.Type = (Rigidbody2D::BodyType)currentBodyType;  // 设置刚体类型
+            }
 
-            GUI::DragFloatN("Mass", &rigidbody2D.GetMass_Ref(), 0.01f, GUI::ValueType::Float, 0.01f, 1000000.0f);
-            GUI::DragFloatN("Linear Drag", &rigidbody2D.GetLinearDrag_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
-            GUI::DragFloatN("Angular Drag", &rigidbody2D.GetAngularDrag_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
-            GUI::DragFloatN("Gravity Scale", &rigidbody2D.GetGravityScale_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
+            GUI::DragFloat("Mass", &rigidbody2D.Mass, 0.01f, 0.01f, 1000000.0f);
+            GUI::DragFloat("Linear Drag", &rigidbody2D.LinearDrag, 0.01f, 0.0f, 1000000.0f);
+            GUI::DragFloat("Angular Drag", &rigidbody2D.AngularDrag, 0.01f, 0.0f, 1000000.0f);
+            GUI::DragFloat("Gravity Scale", &rigidbody2D.GravityScale, 0.01f, 0.0f, 1000000.0f);
 
             // 碰撞检测模式
-            const char* collisionDetectionStrings[] = { "Discrete", "Continuous" };                                                 // 碰撞检测模式：离散 连续
-            const char* currentCollisionDetectionString = collisionDetectionStrings[(int)rigidbody2D.GetCollisionDetectionMode()];  // 当前碰撞检测模式
+            const char* collisionDetectionStrings[] = { "Discrete", "Continuous" }; // 碰撞检测模式：离散 连续
+            int currentCollisionDetection = (int)rigidbody2D.CollisionDetection;    // 当前碰撞检测模式
 
-            GUI::DropdownList("Collision Detection", currentCollisionDetectionString, collisionDetectionStrings, 2, [&](int index, const char* value)
+            if (GUI::DropdownList("Collision Detection", collisionDetectionStrings, 2, &currentCollisionDetection))
             {
-                rigidbody2D.SetCollisionDetectionMode((Rigidbody2D::CollisionDetectionMode)index);  // 设置碰撞检测模式
-            });
+                rigidbody2D.CollisionDetection = (Rigidbody2D::CollisionDetectionMode)currentCollisionDetection;    // 设置碰撞检测模式
+            }
 
-            GUI::CheckBox("Freeze Rotation", &rigidbody2D.IsFreezeRotation_Ref());  // 是否冻结旋转 Z 轴 勾选框
+            GUI::Toggle("Freeze Rotation", &rigidbody2D.FreezeRotation);    // 是否冻结旋转 Z 轴 勾选框
         });
 
         // 绘制 BoxCollider2D 组件
@@ -274,12 +295,11 @@ namespace Lucky
         {
             BoxCollider2D& boxCollider2D = boxCollider2DComponent.BoxCollider2d;
 
-            GUI::DragFloatN("Offset", glm::value_ptr(boxCollider2D.GetOffset()), 0.01f, GUI::ValueType::Float2);
-            GUI::DragFloatN("Size", glm::value_ptr(boxCollider2D.GetSize()), 0.01f, GUI::ValueType::Float2, 0.01f, 1000000.0f);
+            GUI::DragFloat2("Offset", boxCollider2D.Offset);
+            GUI::DragFloat2("Size", boxCollider2D.Size, 0.01, 0.01f, 1000000.0f);
 
-            GUI::DragFloatN("Density", &boxCollider2D.GetDensity_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
-            GUI::DragFloatN("Friction", &boxCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
-            // GUI::DragFloatN("Restitution", &boxCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
+            GUI::DragFloat("Density", &boxCollider2D.Density, 0.01f, 0.0f, 1000000.0f);
+            GUI::DragFloat("Friction", &boxCollider2D.Friction, 0.01f, 0.0f, 1.0f);
         });
 
         // 绘制 CircleCollider2D 组件
@@ -287,12 +307,11 @@ namespace Lucky
         {
             CircleCollider2D& circleCollider2D = circleCollider2DComponent.CircleCollider2d;
 
-            GUI::DragFloatN("Offset", glm::value_ptr(circleCollider2D.GetOffset()), 0.01f, GUI::ValueType::Float2);
-            GUI::DragFloatN("Radius", &circleCollider2D.GetRadius_Ref(), 0.01f, GUI::ValueType::Float, 0.01f, 1000000.0f);
+            GUI::DragFloat2("Offset", circleCollider2D.Offset);
+            GUI::DragFloat("Radius", &circleCollider2D.Radius, 0.01f, 0.01f, 1000000.0f);
 
-            GUI::DragFloatN("Density", &circleCollider2D.GetDensity_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1000000.0f);
-            GUI::DragFloatN("Friction", &circleCollider2D.GetFriction_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
-            // GUI::DragFloatN("Restitution", &circleCollider2D.GetRestitution_Ref(), 0.01f, GUI::ValueType::Float, 0.0f, 1.0f);
+            GUI::DragFloat("Density", &circleCollider2D.Density, 0.01f, 0.0f, 1000000.0f);
+            GUI::DragFloat("Friction", &circleCollider2D.Friction, 0.01f, 0.0f, 1.0f);
         });
 
         // 绘制 C# Script 组件
@@ -337,7 +356,7 @@ namespace Lucky
                         if (field.Type == ScriptFieldType::Float)
                         {
                             float value = scriptInstance->GetFieldValue<float>(name);
-                            if (GUI::DragFloatN(name, &value))
+                            if (GUI::DragFloat(name, &value))
                             {
                                 scriptInstance->SetFieldValue<float>(name, value);
                             }
@@ -367,7 +386,7 @@ namespace Lucky
                             if (field.Type == ScriptFieldType::Float)
                             {
                                 float value = fieldInstance.GetValue<float>();
-                                if (GUI::DragFloatN(name, &value))
+                                if (GUI::DragFloat(name, &value))
                                 {
                                     fieldInstance.SetValue(value);
                                 }
@@ -384,7 +403,7 @@ namespace Lucky
                             if (field.Type == ScriptFieldType::Float)
                             {
                                 float value = 0.0f;
-                                if (GUI::DragFloatN(name, &value))
+                                if (GUI::DragFloat(name, &value))
                                 {
                                     fieldInstance.Field = field;
                                     fieldInstance.SetValue(value);
