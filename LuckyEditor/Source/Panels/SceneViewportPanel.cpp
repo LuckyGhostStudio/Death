@@ -104,7 +104,7 @@ namespace Lucky
             {
                 Object obj = { entity, m_Scene.get() };
                 // 当前选中项
-                if (Selection::Object == obj)
+                if (SelectionManager::IsSelected(obj))
                 {
                     auto [transformComponent, boxCollider2DComponent] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
 
@@ -129,7 +129,7 @@ namespace Lucky
             {
                 Object obj = { entity, m_Scene.get() };
                 // 当前选中项
-                if (Selection::Object == obj)
+                if (SelectionManager::IsSelected(obj))
                 {
                     auto [transformComponent, circleCollider2DComponent] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
 
@@ -179,7 +179,7 @@ namespace Lucky
             ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_Size.x, m_Size.y }, ImVec2(0, 1), ImVec2(1, 0));   // 场景视口图像
 
             // Gizmo
-            Object selectedObject = Selection::Object;  // 被选中物体
+            Object selectedObject = SelectionManager::GetSelection();   // 被选中物体
             // 选中物体存在 && Gizmo 类型存在
             if (selectedObject && m_GizmoType != -1)
             {
@@ -294,7 +294,7 @@ namespace Lucky
             // 鼠标在视口内 鼠标没有位于 Gizmo 上
             if (m_IsHovered && !ImGuizmo::IsOver())
             {
-                Selection::Object = m_PickedObject;  // 更新 Selection
+                SelectionManager::Select(m_PickedObject);   // 更新 Selection
             }
         }
 

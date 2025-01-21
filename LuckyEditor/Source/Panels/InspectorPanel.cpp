@@ -1,7 +1,5 @@
 #include "InspectorPanel.h"
 
-// #include <imgui/imgui.h>
-// #include <imgui/imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Lucky/Scene/Components/SelfComponent.h"
@@ -95,7 +93,7 @@ namespace Lucky
     {
         // 重新设置场景信息
         m_Scene = scene;
-        Selection::Object = {};
+        SelectionManager::Deselect();
     }
 
     void InspectorPanel::OnImGuiRender(bool& isOpen)
@@ -110,9 +108,9 @@ namespace Lucky
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 8));   // 垂直间距为 4
 
             // 被选中的物体存在 TODO 添加资产信息绘制
-            if (m_SelectionObject)
+            if (SelectionManager::GetSelection())
             {
-                DrawComponents(m_SelectionObject);  // 绘制组件 UI
+                DrawComponents(SelectionManager::GetSelection());   // 绘制组件 UI
             }
 
             ImGui::PopStyleVar();

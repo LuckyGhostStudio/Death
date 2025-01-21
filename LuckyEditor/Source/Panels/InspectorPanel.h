@@ -3,7 +3,7 @@
 #include "EditorPanel.h"
 
 #include "Lucky/Scene/Object.h"
-#include "Lucky/Scene/Selection.h"
+#include "Lucky/Scene/SelectionManager.h"
 
 #include "Lucky/Renderer/Texture.h"
 #include "Lucky/Scene/Components/Component.h"
@@ -20,8 +20,6 @@ namespace Lucky
     {
     private:
         Ref<Scene> m_Scene;
-
-        Object& m_SelectionObject = Selection::Object;  // 当前选中项
 
         Ref<Texture2D> m_SettingsButtonIcon;    // 组件设置按钮 Icon
         Ref<Texture2D> m_ComponentIcon;
@@ -191,7 +189,7 @@ namespace Lucky
     inline void InspectorPanel::DrawAddComponentItemButton(const std::string& name)
     {
         // TODO 判断该组件是否可以添加多个
-        if (Selection::Object.HasComponent<TComponent>())
+        if (SelectionManager::GetSelection().HasComponent<TComponent>())
         {
             // TODO 弹出错误 MessageBox
             return;
@@ -200,7 +198,7 @@ namespace Lucky
         // 添加 TComponent 组件
         if (ImGui::MenuItem(name.c_str()))
         {
-            Selection::Object.AddComponent<TComponent>();
+            SelectionManager::GetSelection().AddComponent<TComponent>();
 
             ImGui::CloseCurrentPopup();
         }

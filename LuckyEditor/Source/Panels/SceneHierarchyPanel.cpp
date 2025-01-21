@@ -8,7 +8,7 @@
 #include "Lucky/Scene/Components/CameraComponent.h"
 #include "Lucky/Scene/Components/Rigidbody2DComponent.h"
 #include "Lucky/Scene/Components/BoxCollider2DComponent.h"
-#include "Lucky/Scene/Selection.h"
+#include "Lucky/Scene/SelectionManager.h"
 
 #include <imgui/imgui.h>
 
@@ -26,7 +26,7 @@ namespace Lucky
     {
         // 重新设置场景信息
         m_Scene = scene;
-        Selection::Object = {};
+        SelectionManager::Deselect();
 
         m_SceneIcon = Texture2D::Create("Resources/Icons/Scene_Icon.png");
     }
@@ -62,7 +62,7 @@ namespace Lucky
                 // 点击鼠标 && 鼠标悬停在该窗口（点击空白位置）
                 if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered())
                 {
-                    Selection::Object = {}; // 取消选中：置空选中物体
+                    SelectionManager::Deselect();   // 取消选中：置空选中物体
                 }
 
                 // 创建物体 右键点击窗口白区域弹出菜单：- 右键 不在物体项上
@@ -112,7 +112,7 @@ namespace Lucky
 
         static ImVec4 headerColor = { 0.38f, 0.3805f, 0.381f, 1.0f }; // 树节点颜色
 
-        if (Selection::Object == object)
+        if (SelectionManager::IsSelected(object))
         {
             flags |= ImGuiTreeNodeFlags_Selected;
 
@@ -134,9 +134,9 @@ namespace Lucky
         // 树结点被点击
         if (ImGui::IsItemClicked())
         {
-            Selection::Object = object; // 设置选中物体
+            SelectionManager::Select(object); // 设置选中物体
 
-            LC_TRACE("Selected Object：[ENTT = {0}, UUID {1}, Name {2}]", (uint32_t)Selection::Object, Selection::Object.GetUUID(), Selection::Object.GetName());
+            LC_TRACE("Selected Object：[ENTT = {0}, UUID {1}, Name {2}]", (uint32_t)object, object.GetUUID(), object.GetName());
         }
 
         // 删除物体
@@ -166,28 +166,28 @@ namespace Lucky
             m_Scene->DeleteObject(object);  // 删除物体
 
             // 删除的物体为已选中物体
-            if (Selection::Object == object)
+            if (SelectionManager::IsSelected(object))
             {
-                Selection::Object = {};     // 清空已选中物体
+                SelectionManager::Deselect();   // 清空已选中物体
             }
         }
     }
 
     void SceneHierarchyPanel::OnDuplicateObject()
     {
-        if (Selection::Object)
+        if (SelectionManager::GetSelection())
         {
-            Object newObject = m_Scene->DuplicateObject(Selection::Object); // 复制当前选中物体
-            Selection::Object = newObject;
+            Object newObject = m_Scene->DuplicateObject(SelectionManager::GetSelection()); // 复制当前选中物体
+            SelectionManager::Select(newObject);
         }
     }
 
     void SceneHierarchyPanel::OnDeleteObject()
     {
-        if (Selection::Object)
+        if (SelectionManager::GetSelection())
         {
-            m_Scene->DeleteObject(Selection::Object);   // 删除选中物体
-            Selection::Object = {};                     // 清空已选中物体
+            m_Scene->DeleteObject(SelectionManager::GetSelection());    // 删除选中物体
+            SelectionManager::Deselect();   // 清空已选中物体
         }
     }
 
