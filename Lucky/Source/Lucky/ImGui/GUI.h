@@ -26,16 +26,16 @@ namespace Lucky
     class GUI
     {
     public:
-        static bool DragFloat(const std::string& label, float* value, float valueSpeed = 0.01f, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
-        static bool DragFloat2(const std::string& label, glm::vec2& values, float valueSpeed = 0.01f, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 83.0f);
-        static bool DragFloat3(const std::string& label, glm::vec3& values, float valueSpeed = 0.01f, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 106.0f);
+        static bool DragFloat(const char* label, float* value, float valueSpeed = 0.01f, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+        static bool DragFloat2(const char* label, glm::vec2& values, float valueSpeed = 0.01f, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 83.0f);
+        static bool DragFloat3(const char* label, glm::vec3& values, float valueSpeed = 0.01f, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 106.0f);
 
-        static bool SliderFloat(const std::string& label, float* value, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
-        static bool SliderAngle(const std::string& label, float* value, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+        static bool SliderFloat(const char* label, float* value, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+        static bool SliderAngle(const char* label, float* value, float minValue = 0.0f, float maxValue = 0.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
 
-        static bool Toggle(const std::string& label, bool* value, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+        static bool Toggle(const char* label, bool* value, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
 
-        static bool ColorEditor4(const std::string& label, glm::vec4& color, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+        static bool ColorEdit4(const char* label, glm::vec4& color, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
 
         /// <summary>
         /// 可选择下拉列表
@@ -46,23 +46,23 @@ namespace Lucky
         /// <param name="selected">选中项下标</param>
         /// <param name="labelMinWidth">标签最小列宽</param>
         /// <param name="widgetOffset">小部件右边界向左偏移量</param>
-        static bool DropdownList(const std::string& label, const char** options, uint32_t optionCount, int* selected, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+        static bool DropdownList(const char* label, const char** options, uint32_t optionCount, int* selected, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
 
-        static bool ImageButton(const std::string& label, uint32_t textureID, const glm::vec2& size, float framePadding = 2.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+        static bool ImageButton(const char* label, uint32_t textureID, const glm::vec2& size, float framePadding = 2.0f, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
 
         template<typename Func>
-        inline static void ObjectField(const std::string& label, uint32_t textureID, const std::string& objectName, Func OnClicked, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
+        inline static void ObjectField(const char* label, uint32_t textureID, const char* objectName, Func OnClicked, float labelMinWidth = 120.0f, float widgetOffset = 40.0f);
 
         static bool SelectableImageButton(uint32_t textureID, const glm::vec2& size, const glm::vec4 colors[4], float framePadding = -1.0f);
 
         template<typename T, typename Func>
-        inline static void Foldout(const std::string& label, uint32_t textureID, Func OnOpened, bool defaultOpen = true);
+        inline static void Foldout(const char* label, uint32_t textureID, Func OnOpened, bool defaultOpen = true);
     };
 
     template<typename Func>
-    inline void GUI::ObjectField(const std::string& label, uint32_t textureID, const std::string& objectName, Func OnClicked, float labelMinWidth, float widgetOffset)
+    inline void GUI::ObjectField(const char* label, uint32_t textureID, const char* objectName, Func OnClicked, float labelMinWidth, float widgetOffset)
     {
-        ImGui::PushID(label.c_str());   // 设置控件 ID
+        ImGui::PushID(label);   // 设置控件 ID
 
         float lineHeight = ImGui::GetIO().Fonts->Fonts[1]->FontSize;
         float padding = ImGui::GetStyle().FramePadding.y;
@@ -79,7 +79,7 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label); // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
@@ -100,7 +100,7 @@ namespace Lucky
         // 对象名 TODO None (ObjectType 模板参数)
         ImGui::SameLine();
         ImGui::SetCursorPos({ ImGui::GetCursorPosX() - padding, ImGui::GetCursorPosY() - padding * 1.6f });
-        ImGui::Text(objectName.empty() ? "(None)" : objectName.c_str());
+        ImGui::Text(objectName == "" ? "(None)" : objectName);
 
         ImGui::PopItemWidth();
         ImGui::Columns(1);      // 设置为一列
@@ -109,9 +109,9 @@ namespace Lucky
     }
 
     template<typename T, typename Func>
-    inline void GUI::Foldout(const std::string& label, uint32_t iconID, Func OnOpened, bool defaultOpen)
+    inline void GUI::Foldout(const char* label, uint32_t iconID, Func OnOpened, bool defaultOpen)
     {
-        ImGui::PushID(label.c_str());   // 设置控件ID
+        ImGui::PushID(label);   // 设置控件ID
 
         // 树结点标志
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -162,7 +162,7 @@ namespace Lucky
         ImGui::SameLine(nodePos.x + lineHeight * 2.6);
         ImGui::SetCursorPosY(nodePos.y);
         ImGui::PushFont(boldFont);
-        ImGui::Text(label.c_str());
+        ImGui::Text(label);
         ImGui::PopFont();
         
         //ImGui::SameLine(contentRegionAvail.x - lineHeight - padding * 2);      // 同一行：可用区域左移

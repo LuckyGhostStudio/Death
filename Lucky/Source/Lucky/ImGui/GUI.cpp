@@ -1,12 +1,14 @@
 #include "lcpch.h"
 #include "GUI.h"
 
+#include "ImGui.h"
+
 #include <imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Lucky
 {
-    bool GUI::DragFloat(const std::string& label, float* value, float valueSpeed, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
+    bool GUI::DragFloat(const char* label, float* value, float valueSpeed, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
     {
         float padding = ImGui::GetStyle().FramePadding.y;
 
@@ -22,7 +24,7 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label); // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
@@ -35,7 +37,7 @@ namespace Lucky
         return changed;
     }
 
-    bool GUI::DragFloat2(const std::string& label, glm::vec2& values, float valueSpeed, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
+    bool GUI::DragFloat2(const char* label, glm::vec2& values, float valueSpeed, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
     {
         ImFont* boldFont = ImGui::GetIO().Fonts->Fonts[0];  // 粗体
         float padding = ImGui::GetStyle().FramePadding.y;
@@ -52,7 +54,7 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label); // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushMultiItemsWidths(2, panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
@@ -86,7 +88,7 @@ namespace Lucky
         return changed;
     }
 
-    bool GUI::DragFloat3(const std::string& label, glm::vec3& values, float valueSpeed, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
+    bool GUI::DragFloat3(const char* label, glm::vec3& values, float valueSpeed, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
     {
         ImFont* boldFont = ImGui::GetIO().Fonts->Fonts[0];  // 粗体
         float padding = ImGui::GetStyle().FramePadding.y;
@@ -103,7 +105,7 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label); // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushMultiItemsWidths(3, panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
@@ -149,7 +151,7 @@ namespace Lucky
         return changed;
     }
 
-    bool GUI::SliderFloat(const std::string& label, float* value, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
+    bool GUI::SliderFloat(const char* label, float* value, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
     {
         float padding = ImGui::GetStyle().FramePadding.y;
 
@@ -165,7 +167,7 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label); // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
@@ -179,7 +181,7 @@ namespace Lucky
         return changed;
     }
 
-    bool GUI::SliderAngle(const std::string& label, float* value, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
+    bool GUI::SliderAngle(const char* label, float* value, float minValue, float maxValue, float labelMinWidth, float widgetOffset)
     {
         float padding = ImGui::GetStyle().FramePadding.y;
 
@@ -195,7 +197,7 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label); // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
@@ -209,7 +211,7 @@ namespace Lucky
         return changed;
     }
 
-    bool GUI::Toggle(const std::string& label, bool* value, float labelMinWidth, float widgetOffset)
+    bool GUI::Toggle(const char* label, bool* value, float labelMinWidth, float widgetOffset)
     {
         float padding = ImGui::GetStyle().FramePadding.y;
 
@@ -225,7 +227,7 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label);     // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
@@ -239,7 +241,7 @@ namespace Lucky
         return changed;
     }
 
-    bool GUI::ColorEditor4(const std::string& label, glm::vec4& color, float labelMinWidth, float widgetOffset)
+    bool GUI::ColorEdit4(const char* label, glm::vec4& color, float labelMinWidth, float widgetOffset)
     {
 #if 1   // TODO 移动到通用
         float padding = ImGui::GetStyle().FramePadding.y;
@@ -256,12 +258,17 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label);     // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
 #endif
-        bool changed = ImGui::ColorEdit4(std::format("##{0}", label).c_str(), glm::value_ptr(color));   // 颜色编辑器（1号列）
+        ImVec4 col = { color.x, color.y, color.z, color.w };
+        bool changed = UI::ColorButton(std::format("##{0}", label).c_str(), col, ImGuiColorEditFlags_AlphaPreviewHalf, { panelWidth - labelWidth - widgetOffset, 0 });   // 颜色编辑器（1号列）
+        if (changed)
+        {
+            color = { col.x, col.y, col.z, col.w };
+        }
 
         ImGui::PopItemWidth();
         ImGui::Columns(1);      // 设置为一列
@@ -269,7 +276,7 @@ namespace Lucky
         return changed;
     }
 
-    bool GUI::DropdownList(const std::string& label, const char** options, uint32_t optionCount, int* selected, float labelMinWidth, float widgetOffset)
+    bool GUI::DropdownList(const char* label, const char** options, uint32_t optionCount, int* selected, float labelMinWidth, float widgetOffset)
     {
         const char* current = options[*selected];   // 当前选中项
 
@@ -287,7 +294,7 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label);     // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
@@ -323,7 +330,7 @@ namespace Lucky
         return changed;
     }
 
-    bool GUI::ImageButton(const std::string& label, uint32_t textureID, const glm::vec2& size, float framePadding, float labelMinWidth, float widgetOffset)
+    bool GUI::ImageButton(const char* label, uint32_t textureID, const glm::vec2& size, float framePadding, float labelMinWidth, float widgetOffset)
     {
         float padding = ImGui::GetStyle().FramePadding.y;
 
@@ -339,7 +346,7 @@ namespace Lucky
         ImGui::SetColumnWidth(0, labelWidth);   // 设置 0 号列宽
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + padding);
-        ImGui::Text(label.c_str()); // 控件名（0 号列）
+        ImGui::Text(label);     // 控件名（0 号列）
 
         ImGui::NextColumn();
         ImGui::PushItemWidth(panelWidth - labelWidth - widgetOffset); // 设置 1 号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
@@ -359,9 +366,9 @@ namespace Lucky
     {
         static bool selected = false;
 
-        static ImVec4 buttonColor = { colors[0].r, colors[0].g, colors[0].b,colors[0].a, };         // 原色
-        static ImVec4 buttonHoveredColor = { colors[1].r, colors[1].g, colors[1].b,colors[1].a, };  // 悬浮颜色
-        static ImVec4 buttonActiveColor = { colors[2].r, colors[2].g, colors[2].b,colors[2].a, };   // 激活颜色
+        static ImVec4 buttonColor = { colors[0].r, colors[0].g, colors[0].b,colors[0].a, };        // 原色
+        static ImVec4 buttonHoveredColor = { colors[1].r, colors[1].g, colors[1].b,colors[1].a, }; // 悬浮颜色
+        static ImVec4 buttonActiveColor = { colors[2].r, colors[2].g, colors[2].b,colors[2].a, };  // 激活颜色
 
         if (selected)
         {

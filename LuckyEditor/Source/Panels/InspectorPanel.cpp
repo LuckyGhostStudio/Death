@@ -254,7 +254,7 @@ namespace Lucky
                 }
             }
 
-            GUI::ColorEditor4("Color", spriteRendererComponent.Color);   // 颜色编辑器
+            GUI::ColorEdit4("Color", spriteRendererComponent.Color);   // 颜色编辑器
         });
 
         // 绘制 Rigidbody2D 组件
@@ -321,7 +321,7 @@ namespace Lucky
 
             uint32_t iconID = m_ScriptIcon->GetRendererID();
 
-            GUI::ObjectField("Script", iconID, scriptComponent.ClassName, [&]()
+            GUI::ObjectField("Script", iconID, scriptComponent.ClassName.c_str(), [&]()
             {
                 // 选择 C# 脚本文件
                 std::string filepath = FileDialogs::OpenFile("C# Script(*.cs)\0*.cs\0"); // TODO .Script in project
@@ -354,7 +354,7 @@ namespace Lucky
                         if (field.Type == ScriptFieldType::Float)
                         {
                             float value = scriptInstance->GetFieldValue<float>(name);
-                            if (GUI::DragFloat(name, &value))
+                            if (GUI::DragFloat(name.c_str(), &value))
                             {
                                 scriptInstance->SetFieldValue<float>(name, value);
                             }
@@ -384,7 +384,7 @@ namespace Lucky
                             if (field.Type == ScriptFieldType::Float)
                             {
                                 float value = fieldInstance.GetValue<float>();
-                                if (GUI::DragFloat(name, &value))
+                                if (GUI::DragFloat(name.c_str(), &value))
                                 {
                                     fieldInstance.SetValue(value);
                                 }
@@ -401,7 +401,7 @@ namespace Lucky
                             if (field.Type == ScriptFieldType::Float)
                             {
                                 float value = 0.0f;
-                                if (GUI::DragFloat(name, &value))
+                                if (GUI::DragFloat(name.c_str(), &value))
                                 {
                                     fieldInstance.Field = field;
                                     fieldInstance.SetValue(value);

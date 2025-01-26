@@ -46,7 +46,7 @@ namespace Lucky
             {
                 uint32_t sceneIcon = m_SceneIcon->GetRendererID();
                 // Scene 场景根节点 TODO 场景保存状态显示 Name *
-                GUI::Foldout<Scene>(m_Scene->GetName(), sceneIcon, [&]()
+                GUI::Foldout<Scene>(m_Scene->GetName().c_str(), sceneIcon, [&]()
                 {
                     // 遍历场景所有实体，并调用 each 内的函数
                     m_Scene->m_Registry.each([&](auto ObjectID)
