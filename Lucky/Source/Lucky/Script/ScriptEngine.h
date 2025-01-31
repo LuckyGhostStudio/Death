@@ -36,7 +36,6 @@ namespace Lucky
         ULong, 
 
         Char,
-        String,
 
         Vector2,
         Vector3,
@@ -282,4 +281,58 @@ namespace Lucky
         bool GetFieldValueInternal(const std::string& name, void* buffer);
         bool SetFieldValueInternal(const std::string& name, const void* value);
     };
+
+    namespace Utils
+    {
+        inline static const char* ScriptFieldTypeToString(ScriptFieldType fieldType)
+        {
+            switch (fieldType)
+            {
+                case ScriptFieldType::Float:        return "Float";
+                case ScriptFieldType::Double:       return "Double";
+                case ScriptFieldType::Bool:         return "Bool";
+                case ScriptFieldType::SByte:        return "SByte";
+                case ScriptFieldType::Short:        return "Short";
+                case ScriptFieldType::Int:          return "Int";
+                case ScriptFieldType::Long:         return "Long";
+                case ScriptFieldType::Byte:         return "Byte";
+                case ScriptFieldType::UShort:       return "UShort";
+                case ScriptFieldType::UInt:         return "UInt";
+                case ScriptFieldType::ULong:        return "ULong";
+                case ScriptFieldType::Char:         return "Char";
+                case ScriptFieldType::Vector2:      return "Vector2";
+                case ScriptFieldType::Vector3:      return "Vector3";
+                case ScriptFieldType::Vector4:      return "Vector4";
+                case ScriptFieldType::GameObject:   return "GameObject";
+            }
+
+            LC_CORE_ASSERT(false, "Unknown ScriptFieldType");
+
+            return "None";
+        }
+
+        inline static ScriptFieldType ScriptFieldTypeFromString(std::string_view fieldType)
+        {
+            if (fieldType == "Float")       return ScriptFieldType::Float;
+            if (fieldType == "Double")      return ScriptFieldType::Double;
+            if (fieldType == "Bool")        return ScriptFieldType::Bool;
+            if (fieldType == "SByte")       return ScriptFieldType::SByte;
+            if (fieldType == "Short")       return ScriptFieldType::Short;
+            if (fieldType == "Int")         return ScriptFieldType::Int;
+            if (fieldType == "Long")        return ScriptFieldType::Long;
+            if (fieldType == "Byte")        return ScriptFieldType::Byte;
+            if (fieldType == "UShort")      return ScriptFieldType::UShort;
+            if (fieldType == "UInt")        return ScriptFieldType::UInt;
+            if (fieldType == "ULong")       return ScriptFieldType::ULong;
+            if (fieldType == "Char")        return ScriptFieldType::Char;
+            if (fieldType == "Vector2")     return ScriptFieldType::Vector2;
+            if (fieldType == "Vector3")     return ScriptFieldType::Vector3;
+            if (fieldType == "Vector4")     return ScriptFieldType::Vector4;
+            if (fieldType == "GameObject")  return ScriptFieldType::GameObject;
+
+            LC_CORE_ASSERT(false, "Unknown ScriptFieldType");
+
+            return ScriptFieldType::None;
+        }
+    }
 }

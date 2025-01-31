@@ -12,6 +12,8 @@
 #include "Lucky/Scene/Components/CircleCollider2DComponent.h"
 #include "Lucky/Scene/Components/ScriptComponent.h"
 
+#include "Lucky/Script/ScriptEngine.h"
+
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
@@ -136,6 +138,28 @@ namespace YAML
             rhs.y = node[1].as<float>();
             rhs.z = node[2].as<float>();
             rhs.w = node[3].as<float>();
+
+            return true;
+        }
+    };
+
+    /// <summary>
+    /// UUID 转换
+    /// </summary>
+    template<>
+    struct convert<Lucky::UUID>
+    {
+        static Node encode(const Lucky::UUID& uuid)
+        {
+            Node node;
+            node.push_back((uint64_t)uuid);
+
+            return node;
+        }
+
+        static bool decode(const Node& node, Lucky::UUID& uuid)
+        {
+            uuid = node.as<uint64_t>();
 
             return true;
         }
@@ -321,7 +345,60 @@ namespace Lucky
             
             out << YAML::Key << "ClassNamespace" << YAML::Value << scriptComponent.ClassNamespace;
             out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.ClassName;
-            // TODO public 成员变量
+
+            // Fields public 成员变量
+            std::string fullName = std::format("{}.{}", scriptComponent.ClassNamespace, scriptComponent.ClassName);
+            Ref<ScriptClass> monoBehaviourClass = ScriptEngine::GetMonoBehaviourClass(fullName);
+            const auto& fields = monoBehaviourClass->GetFields();
+
+            if (fields.size() > 0)
+            {
+                out << YAML::Key << "ScriptFields" << YAML::Value;
+
+                ScriptFieldMap& monoBehaviourFields = ScriptEngine::GetScriptFieldMap(object.GetUUID());
+
+                out << YAML::BeginSeq;
+
+                for (const auto& [name, field] : fields)
+                {
+                    if (monoBehaviourFields.find(name) == monoBehaviourFields.end())
+                    {
+                        continue;
+                    }
+
+                    out << YAML::BeginMap; // ScriptField
+
+                    out << YAML::Key << "Name" << YAML::Value << name;
+                    out << YAML::Key << "Type" << YAML::Value << Utils::ScriptFieldTypeToString(field.Type);
+                    out << YAML::Key << "Data" << YAML::Value;
+
+                    ScriptFieldInstance& scriptField = monoBehaviourFields.at(name);
+
+                    switch (field.Type)
+                    {
+                        case ScriptFieldType::Float:        out << scriptField.GetValue<float>();       break;
+                        case ScriptFieldType::Double:       out << scriptField.GetValue<double>();      break;
+                        case ScriptFieldType::Bool:         out << scriptField.GetValue<bool>();        break;
+                        case ScriptFieldType::SByte:        out << scriptField.GetValue<int8_t>();      break;
+                        case ScriptFieldType::Short:        out << scriptField.GetValue<int16_t>();     break;
+                        case ScriptFieldType::Int:          out << scriptField.GetValue<int32_t>();     break;
+                        case ScriptFieldType::Long:         out << scriptField.GetValue<int64_t>();     break;
+                        case ScriptFieldType::Byte:         out << scriptField.GetValue<uint8_t>();     break;
+                        case ScriptFieldType::UShort:       out << scriptField.GetValue<uint16_t>();    break;
+                        case ScriptFieldType::UInt:         out << scriptField.GetValue<uint32_t>();    break;
+                        case ScriptFieldType::ULong:        out << scriptField.GetValue<uint64_t>();    break;
+                        case ScriptFieldType::Char:         out << scriptField.GetValue<char>();        break;
+                        case ScriptFieldType::Vector2:      out << scriptField.GetValue<glm::vec2>();   break;
+                        case ScriptFieldType::Vector3:      out << scriptField.GetValue<glm::vec3>();   break;
+                        case ScriptFieldType::Vector4:      out << scriptField.GetValue<glm::vec4>();   break;
+                        case ScriptFieldType::GameObject:   out << scriptField.GetValue<UUID>();        break;
+                    }
+
+                    out << YAML::EndMap; // ScriptFields
+                }
+
+                out << YAML::EndSeq;
+            }
 
             out << YAML::EndMap;    // ScriptComponent
         }
@@ -504,7 +581,58 @@ namespace Lucky
 
                     scriptComponent.ClassNamespace = scriptComponentNode["ClassNamespace"].as<std::string>();
                     scriptComponent.ClassName = scriptComponentNode["ClassName"].as<std::string>();
-                    // TODO public 成员变量
+                    
+                    // Fields public 成员变量
+                    auto scriptFields = scriptComponentNode["ScriptFields"];
+                    if (scriptFields)
+                    {
+                        std::string fullName = std::format("{}.{}", scriptComponent.ClassNamespace, scriptComponent.ClassName);
+
+                        Ref<ScriptClass> monoBehaviourClass = ScriptEngine::GetMonoBehaviourClass(fullName);
+
+                        LC_CORE_ASSERT(monoBehaviourClass, "MonoBehaviour Class NotFound.");
+
+                        const auto& fields = monoBehaviourClass->GetFields();
+                        ScriptFieldMap& monoBehaviourFields = ScriptEngine::GetScriptFieldMap(deserializedObject.GetUUID());
+
+                        for (auto scriptField : scriptFields)
+                        {
+                            std::string name = scriptField["Name"].as<std::string>();
+
+                            ScriptFieldType type = Utils::ScriptFieldTypeFromString(scriptField["Type"].as<std::string>());
+
+                            ScriptFieldInstance& fieldInstance = monoBehaviourFields[name];
+
+                            // TODO Log Warning
+                            LC_CORE_ASSERT(fields.find(name) != fields.end(), "");
+
+                            if (fields.find(name) == fields.end())
+                            {
+                                continue;
+                            }
+
+                            fieldInstance.Field = fields.at(name);
+                            switch (type)
+                            {
+                                case ScriptFieldType::Float:        fieldInstance.SetValue(scriptField["Data"].as<float>());        break;
+                                case ScriptFieldType::Double:       fieldInstance.SetValue(scriptField["Data"].as<double>());       break;
+                                case ScriptFieldType::Bool:         fieldInstance.SetValue(scriptField["Data"].as<bool>());         break;
+                                case ScriptFieldType::SByte:        fieldInstance.SetValue(scriptField["Data"].as<int8_t>());       break;
+                                case ScriptFieldType::Short:        fieldInstance.SetValue(scriptField["Data"].as<int16_t>());      break;
+                                case ScriptFieldType::Int:          fieldInstance.SetValue(scriptField["Data"].as<int32_t>());      break;
+                                case ScriptFieldType::Long:         fieldInstance.SetValue(scriptField["Data"].as<int64_t>());      break;
+                                case ScriptFieldType::Byte:         fieldInstance.SetValue(scriptField["Data"].as<uint8_t>());      break;
+                                case ScriptFieldType::UShort:       fieldInstance.SetValue(scriptField["Data"].as<uint16_t>());     break;
+                                case ScriptFieldType::UInt:         fieldInstance.SetValue(scriptField["Data"].as<uint32_t>());     break;
+                                case ScriptFieldType::ULong:        fieldInstance.SetValue(scriptField["Data"].as<uint64_t>());     break;
+                                case ScriptFieldType::Char:         fieldInstance.SetValue(scriptField["Data"].as<char>());         break;
+                                case ScriptFieldType::Vector2:      fieldInstance.SetValue(scriptField["Data"].as<glm::vec2>());    break;
+                                case ScriptFieldType::Vector3:      fieldInstance.SetValue(scriptField["Data"].as<glm::vec3>());    break;
+                                case ScriptFieldType::Vector4:      fieldInstance.SetValue(scriptField["Data"].as<glm::vec4>());    break;
+                                case ScriptFieldType::GameObject:   fieldInstance.SetValue(scriptField["Data"].as<UUID>());         break;
+                            }
+                        }
+                    }
                 }
             }
         }

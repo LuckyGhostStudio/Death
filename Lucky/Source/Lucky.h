@@ -13,16 +13,17 @@
 
 #include "Lucky/Scene/Scene.h"
 #include "Lucky/Scene/Object.h"
-#include "Lucky/Scene/Selection.h"
+#include "Lucky/Scene/SelectionManager.h"
 
 // Components
 #include "Lucky/Scene/Components/SelfComponent.h"
 #include "Lucky/Scene/Components/TransformComponent.h"
-#include "Lucky/Scene/Components/CameraComponent.h"
 #include "Lucky/Scene/Components/SpriteRendererComponent.h"
+#include "Lucky/Scene/Components/CameraComponent.h"
 #include "Lucky/Scene/Components/Rigidbody2DComponent.h"
 #include "Lucky/Scene/Components/BoxCollider2DComponent.h"
 #include "Lucky/Scene/Components/CircleCollider2DComponent.h"
+#include "Lucky/Scene/Components/ScriptComponent.h"
 
 // Renderer
 #include "Lucky/Renderer/Renderer.h"

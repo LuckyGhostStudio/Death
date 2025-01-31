@@ -127,3 +127,13 @@ Objects:
     ScriptComponent:
       ClassNamespace: Game
       ClassName: Player
+      ScriptFields:
+        - Name: damage
+          Type: Float
+          Data: -11.5100002
+        - Name: speed
+          Type: Float
+          Data: -1.37
+        - Name: time
+          Type: Float
+          Data: 2.01999998

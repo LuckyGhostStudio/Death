@@ -343,6 +343,8 @@ namespace Lucky
 
             if (m_Scene->IsRunning())
             {
+                // TODO 运行时从 UI 读取 public 字段值写入到脚本字段
+
                 Ref<ScriptInstance> scriptInstance = ScriptEngine::GetMonoBehaviourScriptInstance(object.GetUUID());
                 if (scriptInstance)
                 {
@@ -364,6 +366,8 @@ namespace Lucky
             }
             else
             {
+                // TODO 编辑模式，在脚本重新编译后 从脚本读取字段值显示在 UI（用于在运行时读取写入到脚本）
+
                 // Mono 脚本子类存在
                 if (ScriptEngine::MonoBehaviourClassExists(fullName))
                 {
@@ -371,14 +375,14 @@ namespace Lucky
 
                     const auto& fields = monoBehaviourClass->GetFields();   // C# 脚本中的 public 字段
 
-                    ScriptFieldMap& fieldMap = ScriptEngine::GetScriptFieldMap(object.GetUUID());
+                    ScriptFieldMap& monoBehaviourFields = ScriptEngine::GetScriptFieldMap(object.GetUUID());
 
                     for (const auto& [name, field] : fields)
                     {
                         // 将 FieldMap 中的 字段值设置到 UI
-                        if (fieldMap.find(name) != fieldMap.end())
+                        if (monoBehaviourFields.find(name) != monoBehaviourFields.end())
                         {
-                            ScriptFieldInstance& fieldInstance = fieldMap.at(name);
+                            ScriptFieldInstance& fieldInstance = monoBehaviourFields.at(name);
 
                             // Float
                             if (field.Type == ScriptFieldType::Float)
@@ -393,7 +397,7 @@ namespace Lucky
                         // 从 UI 读取值 设置到 FieldMap
                         else
                         {
-                            ScriptFieldInstance& fieldInstance = fieldMap[name];
+                            ScriptFieldInstance& fieldInstance = monoBehaviourFields[name];
 
                             // TODO 初始显示脚本 public 字段的默认值
 
